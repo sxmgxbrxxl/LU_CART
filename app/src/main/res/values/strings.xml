@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">LU CART</string>
+    <string name="client_id">179629333292-knuqj9rtkti72od06a4qndgnk1na8fli.apps.googleusercontent.com</string>
+
+    <string name="facebook_app_id">1869165270274565</string>
+    <string name="fb_login_protocol_scheme">fb1869165270274565</string>
+    <string name="facebook_client_token">EAAajZCvP2EgUBOxyKs9gK1yr71SaydnVyDRZAKmQZAkoptQP1apFVCMyMplFTR58QyelZCSxrUxM6PGOcqtvA8uRCiCHLeiZBZCxodUg5aqPalrZBsOBkvcJS4EY70DXuSFdNUSmd0dkaTds5lxMoqiJGo4LvqwjndHbRXm8j2lYXa7hS0HHE8O7rMZAarwvUO09ut7OTCmiTnRH9hK2pnfnuZBOvZCxmy5mTHotvR0GIIjZAY6X46AneDZBkBAN0DZBC1QZDZD</string>
+</resources>

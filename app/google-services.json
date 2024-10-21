@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "179629333292",
+    "project_id": "lu-cart-firebase",
+    "storage_bucket": "lu-cart-firebase.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:179629333292:android:479a6b3e88873b84b9ea89",
+        "android_client_info": {
+          "package_name": "com.advento.lucart"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBynO0mJfdWpyuCmHivQMLQCsHjKQLnINM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
