@@ -136,6 +136,7 @@ public class MainActivity extends AppCompatActivity {
                 intent.putExtra("EMAIL", user.getEmail());
                 intent.putExtra("PHOTO_URL", user.getPhotoUrl() != null ? user.getPhotoUrl().toString() : null);
                 startActivity(intent);
+
                 Toast.makeText(this, "Sign in successfully", Toast.LENGTH_SHORT).show();
             }
         } else {

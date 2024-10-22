@@ -3,6 +3,8 @@ package com.advento.lucart;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.text.method.HideReturnsTransformationMethod;
+import android.text.method.PasswordTransformationMethod;
 import android.view.View;
 import android.widget.Toast;
 
@@ -59,9 +61,20 @@ public class EmailLogin extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
+        binding.cbShow.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+                // Show password
+                binding.etPassword.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
+            } else {
+                // Hide password
+                binding.etPassword.setTransformationMethod(PasswordTransformationMethod.getInstance());
+            }
+            // Move cursor to the end of the text
+            binding.etPassword.setSelection(binding.etPassword.getText().length());
+        });
+
         binding.btnSave.setOnClickListener(v -> {
 
-            binding.progressCircular.setVisibility(View.VISIBLE);
             String userEmail = binding.etEmail.getText().toString().trim();
             String userPassword = binding.etPassword.getText().toString().trim();
 
@@ -79,8 +92,6 @@ public class EmailLogin extends AppCompatActivity {
                     .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
-
-                            binding.progressCircular.setVisibility(View.GONE);
 
                             if (task.isSuccessful()) {
                                 Toast.makeText(EmailLogin.this, "Authentication Successful",

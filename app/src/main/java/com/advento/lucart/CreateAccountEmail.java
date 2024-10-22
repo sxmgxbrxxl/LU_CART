@@ -20,6 +20,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 
 import com.advento.lucart.databinding.ActivityCreateAccountEmailBinding;
 import com.advento.lucart.models.User;
@@ -40,6 +43,8 @@ public class CreateAccountEmail extends AppCompatActivity {
 
     private ActivityCreateAccountEmailBinding binding;
     private FirebaseAuth mAuth;
+    private FirebaseDatabase db;
+    private DatabaseReference reference;
     private Uri photoUri;
     private static final int CAMERA_REQUEST_CODE = 100;
     private static final int GALLERY_REQUEST_CODE = 101;
@@ -53,6 +58,12 @@ public class CreateAccountEmail extends AppCompatActivity {
         binding = ActivityCreateAccountEmailBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return insets;
+        });
+
         mAuth = FirebaseAuth.getInstance();
 
         binding.btnSave.setOnClickListener(v -> saveUserInfo());
@@ -60,62 +71,55 @@ public class CreateAccountEmail extends AppCompatActivity {
     }
 
     private void saveUserInfo() {
+        // Check if the user is authenticated
+        if (mAuth.getCurrentUser() == null) {
+            showToast("User not authenticated");
+            return;
+        }
+
+        // Get All Data
+        String userId = mAuth.getCurrentUser().getUid();
+        String email = getIntent().getStringExtra("EMAIL");
+        String password = getIntent().getStringExtra("PASSWORD");
         String firstName = binding.etFirstName.getText().toString().trim();
         String lastName = binding.etLastName.getText().toString().trim();
-        String email = mAuth.getCurrentUser().getEmail(); // Get the user's email
-        String userId = mAuth.getCurrentUser().getUid(); // Get the user's ID
 
-        if (TextUtils.isEmpty(firstName) || TextUtils.isEmpty(lastName) || photoUri == null) {
-            showToast("Please fill in all fields and choose a photo.");
-            return;
-        }
+        Log.d("SaveUserInfo", "Email: " + email);
+        Log.d("SaveUserInfo", "Password: " + password);
+        Log.d("SaveUserInfo", "First Name: " + firstName);
+        Log.d("SaveUserInfo", "Last Name: " + lastName);
+        Log.d("SaveUserInfo", "Photo URI: " + (photoUri != null ? photoUri.toString() : "null"));
 
-        // Assuming you have a method to upload the photo and get the URL
-        uploadPhotoAndSaveToDatabase(photoUri, userId, firstName, lastName, email);
-    }
-
-    private void uploadPhotoAndSaveToDatabase(Uri photoUri, String userId, String firstName, String lastName, String email) {
         if (photoUri == null) {
-            Log.e("UploadPhoto", "Photo URI is null");
-            showToast("Photo URI is null");
+            showToast("Please choose a photo.");
+            return;
+        }
+        String photoUrl = photoUri.toString();
+
+        if (TextUtils.isEmpty(firstName) || TextUtils.isEmpty(lastName)) {
+            showToast("Please fill in all fields.");
             return;
         }
 
-        Log.d("UploadPhoto", "Uploading photo from URI: " + photoUri.toString());
+        //ORDER MATTERS
+        User user = new User(firstName, lastName, email, password, photoUrl);
 
-        // Create a reference to Firebase Storage
-        StorageReference storageReference = FirebaseStorage.getInstance().getReference("profile_photos/" + userId + ".jpg");
-        Log.d("UploadPhoto", "Uploading photo to: " + storageReference.getPath());
+        db = FirebaseDatabase.getInstance("https://lu-cart-firebase-default-rtdb.asia-southeast1.firebasedatabase.app");
+        reference = db.getReference("users");  // Adjust the path as needed
 
-        storageReference.putFile(photoUri)
-                .addOnSuccessListener(taskSnapshot -> {
-                    storageReference.getDownloadUrl().addOnSuccessListener(uri -> {
-                        String photoUrl = uri.toString();
-                        Log.d("UploadPhoto", "Photo uploaded successfully: " + photoUrl);
-                        saveUserToDatabase(userId, firstName, lastName, email, photoUrl);
-                    });
-                })
-                .addOnFailureListener(e -> {
-                    Log.e("UploadPhoto", "Failed to upload photo: " + e.getMessage());
-                    showToast("Failed to upload photo: " + e.getMessage());
-                });
+        // Write user data to Firebase Realtime Database
+        reference.child(userId).setValue(user).addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                showToast("User information saved successfully");
+                // Navigate to the Home screen after successful saving
+                startActivity(new Intent(CreateAccountEmail.this, Home.class));
+            } else {
+                // Log the error if saving fails
+                Log.e("SaveUserInfo", "Failed to save user information: " + task.getException());
+                showToast("Failed to save user information");
+            }
+        });
     }
-
-    private void saveUserToDatabase(String userId, String firstName, String lastName, String email, String photoUrl) {
-        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("users").child(userId);
-
-        User user = new User(firstName, lastName, email, photoUrl); // Create a User object
-
-        databaseReference.setValue(user)
-                .addOnSuccessListener(aVoid -> {
-                    showToast("User info saved successfully");
-                    // You can navigate to another activity here if needed
-                })
-                .addOnFailureListener(e -> {
-                    showToast("Failed to save user info: " + e.getMessage());
-                });
-    }
-
 
     private void showImagePickerOptions() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -124,21 +128,18 @@ public class CreateAccountEmail extends AppCompatActivity {
 
         builder.setItems(options, (dialog, which) -> {
             if (which == 0) {
-                // Open Camera
                 if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
                     openCamera();
                 } else {
                     ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, CAMERA_REQUEST_CODE);
                 }
             } else if (which == 1) {
-                // Open Gallery
                 if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_IMAGES) == PackageManager.PERMISSION_GRANTED) {
                     openGallery();
                 } else {
                     ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_MEDIA_IMAGES}, GALLERY_REQUEST_CODE);
                 }
             } else if (which == 2) {
-                // Remove Photo
                 removePhoto();
             }
         });

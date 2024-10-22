@@ -35,13 +35,13 @@ public class EmailVerification extends AppCompatActivity {
         binding = ActivityEmailVerificationBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        mAuth = FirebaseAuth.getInstance();
-
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        mAuth = FirebaseAuth.getInstance();
 
         setSupportActionBar(binding.toolbar);
 
@@ -49,16 +49,11 @@ public class EmailVerification extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
-        // Get email and password from the first activity
+        // Get email and password from the EMAILSIGNUP
         String userEmail = getIntent().getStringExtra("EMAIL");
         String userPassword = getIntent().getStringExtra("PASSWORD");
 
-        // Register user with email and password
-        if (!TextUtils.isEmpty(userEmail) && !TextUtils.isEmpty(userPassword)) {
-            registerUser(userEmail, userPassword);
-        } else {
-            Toast.makeText(this, "Email and Password cannot be empty", Toast.LENGTH_SHORT).show();
-        }
+        registerUser(userEmail, userPassword);
 
         binding.btnVerify.setOnClickListener(v -> checkEmailVerification());
     }
@@ -96,6 +91,8 @@ public class EmailVerification extends AppCompatActivity {
                     if (currentUser.isEmailVerified()) {
                         // User's email is verified, allow them to proceed
                         Intent intent = new Intent(EmailVerification.this, CreateAccountEmail.class);
+                        intent.putExtra("EMAIL", currentUser.getEmail());
+                        intent.putExtra("PASSWORD", getIntent().getStringExtra("PASSWORD"));
                         startActivity(intent);
                         finish(); // Close the current activity
                     } else {
@@ -127,7 +124,7 @@ public class EmailVerification extends AppCompatActivity {
 
         // Set button action
         dialogButton.setOnClickListener(v -> {
-            startActivity(new Intent(EmailVerification.this, MainActivity.class));
+            startActivity(new Intent(EmailVerification.this, EmailLogin.class));
         });
 
         // Show the dialog

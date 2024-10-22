@@ -51,7 +51,6 @@ public class EmailSignUp extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
-
         binding.btnContinue.setOnClickListener(v -> {
 
             String userEmail = binding.etEmail.getText().toString().trim();
@@ -69,7 +68,7 @@ public class EmailSignUp extends AppCompatActivity {
 
             //// NOTE NEED EMAIL AND PASSWORD VALIDATIONS //// ADD TO TO-DO ////
 
-            Intent intent = new Intent(EmailSignUp.this, EmailVerification.class); //CHANGE (FOR TEST ONLY)
+            Intent intent = new Intent(EmailSignUp.this, EmailVerification.class);
             intent.putExtra("EMAIL", userEmail);
             intent.putExtra("PASSWORD", userPassword);
             startActivity(intent);

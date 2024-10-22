@@ -28,9 +28,11 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.LUCART"
         tools:targetApi="31">
+
         <activity
             android:name=".Home"
-            android:exported="false" />
+            android:exported="false"
+            android:theme="@style/CustomTheme" />
         <activity
             android:name=".EmailLogin"
             android:exported="false" />
@@ -45,6 +47,9 @@
             android:exported="false" />
         <activity
             android:name=".MainActivity"
+            android:exported="false" />
+        <activity
+            android:name=".SplashScreen"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
