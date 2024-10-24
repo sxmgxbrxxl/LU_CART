@@ -14,66 +14,66 @@
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="200dp">
 
         <ImageView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:src="@drawable/try_graham"
-            android:scaleType="centerCrop" />
+            android:scaleType="centerCrop"
+            android:src="@drawable/try_graham" />
 
         <View
             android:layout_width="match_parent"
             android:layout_height="200dp"
-            android:background="@drawable/gradient_overlay" /> <!-- Your gradient drawable -->
+            android:layout_gravity="bottom"
+            android:background="@drawable/gradient_overlay" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingStart="16dp"
-            android:paddingBottom="80dp"
-            android:layout_gravity="bottom">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Graham Balls"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:textColor="@android:color/white" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingStart="10dp"
-                android:text="$1.99"
-                android:textSize="18sp"
-                android:textColor="@android:color/white" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
             android:orientation="vertical"
-            android:padding="16dp"
-            android:layout_gravity="bottom">
+            android:padding="16dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Graham Balls"
+                    android:fontFamily="@font/montserrat_bold"
+                    android:textColor="@android:color/white"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="10dp"
+                    android:text="$1.99"
+                    android:fontFamily="@font/montserrat_semibold"
+                    android:textColor="@android:color/white"
+                    android:textSize="18sp" />
+            </LinearLayout>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Marshmallows coated with Graham Crackers mixture and a splash of variety of toppings"
-                android:textSize="14sp"
-                android:textColor="@android:color/white" />
+                android:text="Marshmallows coated with Graham Crackers mixture with a splash of variety of toppings"
+                android:fontFamily="@font/montserrat"
+                android:textColor="@android:color/white"
+                android:textSize="14sp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="★★★★☆"
+                android:textColor="@android:color/white"
                 android:textSize="16sp"
-                android:textColor="@android:color/white" />
-
+                android:layout_marginBottom="10dp"/>
         </LinearLayout>
 
     </FrameLayout>

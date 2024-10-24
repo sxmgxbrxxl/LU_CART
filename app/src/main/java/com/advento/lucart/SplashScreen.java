@@ -33,13 +33,6 @@ public class SplashScreen extends AppCompatActivity {
             return insets;
         });
 
-        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                binding.progressBar.setVisibility(View.VISIBLE);
-            }
-        }, 1000);
-
 
         new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
             @Override
@@ -48,6 +41,6 @@ public class SplashScreen extends AppCompatActivity {
                 startActivity(intent);
                 finish();
             }
-        }, 2000);
+        }, 1000);
     }
 }

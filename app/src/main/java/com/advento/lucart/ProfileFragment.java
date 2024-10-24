@@ -66,11 +66,11 @@ public class ProfileFragment extends Fragment {
         // Inflate the layout using ViewBinding
         binding = FragmentProfileBinding.inflate(inflater, container, false);
 
-        // Set up UI actions and event listeners
-        binding.btnSignOut.setOnClickListener(v -> signOut());
-
         // Load user data after the view is created
         loadData();
+
+        // Set up UI actions and event listeners
+        binding.btnSignOut.setOnClickListener(v -> signOut());
 
         return binding.getRoot();
     }

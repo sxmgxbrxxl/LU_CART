@@ -1,8 +1,10 @@
 package com.advento.lucart;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.widget.Toast;
+import android.widget.VideoView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.activity.result.ActivityResult;
@@ -61,6 +63,18 @@ public class MainActivity extends AppCompatActivity {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
+        });
+
+        VideoView videoView = findViewById(R.id.vvAnimation);
+
+        // Set video URI (place your video in res/raw folder and reference it)
+        Uri videoUri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.raw_anim);
+        videoView.setVideoURI(videoUri);
+
+        // Loop the video
+        videoView.setOnPreparedListener(mp -> {
+            mp.setLooping(true); // Set looping
+            videoView.start(); // Start the video
         });
 
         initializeFirebaseAndFacebook();
