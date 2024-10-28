@@ -26,6 +26,7 @@
         android:layout_height="75dp"
         android:layout_marginStart="24dp"
         android:layout_marginTop="28dp"
+        android:contentDescription="@string/image_email"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/toolbar"
         app:srcCompat="@drawable/ic_emailsend" />
@@ -37,7 +38,7 @@
         android:layout_marginStart="24dp"
         android:layout_marginTop="12dp"
         android:fontFamily="@font/montserrat_bold"
-        android:text="Welcome Back!"
+        android:text="@string/welcome_back"
         android:textColor="@color/black"
         android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"
@@ -50,7 +51,7 @@
         android:layout_marginStart="24dp"
         android:layout_marginTop="8dp"
         android:fontFamily="@font/montserrat"
-        android:text="Please enter your email and password"
+        android:text="@string/please_enter_your_email_and_password"
         android:textColor="@color/black"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvEmail" />
@@ -60,7 +61,7 @@
         android:layout_width="300dp"
         android:layout_height="60dp"
         android:layout_marginTop="32dp"
-        android:hint="Email"
+        android:hint="@string/email"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.504"
         app:layout_constraintStart_toStartOf="parent"
@@ -69,7 +70,7 @@
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/etEmail"
             android:layout_width="300dp"
-            android:layout_height="wrap_content"
+            android:layout_height="48dp"
             android:fontFamily="@font/montserrat"
             android:inputType="textEmailAddress"
             android:textSize="12sp" />  <!-- The input field -->
@@ -81,7 +82,7 @@
         android:layout_width="300dp"
         android:layout_height="60dp"
         android:layout_marginTop="16dp"
-        android:hint="Password"
+        android:hint="@string/password"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.504"
         app:layout_constraintStart_toStartOf="parent"
@@ -90,7 +91,7 @@
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/etPassword"
             android:layout_width="300dp"
-            android:layout_height="wrap_content"
+            android:layout_height="48dp"
             android:fontFamily="@font/montserrat"
             android:inputType="textPassword"
             android:textSize="12sp" />  <!-- The input field -->
@@ -104,9 +105,9 @@
         android:layout_marginBottom="25dp"
         android:background="@drawable/bg_button"
         android:fontFamily="@font/montserrat_semibold"
-        android:text="Continue"
+        android:text="@string/proceed"
         android:textColor="@color/white"
-        android:textSize="12dp"
+        android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -114,12 +115,12 @@
     <CheckBox
         android:id="@+id/cbShow"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="48dp"
         android:layout_marginStart="52dp"
         android:layout_marginTop="16dp"
         android:layout_marginEnd="231dp"
         android:fontFamily="@font/montserrat"
-        android:text="Show Password"
+        android:text="@string/show_password"
         android:textSize="12sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

@@ -1,21 +1,16 @@
-plugins {
-    alias(libs.plugins.android.application)
-    alias(libs.plugins.google.gms.google.services)
-}
+apply plugin: 'com.android.application'
+apply plugin: 'com.google.gms.google-services'
 
 android {
-
-    viewBinding.enable = true
-    namespace 'com.advento.lucart'
-    compileSdk 34
+    compileSdkVersion 34  // This is set correctly
+    namespace "com.advento.lucart"
 
     defaultConfig {
         applicationId "com.advento.lucart"
-        minSdk 31
-        targetSdk 34
+        minSdkVersion 30
+        targetSdkVersion 34
         versionCode 1
         versionName "1.0"
-
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -25,6 +20,11 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
+    viewBinding {
+        enabled = true  // Correct syntax for enabling view binding
+    }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -32,21 +32,22 @@ android {
 }
 
 dependencies {
-
-    implementation "androidx.cardview:cardview:1.0.0"
-    implementation 'com.facebook.android:facebook-android-sdk:latest.release'
-    implementation 'com.google.android.gms:play-services-auth:21.2.0'
-    implementation 'com.github.bumptech.glide:glide:4.16.0'
-    implementation 'com.google.android.material:material:1.9.0'
-    implementation 'com.google.firebase:firebase-storage:20.2.1'
-    implementation 'com.google.android.material:material:1.3.0-alpha03'
-
-    implementation libs.appcompat
+    implementation libs.core.ktx
+    implementation libs.material.v180
+    implementation libs.cardview
+    implementation libs.facebook.android.sdk
+    implementation libs.play.services.auth
     implementation libs.material
+    implementation libs.appcompat
+    implementation libs.glide
     implementation libs.activity
-    implementation libs.constraintlayout
     implementation libs.firebase.database
-    implementation libs.firebase.auth
+    implementation libs.constraintlayout
+    implementation libs.recyclerview
+    implementation libs.firebase.firestore
+    implementation libs.firebase.analytics
+    implementation libs.firebase.auth       
+    implementation libs.firebase.storage
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core

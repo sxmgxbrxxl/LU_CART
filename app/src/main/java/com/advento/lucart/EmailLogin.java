@@ -28,13 +28,22 @@ public class EmailLogin extends AppCompatActivity {
 
     private FirebaseAuth auth;
 
+    // admin UID
+    private static final String ADMIN_UID = "JlmXtJLguLOSoe7HCJ3JOXBVnJ52";
+
+    //admin admin
     @Override
     public void onStart() {
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = auth.getCurrentUser();
-        if(currentUser != null){
-            startActivity(new Intent(EmailLogin.this, Home.class));
+        if (currentUser != null) {
+            // Check if the current user is the admin
+            if (currentUser.getUid().equals(ADMIN_UID)) {
+                startActivity(new Intent(EmailLogin.this, AdminDashboard.class));
+            } else {
+                startActivity(new Intent(EmailLogin.this, Home.class));
+            }
         }
     }
 
@@ -74,7 +83,6 @@ public class EmailLogin extends AppCompatActivity {
         });
 
         binding.btnSave.setOnClickListener(v -> {
-
             String userEmail = binding.etEmail.getText().toString().trim();
             String userPassword = binding.etPassword.getText().toString().trim();
 
@@ -92,17 +100,19 @@ public class EmailLogin extends AppCompatActivity {
                     .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
-
                             if (task.isSuccessful()) {
-                                Toast.makeText(EmailLogin.this, "Authentication Successful",
-                                        Toast.LENGTH_SHORT).show();
-                                startActivity(new Intent(EmailLogin.this, Home.class));
-                                // Sign in success, update UI with the signed-in user's information
                                 FirebaseUser user = auth.getCurrentUser();
+                                // Check if the current user is the admin
+                                if (user != null && user.getUid().equals(ADMIN_UID)) {
+                                    Toast.makeText(EmailLogin.this, "Authentication Successful, Admin Access Granted", Toast.LENGTH_SHORT).show();
+                                    startActivity(new Intent(EmailLogin.this, AdminDashboard.class));
+                                } else {
+                                    Toast.makeText(EmailLogin.this, "Authentication Successful, User Access Granted", Toast.LENGTH_SHORT).show();
+                                    startActivity(new Intent(EmailLogin.this, Home.class)); // or any other user activity
+                                }
                             } else {
                                 // If sign in fails, display a message to the user.
-                                Toast.makeText(EmailLogin.this, "Authentication failed.",
-                                        Toast.LENGTH_SHORT).show();
+                                Toast.makeText(EmailLogin.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
                             }
                         }
                     });

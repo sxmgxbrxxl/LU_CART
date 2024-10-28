@@ -1,7 +1,6 @@
 package com.advento.lucart;
 
-import static android.app.Activity.RESULT_OK;
-
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -13,107 +12,130 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.advento.lucart.databinding.FragmentMyProductsBinding;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MyProductsFragment extends Fragment {
 
-    private FragmentMyProductsBinding binding;
-    private Uri imageUri; // Store the selected image URI
-    private ImageView imageViewProduct; // Reference to the ImageView in the dialog
-
-    public MyProductsFragment() {
-        // Required empty public constructor
-    }
+    private Uri imageUri;
+    private ImageView imageViewProduct;
+    private ProductAdapter productAdapter;
+    private List<Product> approvedProducts;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout using ViewBinding
-        binding = FragmentMyProductsBinding.inflate(inflater, container, false);
+        FragmentMyProductsBinding binding = FragmentMyProductsBinding.inflate(inflater, container, false);
 
         binding.ivaddProduct.setOnClickListener(v -> showAddProductDialog());
+
+        RecyclerView recyclerView = binding.rvApprovedProducts;
+        approvedProducts = new ArrayList<>(); // This will be fetched from the database
+        productAdapter = new ProductAdapter(getContext(), approvedProducts);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerView.setAdapter(productAdapter);
+
+        // Fetch approved products from Firestore on fragment creation
+        fetchApprovedProducts();
 
         return binding.getRoot();
     }
 
+    @SuppressLint("NotifyDataSetChanged")
     private void showAddProductDialog() {
-        // Inflate the dialog view
         LayoutInflater inflater = LayoutInflater.from(getContext());
         View dialogView = inflater.inflate(R.layout.dialog_addproduct_layout, null);
 
-        // Find views in the dialog
-        imageViewProduct = dialogView.findViewById(R.id.ivProductImage); // Store the ImageView reference
+        imageViewProduct = dialogView.findViewById(R.id.ivProductImage);
         Button buttonUploadPhoto = dialogView.findViewById(R.id.buttonUploadPhoto);
         EditText editTextProductName = dialogView.findViewById(R.id.editTextProductName);
         EditText editTextProductPrice = dialogView.findViewById(R.id.editTextProductPrice);
         EditText editTextProductDescription = dialogView.findViewById(R.id.editTextProductDescription);
         EditText editTextStockNumber = dialogView.findViewById(R.id.editTextStockNumber);
 
-        // Create the dialog
-        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
         builder.setTitle("Add Product")
                 .setView(dialogView)
                 .setPositiveButton("Add", (dialog, which) -> {
-                    // Handle the add product action here
+                    // Fetching user-entered data from dialog fields
                     String productName = editTextProductName.getText().toString();
                     String productPrice = editTextProductPrice.getText().toString();
                     String productDescription = editTextProductDescription.getText().toString();
                     String stockNumber = editTextStockNumber.getText().toString();
+                    String userId = FirebaseAuth.getInstance().getCurrentUser().getUid(); // User's ID
+                    String status = "pending"; // Default status for admin approval
 
                     if (imageUri != null) {
-                        uploadProduct(productName, productPrice, productDescription, stockNumber, imageUri);
+                        // Create product object
+                        Product newProduct = new Product(productName, productPrice, productDescription, imageUri.toString(), "", status, userId);
+
+                        // Save to Firestore
+                        FirebaseFirestore db = FirebaseFirestore.getInstance();
+                        db.collection("products").add(newProduct)
+                                .addOnSuccessListener(documentReference -> {
+                                    // Save document ID as productId in Firestore
+                                    db.collection("products").document(documentReference.getId())
+                                            .update("productId", documentReference.getId())
+                                            .addOnSuccessListener(aVoid -> {
+                                                Toast.makeText(getContext(), "Product added to pending list", Toast.LENGTH_SHORT).show();
+                                                fetchApprovedProducts(); // Refresh list if needed
+                                            });
+                                })
+                                .addOnFailureListener(e -> Toast.makeText(getContext(), "Error adding product", Toast.LENGTH_SHORT).show());
                     } else {
                         Toast.makeText(getContext(), "Please select an image", Toast.LENGTH_SHORT).show();
                     }
                 })
                 .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
 
-        // Show the dialog
-        AlertDialog alertDialog = builder.create();
-
-        // Handle upload photo button click
         buttonUploadPhoto.setOnClickListener(v -> openImagePicker());
-
-        alertDialog.show();
+        builder.create().show();
     }
 
-    private static final int PICK_IMAGE_REQUEST = 1;
-
     private void openImagePicker() {
-        Intent intent = new Intent();
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("image/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
+        startActivityForResult(intent, 100);
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null) {
-            imageUri = data.getData(); // Store the selected image URI
-            // Update the ImageView in the dialog with the selected image
-            if (imageViewProduct != null) {
-                imageViewProduct.setImageURI(imageUri);
-            }
+        if (requestCode == 100 && data != null && data.getData() != null) {
+            imageUri = data.getData();
+            imageViewProduct.setImageURI(imageUri);
         }
     }
 
-    private void uploadProduct(String productName, String productPrice, String productDescription, String stockNumber, Uri imageUri) {
-        // Add your code here to upload the product data and the image to the database.
-        // For example, you can use Firebase Storage to upload the image and then store the product details in your database.
-
-        // Placeholder for upload logic
-        Toast.makeText(getContext(), "Uploading product...", Toast.LENGTH_SHORT).show();
-
-        // After successful upload, show a success message
-        Toast.makeText(getContext(), "Product was successfully added to pending list", Toast.LENGTH_SHORT).show();
+    // Method to fetch approved products from Firestore
+    @SuppressLint("NotifyDataSetChanged")
+    private void fetchApprovedProducts() {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("products")
+                .whereEqualTo("status", "approved") // Adjust the query to fetch only approved products
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        approvedProducts.clear(); // Clear the current list
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            Product product = document.toObject(Product.class);
+                            approvedProducts.add(product); // Add each approved product to the list
+                        }
+                        productAdapter.notifyDataSetChanged(); // Notify adapter to refresh the list
+                    } else {
+                        Toast.makeText(getContext(), "Error fetching products", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 }

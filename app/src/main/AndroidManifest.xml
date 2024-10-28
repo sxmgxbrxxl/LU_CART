@@ -27,13 +27,21 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.LUCART"
-        tools:targetApi="31">
-
+        tools:targetApi="29">
+        <activity
+            android:name=".ViewStatisticsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ApproveProductsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".AdminDashboard"
+            android:exported="false" />
         <activity
             android:name=".Home"
             android:exported="false"
             android:theme="@style/CustomTheme"
-            android:windowSoftInputMode="adjustPan"/>
+            android:windowSoftInputMode="adjustPan" />
         <activity
             android:name=".EmailLogin"
             android:exported="false" />

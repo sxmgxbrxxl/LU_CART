@@ -98,7 +98,7 @@
         android:layout_marginEnd="70dp"
         android:layout_marginBottom="40dp"
         android:fontFamily="@font/montserrat_semibold"
-        android:text="Login"
+        android:text="@string/login"
         android:textColor="@color/black"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
