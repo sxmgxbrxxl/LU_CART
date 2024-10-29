@@ -1,58 +1,68 @@
 package com.advento.lucart;
 
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
-
-import com.advento.lucart.databinding.FragmentHomeBinding;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import java.util.ArrayList;
+import java.util.List;
 
 public class HomeFragment extends Fragment {
 
-    public HomeFragment() {
-        // Required empty public constructor
-    }
+    private ProductAdapter productAdapter;
+    private List<Product> productList;
+    private FirebaseFirestore db;
 
-    private FragmentHomeBinding binding;
-
+    @Nullable
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_home, container, false);
 
+        // Initialize Firestore and RecyclerView
+        db = FirebaseFirestore.getInstance();
+        RecyclerView recyclerView = view.findViewById(R.id.recycler_view_products);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        // Initialize product list and adapter
+        productList = new ArrayList<>();
+        productAdapter = new ProductAdapter(getContext(), productList);
+        recyclerView.setAdapter(productAdapter);
+
+        // Load approved products from Firestore
+        loadApprovedProducts();
+
+        return view;
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout using ViewBinding
-        binding = FragmentHomeBinding.inflate(inflater, container, false);
+    private void loadApprovedProducts() {
+        // Reference to the products collection
+        CollectionReference productsRef = db.collection("products");
 
-        binding.btnSell.setOnClickListener( v-> addToHome());
+        // Query to get only approved products
+        productsRef.whereEqualTo("status", "approved")
+                .addSnapshotListener((value, error) -> {
+                    if (error != null) {
+                        // Handle the error
+                        return;
+                    }
+                    if (value != null) {
+                        productList.clear(); // Clear the list to avoid duplicate entries
 
-        return binding.getRoot();
-    }
-
-        private void addToHome() {
-        // Get the container layout where custom views will be added
-        LinearLayout containerLayout = binding.containerLayout; // Assume this is defined in FragmentSellBinding
-
-        // Inflate the custom layout and add it dynamically
-        View customView = LayoutInflater.from(getContext()).inflate(R.layout.product_tile, containerLayout, false);
-
-        // Set fixed size of 600dp for the custom view
-        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(700, 480);
-        layoutParams.setMargins(0,0,0,0);  // Set margins (left, top, right, bottom)
-        customView.setLayoutParams(layoutParams);
-
-        // Center the custom view in the container layout
-        containerLayout.setGravity(Gravity.CENTER);
-
-        // Add the custom view to the container layout
-        containerLayout.addView(customView);
+                        // Loop through each document and convert to Product object
+                        for (QueryDocumentSnapshot doc : value) {
+                            Product product = doc.toObject(Product.class);
+                            productList.add(product); // Add product to list
+                        }
+                        productAdapter.notifyDataSetChanged(); // Notify adapter of data change
+                    }
+                });
     }
 }

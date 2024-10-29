@@ -32,11 +32,15 @@ public class MyProductsFragment extends Fragment {
     private ImageView imageViewProduct;
     private ProductAdapter productAdapter;
     private List<Product> approvedProducts;
+    private String currentUserId;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         FragmentMyProductsBinding binding = FragmentMyProductsBinding.inflate(inflater, container, false);
+
+        // Initialize user ID
+        currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
         binding.ivaddProduct.setOnClickListener(v -> showAddProductDialog());
 
@@ -73,12 +77,11 @@ public class MyProductsFragment extends Fragment {
                     String productPrice = editTextProductPrice.getText().toString();
                     String productDescription = editTextProductDescription.getText().toString();
                     String stockNumber = editTextStockNumber.getText().toString();
-                    String userId = FirebaseAuth.getInstance().getCurrentUser().getUid(); // User's ID
                     String status = "pending"; // Default status for admin approval
 
                     if (imageUri != null) {
                         // Create product object
-                        Product newProduct = new Product(productName, productPrice, productDescription, imageUri.toString(), "", status, userId);
+                        Product newProduct = new Product(productName, productPrice, productDescription, imageUri.toString(), "", status, currentUserId);
 
                         // Save to Firestore
                         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -123,7 +126,7 @@ public class MyProductsFragment extends Fragment {
     private void fetchApprovedProducts() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("products")
-                .whereEqualTo("status", "approved") // Adjust the query to fetch only approved products
+                .whereEqualTo("status", "approved") // Fetch only approved products for homepage
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
@@ -135,6 +138,31 @@ public class MyProductsFragment extends Fragment {
                         productAdapter.notifyDataSetChanged(); // Notify adapter to refresh the list
                     } else {
                         Toast.makeText(getContext(), "Error fetching products", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+        // Fetch products specific to the current user for "My Products"
+        fetchUserProducts();
+    }
+
+    // Method to fetch approved products by the current user
+    @SuppressLint("NotifyDataSetChanged")
+    private void fetchUserProducts() {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("products")
+                .whereEqualTo("userId", currentUserId) // Fetch products uploaded by the current user
+                .whereEqualTo("status", "approved") // Ensure they are approved
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        approvedProducts.clear(); // Clear the current list for My Products
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            Product product = document.toObject(Product.class);
+                            approvedProducts.add(product); // Add each product by the current user to the list
+                        }
+                        productAdapter.notifyDataSetChanged(); // Notify adapter to refresh the list
+                    } else {
+                        Toast.makeText(getContext(), "Error fetching user products", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
