@@ -32,7 +32,7 @@ public class Home extends AppCompatActivity {
 
         Fragment homeFragment = new HomeFragment();
         Fragment myProductsFragment = new MyProductsFragment();
-        Fragment cartFragment = new CartFragment();
+        Fragment myCartFragment = new MyCartFragment();
         Fragment profileFragment = new ProfileFragment();
 
         setCurrentFragment(homeFragment);
@@ -43,7 +43,7 @@ public class Home extends AppCompatActivity {
             if (itemId == R.id.miHome) {
                 setCurrentFragment(homeFragment);
             } else if (itemId == R.id.miCart) {
-                setCurrentFragment(cartFragment);
+                setCurrentFragment(myCartFragment);
             } else if (itemId == R.id.miMyProducts) {
                 setCurrentFragment(myProductsFragment);
             } else if (itemId == R.id.miProfile) {

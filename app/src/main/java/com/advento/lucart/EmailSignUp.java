@@ -6,6 +6,7 @@ import android.text.TextUtils;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
+import android.util.Patterns;
 import android.view.View;
 import android.widget.Toast;
 
@@ -55,36 +56,30 @@ public class EmailSignUp extends AppCompatActivity {
 
             String userEmail = binding.etEmail.getText().toString().trim();
             String userPassword = binding.etPassword.getText().toString().trim();
+            String confirmPassword = binding.etConfirmPassword.getText().toString().trim();
 
-            if (TextUtils.isEmpty(userEmail)) {
-                Toast.makeText(this, "Please enter your email", Toast.LENGTH_SHORT).show();
-                return; // Exit if credentials are empty
-            }
-
-            if (TextUtils.isEmpty(userPassword)) {
-                Toast.makeText(this, "Please enter your password", Toast.LENGTH_SHORT).show();
-                return; // Exit if credentials are empty
-            }
-
-            //// NOTE NEED EMAIL AND PASSWORD VALIDATIONS //// ADD TO TO-DO ////
-
-            Intent intent = new Intent(EmailSignUp.this, EmailVerification.class);
-            intent.putExtra("EMAIL", userEmail);
-            intent.putExtra("PASSWORD", userPassword);
-            startActivity(intent);
-            finish();
-        });
-
-        binding.cbShow.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (isChecked) {
-                // Show password
-                binding.etPassword.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
+            if (userEmail.isEmpty()) {
+                binding.etEmail.setError("Please enter your email.");
+                binding.etEmail.requestFocus();
+            } else if (userPassword.isEmpty()) {
+                binding.etPassword.setError("Please enter your password.");
+                binding.etPassword.requestFocus();
+            } else if (userPassword.length() < 6) {
+                binding.etPassword.setError("Password must be at least 6 characters.");
+                binding.etPassword.requestFocus();
+            } else if (confirmPassword.isEmpty()) {
+                binding.etConfirmPassword.setError("Please confirm your password.");
+                binding.etConfirmPassword.requestFocus();
+            } else if (!userPassword.equals(confirmPassword)) {
+                binding.etConfirmPassword.setError("Passwords do not match");
+                binding.etConfirmPassword.requestFocus();
             } else {
-                // Hide password
-                binding.etPassword.setTransformationMethod(PasswordTransformationMethod.getInstance());
+                Intent intent = new Intent(EmailSignUp.this, EmailVerification.class);
+                intent.putExtra("EMAIL", userEmail);
+                intent.putExtra("PASSWORD", userPassword);
+                startActivity(intent);
+                finish();
             }
-            // Move cursor to the end of the text
-            binding.etPassword.setSelection(binding.etPassword.getText().length());
         });
     }
 

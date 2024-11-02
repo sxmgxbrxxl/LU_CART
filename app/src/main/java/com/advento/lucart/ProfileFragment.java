@@ -56,6 +56,9 @@ public class ProfileFragment extends Fragment {
             return;
         }
 
+        // Load user data after the view is created
+        loadData();
+        
         // Initialize Google Sign-In client
         initializeGoogleSignInClient();
     }
@@ -66,10 +69,22 @@ public class ProfileFragment extends Fragment {
         // Inflate the layout using ViewBinding
         binding = FragmentProfileBinding.inflate(inflater, container, false);
 
-        // Load user data after the view is created
-        loadData();
+        binding.ivSettings.setOnClickListener(v -> {
+            startActivity(new Intent(getActivity(), Settings.class));
+        });
 
-        // Set up UI actions and event listeners
+        binding.btnMyProfile.setOnClickListener(v -> {
+            startActivity(new Intent(getActivity(), MyProfile.class));
+        });
+
+        binding.btnFavorites.setOnClickListener(v -> {
+            startActivity(new Intent(getActivity(), Favorites.class));
+        });
+
+        binding.btnTransactions.setOnClickListener(v -> {
+            startActivity(new Intent(getActivity(), Transactions.class));
+        });
+
         binding.btnSignOut.setOnClickListener(v -> signOut());
 
         return binding.getRoot();

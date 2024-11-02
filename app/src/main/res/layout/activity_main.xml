@@ -50,7 +50,7 @@
         android:text="Continue with Email"
         android:textColor="@color/white"
         android:textSize="12dp"
-        app:layout_constraintBottom_toTopOf="@+id/tvQuestion"
+        app:layout_constraintBottom_toTopOf="@+id/llQuestion"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -65,6 +65,7 @@
         android:textSize="14sp"
         app:layout_constraintBottom_toTopOf="@+id/btnFacebook"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
@@ -78,40 +79,57 @@
         android:textSize="20sp"
         app:layout_constraintBottom_toTopOf="@+id/tvCaption"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <TextView
-        android:id="@+id/tvQuestion"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/llQuestion"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="60dp"
-        android:layout_marginBottom="40dp"
-        android:fontFamily="@font/montserrat"
-        android:text="Already have an account?"
+        android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
-    <TextView
-        android:id="@+id/tvLogin"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="70dp"
-        android:layout_marginBottom="40dp"
-        android:fontFamily="@font/montserrat_semibold"
-        android:text="@string/login"
-        android:textColor="@color/black"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        <TextView
+            android:id="@+id/tvQuestion"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAlignment="textEnd"
+            android:paddingEnd="5dp"
+            android:layout_weight="1"
+            android:layout_marginStart="60dp"
+            android:layout_marginBottom="40dp"
+            android:fontFamily="@font/montserrat"
+            android:text="Already have an account?"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/tvLogin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginEnd="70dp"
+            android:layout_marginBottom="40dp"
+            android:fontFamily="@font/montserrat_semibold"
+            android:text="@string/login"
+            android:textColor="@color/black"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/tvQuestion" />
+
+    </LinearLayout>
 
     <VideoView
         android:id="@+id/vvAnimation"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginBottom="20dp"
+        app:layout_constraintBottom_toTopOf="@id/tvSignIn"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/tvSignIn"/>
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 

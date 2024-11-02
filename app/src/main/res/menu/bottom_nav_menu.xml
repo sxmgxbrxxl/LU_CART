@@ -8,7 +8,7 @@
 
     <item
         android:id="@+id/miCart"
-        android:title="Cart"
+        android:title="My Cart"
         android:icon="@drawable/ic_cart_filled" />
 
     <item

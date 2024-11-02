@@ -1,5 +1,6 @@
 package com.advento.lucart;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +10,10 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
+import com.advento.lucart.databinding.FragmentHomeBinding;
+import com.advento.lucart.databinding.FragmentMyProductsBinding;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -24,11 +29,11 @@ public class HomeFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_home, container, false);
+        FragmentHomeBinding binding = FragmentHomeBinding.inflate(inflater, container, false);
 
         // Initialize Firestore and RecyclerView
         db = FirebaseFirestore.getInstance();
-        RecyclerView recyclerView = view.findViewById(R.id.recycler_view_products);
+        RecyclerView recyclerView = binding.recyclerViewProducts;
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         // Initialize product list and adapter
@@ -36,10 +41,24 @@ public class HomeFragment extends Fragment {
         productAdapter = new ProductAdapter(getContext(), productList);
         recyclerView.setAdapter(productAdapter);
 
+        binding.ivBell.setOnClickListener(v -> openNotifications());
+
+        binding.swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                loadApprovedProducts();
+                binding.swipeRefreshLayout.setRefreshing(false);
+            }
+        });
+
         // Load approved products from Firestore
         loadApprovedProducts();
 
-        return view;
+        return binding.getRoot();
+    }
+
+    private void openNotifications()  {
+        startActivity(new Intent(getActivity(), Notifications.class));
     }
 
     private void loadApprovedProducts() {

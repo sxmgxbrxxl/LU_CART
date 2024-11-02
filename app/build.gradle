@@ -2,8 +2,10 @@ apply plugin: 'com.android.application'
 apply plugin: 'com.google.gms.google-services'
 
 android {
-    compileSdkVersion 34  // This is set correctly
+
+    viewBinding.enable = true;
     namespace "com.advento.lucart"
+    compileSdk 34
 
     defaultConfig {
         applicationId "com.advento.lucart"

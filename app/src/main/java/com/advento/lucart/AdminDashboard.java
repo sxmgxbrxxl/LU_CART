@@ -2,47 +2,47 @@ package com.advento.lucart;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
-import android.widget.ImageButton;
 
+import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 
+import com.advento.lucart.databinding.ActivityAdminDashboardBinding;
 import com.google.firebase.auth.FirebaseAuth;
 
 public class AdminDashboard extends AppCompatActivity {
 
+    private ActivityAdminDashboardBinding binding;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_admin_dashboard2);
 
-        // Initialize ImageButtons
-        ImageButton btnApproveProducts = findViewById(R.id.btn_approve_products);
-        ImageButton btnViewStatistics = findViewById(R.id.btn_view_statistics);
+        EdgeToEdge.enable(this);
 
-        // Set click listener for Approve Products button
-        btnApproveProducts.setOnClickListener(v -> {
-            Intent intent = new Intent(AdminDashboard.this, ApproveProductsActivity.class);
-            startActivity(intent);
+        binding = ActivityAdminDashboardBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
+
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return insets;
+        });
+
+        binding.btnPendingProducts.setOnClickListener(v -> {
+            startActivity(new Intent(AdminDashboard.this, PendingProductsActivity.class));
         });
 
         // Set click listener for View Statistics button
-        btnViewStatistics.setOnClickListener(v -> {
-            Intent intent = new Intent(AdminDashboard.this, ViewStatisticsActivity.class);
-            startActivity(intent);
+        binding.btnViewStatistics.setOnClickListener(v -> {
+            startActivity(new Intent(AdminDashboard.this, ViewStatisticsActivity.class));
         });
 
-
-        Button logoutButton = findViewById(R.id.btn_logout);
-        logoutButton.setOnClickListener(v -> {
+        binding.btnSignOut.setOnClickListener(v -> {
             FirebaseAuth.getInstance().signOut(); // Make sure to sign out the user
-            Intent intent = new Intent(AdminDashboard.this, EmailLogin.class);
-            startActivity(intent);
-            finish(); // Optionally call finish() to remove AdminDashboard from the back stack
+            startActivity(new Intent(AdminDashboard.this, SplashScreen.class));
         });
-
     }
-
-
 }

@@ -17,11 +17,14 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.advento.lucart.databinding.FragmentMyProductsBinding;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,13 +45,21 @@ public class MyProductsFragment extends Fragment {
         // Initialize user ID
         currentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
-        binding.ivaddProduct.setOnClickListener(v -> showAddProductDialog());
+        binding.ivAddProduct.setOnClickListener(v -> showAddProductDialog());
 
         RecyclerView recyclerView = binding.rvApprovedProducts;
         approvedProducts = new ArrayList<>(); // This will be fetched from the database
         productAdapter = new ProductAdapter(getContext(), approvedProducts);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(productAdapter);
+
+        binding.swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                fetchApprovedProducts();
+                binding.swipeRefreshLayout.setRefreshing(false);
+            }
+        });
 
         // Fetch approved products from Firestore on fragment creation
         fetchApprovedProducts();
@@ -80,22 +91,33 @@ public class MyProductsFragment extends Fragment {
                     String status = "pending"; // Default status for admin approval
 
                     if (imageUri != null) {
-                        // Create product object
-                        Product newProduct = new Product(productName, productPrice, productDescription, imageUri.toString(), "", status, currentUserId);
+                        // Define the Firebase Storage path for product images
+                        StorageReference storageRef = FirebaseStorage.getInstance().getReference().child("product_images/" + System.currentTimeMillis() + ".jpg");
 
-                        // Save to Firestore
-                        FirebaseFirestore db = FirebaseFirestore.getInstance();
-                        db.collection("products").add(newProduct)
-                                .addOnSuccessListener(documentReference -> {
-                                    // Save document ID as productId in Firestore
-                                    db.collection("products").document(documentReference.getId())
-                                            .update("productId", documentReference.getId())
-                                            .addOnSuccessListener(aVoid -> {
-                                                Toast.makeText(getContext(), "Product added to pending list", Toast.LENGTH_SHORT).show();
-                                                fetchApprovedProducts(); // Refresh list if needed
-                                            });
+                        // Upload the image to Firebase Storage
+                        storageRef.putFile(imageUri)
+                                .addOnSuccessListener(taskSnapshot -> {
+                                    // Get the download URL for the uploaded image
+                                    storageRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                                        // Create product object with the image download URL
+                                        Product newProduct = new Product(productName, productPrice, productDescription, uri.toString(), "", status, currentUserId);
+
+                                        // Save to Firestore
+                                        FirebaseFirestore db = FirebaseFirestore.getInstance();
+                                        db.collection("products").add(newProduct)
+                                                .addOnSuccessListener(documentReference -> {
+                                                    // Save document ID as productId in Firestore
+                                                    db.collection("products").document(documentReference.getId())
+                                                            .update("productId", documentReference.getId())
+                                                            .addOnSuccessListener(aVoid -> {
+                                                                Toast.makeText(getContext(), "Product added to pending list", Toast.LENGTH_SHORT).show();
+                                                                fetchApprovedProducts(); // Refresh list if needed
+                                                            });
+                                                })
+                                                .addOnFailureListener(e -> Toast.makeText(getContext(), "Error adding product", Toast.LENGTH_SHORT).show());
+                                    });
                                 })
-                                .addOnFailureListener(e -> Toast.makeText(getContext(), "Error adding product", Toast.LENGTH_SHORT).show());
+                                .addOnFailureListener(e -> Toast.makeText(getContext(), "Image upload failed", Toast.LENGTH_SHORT).show());
                     } else {
                         Toast.makeText(getContext(), "Please select an image", Toast.LENGTH_SHORT).show();
                     }
@@ -105,6 +127,7 @@ public class MyProductsFragment extends Fragment {
         buttonUploadPhoto.setOnClickListener(v -> openImagePicker());
         builder.create().show();
     }
+
 
     private void openImagePicker() {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);

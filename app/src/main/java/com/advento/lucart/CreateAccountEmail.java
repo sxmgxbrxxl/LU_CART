@@ -30,6 +30,9 @@ import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.storage.UploadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -70,54 +73,58 @@ public class CreateAccountEmail extends AppCompatActivity {
         binding.circularImageView.setOnClickListener(v -> showImagePickerOptions());
     }
 
+    // Add this method in your class
+    private void uploadPhotoToFirebase(Uri photoUri, String userId, OnSuccessListener<Uri> onSuccessListener) {
+        StorageReference storageRef = FirebaseStorage.getInstance().getReference();
+        StorageReference photoRef = storageRef.child("profile_photos/" + userId + ".jpg");
+
+        photoRef.putFile(photoUri)
+                .addOnSuccessListener(taskSnapshot -> photoRef.getDownloadUrl().addOnSuccessListener(onSuccessListener))
+                .addOnFailureListener(e -> {
+                    Log.e("FirebaseStorage", "Photo upload failed", e);
+                    showToast("Photo upload failed");
+                });
+    }
+
     private void saveUserInfo() {
-        // Check if the user is authenticated
         if (mAuth.getCurrentUser() == null) {
             showToast("User not authenticated");
             return;
         }
 
-        // Get All Data
         String userId = mAuth.getCurrentUser().getUid();
         String email = getIntent().getStringExtra("EMAIL");
         String password = getIntent().getStringExtra("PASSWORD");
         String firstName = binding.etFirstName.getText().toString().trim();
         String lastName = binding.etLastName.getText().toString().trim();
 
-        Log.d("SaveUserInfo", "Email: " + email);
-        Log.d("SaveUserInfo", "Password: " + password);
-        Log.d("SaveUserInfo", "First Name: " + firstName);
-        Log.d("SaveUserInfo", "Last Name: " + lastName);
-        Log.d("SaveUserInfo", "Photo URI: " + (photoUri != null ? photoUri.toString() : "null"));
-
-        if (photoUri == null) {
-            showToast("Please choose a photo.");
-            return;
-        }
-        String photoUrl = photoUri.toString();
-
         if (TextUtils.isEmpty(firstName) || TextUtils.isEmpty(lastName)) {
             showToast("Please fill in all fields.");
             return;
         }
 
-        //ORDER MATTERS
-        User user = new User(firstName, lastName, email, password, photoUrl);
+        if (photoUri == null) {
+            showToast("Please choose a photo.");
+            return;
+        }
 
-        db = FirebaseDatabase.getInstance("https://lu-cart-firebase-default-rtdb.asia-southeast1.firebasedatabase.app");
-        reference = db.getReference("users");  // Adjust the path as needed
+        // Upload photo to Firebase Storage and get the URL
+        uploadPhotoToFirebase(photoUri, userId, downloadUrl -> {
+            String photoUrl = downloadUrl.toString();
+            User user = new User(firstName, lastName, email, password, photoUrl);
 
-        // Write user data to Firebase Realtime Database
-        reference.child(userId).setValue(user).addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                showToast("User information saved successfully");
-                // Navigate to the Home screen after successful saving
-                startActivity(new Intent(CreateAccountEmail.this, Home.class));
-            } else {
-                // Log the error if saving fails
-                Log.e("SaveUserInfo", "Failed to save user information: " + task.getException());
-                showToast("Failed to save user information");
-            }
+            db = FirebaseDatabase.getInstance("https://lu-cart-firebase-default-rtdb.asia-southeast1.firebasedatabase.app");
+            reference = db.getReference("users");
+
+            reference.child(userId).setValue(user).addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    showToast("User information saved successfully");
+                    startActivity(new Intent(CreateAccountEmail.this, Home.class));
+                } else {
+                    Log.e("SaveUserInfo", "Failed to save user information: " + task.getException());
+                    showToast("Failed to save user information");
+                }
+            });
         });
     }
 

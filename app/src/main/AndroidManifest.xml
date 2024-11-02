@@ -29,10 +29,28 @@
         android:theme="@style/Theme.LUCART"
         tools:targetApi="29">
         <activity
+            android:name=".ProductOverview"
+            android:exported="false" />
+        <activity
+            android:name=".Notifications"
+            android:exported="false" />
+        <activity
+            android:name=".Settings"
+            android:exported="false" />
+        <activity
+            android:name=".Transactions"
+            android:exported="false" />
+        <activity
+            android:name=".Favorites"
+            android:exported="false" />
+        <activity
+            android:name=".MyProfile"
+            android:exported="false" />
+        <activity
             android:name=".ViewStatisticsActivity"
             android:exported="false" />
         <activity
-            android:name=".ApproveProductsActivity"
+            android:name=".PendingProductsActivity"
             android:exported="false" />
         <activity
             android:name=".AdminDashboard"

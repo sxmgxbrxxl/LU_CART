@@ -4,13 +4,14 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:padding="16dp"
+    android:gravity="center"
     android:orientation="vertical">
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:cardElevation="10dp"
-        app:cardMaxElevation="12dp"
+        app:cardElevation="4dp"
+        app:cardMaxElevation="5dp"
         app:cardPreventCornerOverlap="true"
         app:cardCornerRadius="20dp">
 
@@ -19,45 +20,103 @@
             android:layout_width="match_parent"
             android:layout_height="200dp"
             android:contentDescription="@string/productimage"
-            android:src="@drawable/try_graham"
+            android:src="@drawable/bg_image_placeholder"
             android:scaleType="centerCrop" />
     </androidx.cardview.widget.CardView>
-
-    <EditText
-        android:id="@+id/editTextProductName"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:autofillHints=""
-        android:hint="@string/product_name"
-        android:inputType="text" />
-
-    <EditText
-        android:id="@+id/editTextProductPrice"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:autofillHints=""
-        android:hint="@string/product_price"
-        android:inputType="numberDecimal" />
-
-    <EditText
-        android:id="@+id/editTextProductDescription"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:autofillHints=""
-        android:hint="@string/product_description"
-        android:inputType="text" />
-
-    <EditText
-        android:id="@+id/editTextStockNumber"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:autofillHints=""
-        android:hint="@string/stock_number"
-        android:inputType="number" />
 
     <Button
         android:id="@+id/buttonUploadPhoto"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
         android:text="@string/choose_image" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/product_name"
+            android:textColor="@color/black"
+            android:fontFamily="@font/montserrat_semibold"/>
+
+        <EditText
+            android:id="@+id/editTextProductName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:fontFamily="@font/montserrat"
+            android:inputType="text" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/product_price"
+            android:textColor="@color/black"
+            android:fontFamily="@font/montserrat_semibold"/>
+
+        <EditText
+            android:id="@+id/editTextProductPrice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:hint="₱0.00"
+            android:layout_weight="1"
+            android:fontFamily="@font/montserrat"
+            android:inputType="numberDecimal" />
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/product_description"
+            android:textColor="@color/black"
+            android:fontFamily="@font/montserrat_semibold"/>
+
+        <EditText
+            android:id="@+id/editTextProductDescription"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:fontFamily="@font/montserrat"
+            android:inputType="text" />
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/stock_number"
+            android:textColor="@color/black"
+            android:fontFamily="@font/montserrat_semibold"/>
+
+        <EditText
+            android:id="@+id/editTextStockNumber"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:fontFamily="@font/montserrat"
+            android:inputType="number" />
+
+    </LinearLayout>
+
 </LinearLayout>

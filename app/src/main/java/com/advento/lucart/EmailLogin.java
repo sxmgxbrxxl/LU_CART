@@ -70,18 +70,6 @@ public class EmailLogin extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
-        binding.cbShow.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (isChecked) {
-                // Show password
-                binding.etPassword.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
-            } else {
-                // Hide password
-                binding.etPassword.setTransformationMethod(PasswordTransformationMethod.getInstance());
-            }
-            // Move cursor to the end of the text
-            binding.etPassword.setSelection(binding.etPassword.getText().length());
-        });
-
         binding.btnSave.setOnClickListener(v -> {
             String userEmail = binding.etEmail.getText().toString().trim();
             String userPassword = binding.etPassword.getText().toString().trim();

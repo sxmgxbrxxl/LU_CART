@@ -1,6 +1,7 @@
 package com.advento.lucart;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,6 +43,16 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
         Glide.with(context)
                 .load(product.getProductImage())
                 .into(holder.imageView);
+
+        // Set click listener to open ProductOverview with product details
+        holder.itemView.setOnClickListener(v -> {
+            Intent intent = new Intent(context, ProductOverview.class);
+            intent.putExtra("productImage", product.getProductImage());
+            intent.putExtra("productName", product.getProductName());
+            intent.putExtra("productPrice", product.getProductPrice());
+            intent.putExtra("productDescription", product.getProductDescription());
+            context.startActivity(intent);
+        });
     }
 
     @Override

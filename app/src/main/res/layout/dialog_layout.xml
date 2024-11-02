@@ -10,7 +10,8 @@
         android:id="@+id/dialog_message"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="This is a message"
+        android:text="TEXT MESSAGE"
+        android:fontFamily="@font/montserrat"
         android:textAlignment="center"
         android:textSize="18sp"
         android:textColor="@android:color/black" />
@@ -19,6 +20,7 @@
         android:id="@+id/dialog_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:fontFamily="@font/montserrat_bold"
         android:text="PROCEED TO LOGIN PAGE"
         android:layout_marginTop="20dp" />
 

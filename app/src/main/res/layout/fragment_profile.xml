@@ -46,7 +46,7 @@
                 android:layout_width="25dp"
                 android:layout_height="25dp"
                 android:layout_marginEnd="32dp"
-                android:src="@drawable/ic_placeholder"
+                android:src="@drawable/ic_setting"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -66,9 +66,8 @@
 
         <ImageView
             android:id="@+id/ivDisplayPhoto"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:layout_marginTop="8dp"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
             android:scaleType="centerCrop"
             android:src="@drawable/ic_placeholder"
             app:layout_constraintEnd_toEndOf="parent"
@@ -79,9 +78,10 @@
             android:id="@+id/tvFirstName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="16dp"
             android:textColor="@color/black"
-            android:textSize="24sp"
+            android:text="Sam Gabriel"
+            android:textSize="32sp"
             android:fontFamily="@font/montserrat_semibold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -93,6 +93,7 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/montserrat_semibold"
             android:textColor="@color/black"
+            android:text="Advento"
             android:textSize="24sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -103,7 +104,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/black"
-            android:textSize="8sp"
+            android:textSize="16sp"
+            android:layout_marginTop="8dp"
+            android:text="smgbrl101010@gmail.com"
             android:fontFamily="@font/montserrat"
             app:layout_constraintTop_toBottomOf="@id/tvLastName"
             app:layout_constraintStart_toStartOf="parent"
@@ -121,13 +124,13 @@
         tools:layout_editor_absoluteX="0dp">
 
         <androidx.cardview.widget.CardView
-            android:id="@+id/cardView3"
+            android:id="@+id/btnMyProfile"
             android:layout_width="130dp"
             android:layout_height="130dp"
             app:cardElevation="10dp"
             app:cardCornerRadius="20dp"
-            app:layout_constraintBottom_toTopOf="@+id/cardView"
-            app:layout_constraintEnd_toStartOf="@+id/cardView2"
+            app:layout_constraintBottom_toTopOf="@+id/btnTransactions"
+            app:layout_constraintEnd_toStartOf="@+id/btnFavorites"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -158,7 +161,7 @@
         </androidx.cardview.widget.CardView>
 
         <androidx.cardview.widget.CardView
-            android:id="@+id/cardView2"
+            android:id="@+id/btnFavorites"
             android:layout_width="130dp"
             android:layout_height="130dp"
             app:cardElevation="10dp"
@@ -166,7 +169,7 @@
             app:layout_constraintBottom_toTopOf="@+id/btnSignOut"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/cardView3"
+            app:layout_constraintStart_toEndOf="@+id/btnMyProfile"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.5" >
 
@@ -195,7 +198,7 @@
         </androidx.cardview.widget.CardView>
 
         <androidx.cardview.widget.CardView
-            android:id="@+id/cardView"
+            android:id="@+id/btnTransactions"
             android:layout_width="130dp"
             android:layout_height="130dp"
             app:cardElevation="10dp"
@@ -204,7 +207,7 @@
             app:layout_constraintEnd_toStartOf="@+id/btnSignOut"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/cardView3"
+            app:layout_constraintTop_toBottomOf="@+id/btnMyProfile"
             app:layout_constraintVertical_bias="0.5">
 
             <FrameLayout
@@ -240,8 +243,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/cardView"
-            app:layout_constraintTop_toBottomOf="@+id/cardView2"
+            app:layout_constraintStart_toEndOf="@+id/btnTransactions"
+            app:layout_constraintTop_toBottomOf="@+id/btnFavorites"
             app:layout_constraintVertical_bias="0.5">
 
             <FrameLayout
@@ -264,9 +267,6 @@
                     android:text="Sign Out"
                     android:fontFamily="@font/montserrat_semibold"
                     android:textColor="@color/black"/>
-
-
-
             </FrameLayout>
         </androidx.cardview.widget.CardView>
     </androidx.constraintlayout.widget.ConstraintLayout>

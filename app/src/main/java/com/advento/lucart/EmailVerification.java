@@ -2,7 +2,6 @@ package com.advento.lucart;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -43,13 +42,7 @@ public class EmailVerification extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
 
-        setSupportActionBar(binding.toolbar);
-
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
-
-        // Get email and password from the EMAILSIGNUP
+        // Get email and password from the EMAIL SIGN UP
         String userEmail = getIntent().getStringExtra("EMAIL");
         String userPassword = getIntent().getStringExtra("PASSWORD");
 
@@ -107,35 +100,25 @@ public class EmailVerification extends AppCompatActivity {
     }
 
     private void showCustomDialog() {
-        // Inflate the custom dialog layout
+
         LayoutInflater inflater = getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.dialog_layout, null);
 
-        // Create the AlertDialog
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setView(dialogView);
 
-        // Access elements inside the dialog
         TextView dialogMessage = dialogView.findViewById(R.id.dialog_message);
         Button dialogButton = dialogView.findViewById(R.id.dialog_button);
 
-        // Set the message dynamically if needed
         dialogMessage.setText("Registration failed: The given email address is already used in another account");
 
-        // Set button action
         dialogButton.setOnClickListener(v -> {
             startActivity(new Intent(EmailVerification.this, EmailLogin.class));
+            finish();
         });
 
-        // Show the dialog
         AlertDialog dialog = builder.create();
         dialog.setCancelable(false);
         dialog.show();
-    }
-
-    @Override
-    public boolean onSupportNavigateUp() {
-        onBackPressed();
-        return true;
     }
 }

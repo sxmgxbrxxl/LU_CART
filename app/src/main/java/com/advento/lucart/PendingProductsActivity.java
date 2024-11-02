@@ -2,16 +2,23 @@ package com.advento.lucart;
 
 import android.os.Bundle;
 import android.widget.Toast;
+
+import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public class ApproveProductsActivity extends AppCompatActivity {
+public class PendingProductsActivity extends AppCompatActivity {
 
     private ProductAdapter productAdapter;
     private List<Product> pendingProducts;
@@ -20,7 +27,16 @@ public class ApproveProductsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_approve_products);
+
+        EdgeToEdge.enable(this);
+
+        setContentView(R.layout.activity_pending_products);
+
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return insets;
+        });
 
         firestore = FirebaseFirestore.getInstance();
         RecyclerView recyclerView = findViewById(R.id.recycler_view_pending_products);
@@ -72,11 +88,11 @@ public class ApproveProductsActivity extends AppCompatActivity {
                     .set(product)
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
-                            Toast.makeText(ApproveProductsActivity.this, "Approved: " + product.getProductName(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(PendingProductsActivity.this, "Approved: " + product.getProductName(), Toast.LENGTH_SHORT).show();
                             pendingProducts.remove(product);
                             productAdapter.notifyDataSetChanged(); // Refresh list
                         } else {
-                            Toast.makeText(ApproveProductsActivity.this, "Failed to approve product: " + product.getProductName(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(PendingProductsActivity.this, "Failed to approve product: " + product.getProductName(), Toast.LENGTH_SHORT).show();
                         }
                     });
         }
