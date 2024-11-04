@@ -1,64 +1,148 @@
 package com.advento.lucart;
 
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+import android.widget.Toast;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link MyCartFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
-public class MyCartFragment extends Fragment {
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+
+public class MyCartFragment extends Fragment implements CartAdapter.CartItemClickListener {
+    private RecyclerView recyclerView;
+    private CartAdapter adapter;
+    private List<CartItem> cartItems;
+    private FirebaseFirestore db;
+    private String userId;
+    private ProgressBar progressBar;
+    private TextView tvTotalPrice;
+    private TextView tvEmptyCart;
+    private double totalPrice = 0.0;
 
     public MyCartFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment MyCartFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static MyCartFragment newInstance(String param1, String param2) {
-        MyCartFragment fragment = new MyCartFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_my_cart, container, false);
+
+        // Initialize views
+        recyclerView = view.findViewById(R.id.rvCart);
+        progressBar = view.findViewById(R.id.progressBar);
+        tvTotalPrice = view.findViewById(R.id.tvTotalPrice);
+        tvEmptyCart = view.findViewById(R.id.tvEmptyCart);
+
+        // Initialize Firebase
+        db = FirebaseFirestore.getInstance();
+        userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+
+        // Setup RecyclerView
+        cartItems = new ArrayList<>();
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        adapter = new CartAdapter(getContext(), cartItems, this);
+        recyclerView.setAdapter(adapter);
+
+        // Load cart items
+        loadCartItems();
+
+        return view;
+    }
+
+    private void loadCartItems() {
+        showLoading(true);
+
+        db.collection("carts")
+                .document(userId)
+                .collection("items")
+                .addSnapshotListener((value, error) -> {
+                    showLoading(false);
+
+                    // Check if the fragment is still attached before showing a Toast
+                    if (error != null) {
+                        if (isAdded() && getContext() != null) {
+                            Toast.makeText(getContext(), "Error loading cart items", Toast.LENGTH_SHORT).show();
+                        }
+                        return;
+                    }
+
+                    cartItems.clear();
+                    totalPrice = 0.0;
+
+                    if (value != null && !value.isEmpty()) {
+                        for (QueryDocumentSnapshot document : value) {
+                            CartItem item = document.toObject(CartItem.class);
+                            cartItems.add(item);
+                            totalPrice += (item.getPrice() * item.getQuantity());
+                        }
+                        updateUI(false);
+                    } else {
+                        updateUI(true);
+                    }
+
+                    updateTotalPrice();
+                    adapter.notifyDataSetChanged();
+                });
+    }
+
+    private void showLoading(boolean show) {
+        if (progressBar != null) {
+            progressBar.setVisibility(show ? View.VISIBLE : View.GONE);
+        }
+        if (recyclerView != null) {
+            recyclerView.setVisibility(show ? View.GONE : View.VISIBLE);
+        }
+    }
+
+    private void updateUI(boolean isEmpty) {
+        if (tvEmptyCart != null) {
+            tvEmptyCart.setVisibility(isEmpty ? View.VISIBLE : View.GONE);
+        }
+        if (recyclerView != null) {
+            recyclerView.setVisibility(isEmpty ? View.GONE : View.VISIBLE);
+        }
+        if (tvTotalPrice != null) {
+            tvTotalPrice.setVisibility(isEmpty ? View.GONE : View.VISIBLE);
+        }
+    }
+
+    private void updateTotalPrice() {
+        NumberFormat formatPHP = NumberFormat.getCurrencyInstance(new Locale("en", "PH"));
+        String formattedTotal = formatPHP.format(totalPrice);
+        tvTotalPrice.setText("Total: " + formattedTotal);
     }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+    public void onDeleteItem(CartItem item, int position) {
+        cartItems.remove(position);
+        adapter.notifyItemRemoved(position);
+        totalPrice -= (item.getPrice() * item.getQuantity());
+        updateTotalPrice();
+
+        if (cartItems.isEmpty()) {
+            updateUI(true);
         }
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_my_cart, container, false);
+    public void onQuantityChanged(CartItem item, int position, double newTotalPrice) {
+        totalPrice = 0.0;
+        for (CartItem cartItem : cartItems) {
+            totalPrice += (cartItem.getPrice() * cartItem.getQuantity());
+        }
+        updateTotalPrice();
     }
 }

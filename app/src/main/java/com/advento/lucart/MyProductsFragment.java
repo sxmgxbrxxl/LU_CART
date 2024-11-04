@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -78,45 +79,48 @@ public class MyProductsFragment extends Fragment {
         EditText editTextProductPrice = dialogView.findViewById(R.id.editTextProductPrice);
         EditText editTextProductDescription = dialogView.findViewById(R.id.editTextProductDescription);
         EditText editTextStockNumber = dialogView.findViewById(R.id.editTextStockNumber);
+        Spinner spinnerCategory = dialogView.findViewById(R.id.spinnerCategory);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
         builder.setTitle("Add Product")
                 .setView(dialogView)
                 .setPositiveButton("Add", (dialog, which) -> {
-                    // Fetching user-entered data from dialog fields
-                    String productName = editTextProductName.getText().toString();
-                    String productPrice = editTextProductPrice.getText().toString();
-                    String productDescription = editTextProductDescription.getText().toString();
-                    String stockNumber = editTextStockNumber.getText().toString();
+                    // Validate user inputs
+                    String productName = editTextProductName.getText().toString().trim();
+                    String productPrice = editTextProductPrice.getText().toString().trim();
+                    String productDescription = editTextProductDescription.getText().toString().trim();
+                    String stockNumber = editTextStockNumber.getText().toString().trim();
+                    String category = spinnerCategory.getSelectedItem().toString();
                     String status = "pending"; // Default status for admin approval
 
+                    if (productName.isEmpty() || productPrice.isEmpty() || productDescription.isEmpty() || stockNumber.isEmpty()) {
+                        Toast.makeText(getContext(), "All fields are required", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
                     if (imageUri != null) {
-                        // Define the Firebase Storage path for product images
-                        StorageReference storageRef = FirebaseStorage.getInstance().getReference().child("product_images/" + System.currentTimeMillis() + ".jpg");
+                        // Upload image to Firebase Storage
+                        StorageReference storageRef = FirebaseStorage.getInstance().getReference()
+                                .child("product_images/" + System.currentTimeMillis() + ".jpg");
 
-                        // Upload the image to Firebase Storage
                         storageRef.putFile(imageUri)
-                                .addOnSuccessListener(taskSnapshot -> {
-                                    // Get the download URL for the uploaded image
-                                    storageRef.getDownloadUrl().addOnSuccessListener(uri -> {
-                                        // Create product object with the image download URL
-                                        Product newProduct = new Product(productName, productPrice, productDescription, uri.toString(), "", status, currentUserId);
+                                .addOnSuccessListener(taskSnapshot -> storageRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                                    // Create new product with image URL
+                                    Product newProduct = new Product(productName, productPrice, productDescription,
+                                            uri.toString(), "", status, currentUserId, category);
 
-                                        // Save to Firestore
-                                        FirebaseFirestore db = FirebaseFirestore.getInstance();
-                                        db.collection("products").add(newProduct)
-                                                .addOnSuccessListener(documentReference -> {
-                                                    // Save document ID as productId in Firestore
-                                                    db.collection("products").document(documentReference.getId())
-                                                            .update("productId", documentReference.getId())
-                                                            .addOnSuccessListener(aVoid -> {
-                                                                Toast.makeText(getContext(), "Product added to pending list", Toast.LENGTH_SHORT).show();
-                                                                fetchApprovedProducts(); // Refresh list if needed
-                                                            });
-                                                })
-                                                .addOnFailureListener(e -> Toast.makeText(getContext(), "Error adding product", Toast.LENGTH_SHORT).show());
-                                    });
-                                })
+                                    // Save product to Firestore
+                                    FirebaseFirestore db = FirebaseFirestore.getInstance();
+                                    db.collection("products").add(newProduct)
+                                            .addOnSuccessListener(documentReference -> db.collection("products")
+                                                    .document(documentReference.getId())
+                                                    .update("productId", documentReference.getId())
+                                                    .addOnSuccessListener(aVoid -> {
+                                                        Toast.makeText(getContext(), "Product added to pending list", Toast.LENGTH_SHORT).show();
+                                                        fetchUserProducts(); // Refresh the user’s products
+                                                    }))
+                                            .addOnFailureListener(e -> Toast.makeText(getContext(), "Error adding product", Toast.LENGTH_SHORT).show());
+                                }))
                                 .addOnFailureListener(e -> Toast.makeText(getContext(), "Image upload failed", Toast.LENGTH_SHORT).show());
                     } else {
                         Toast.makeText(getContext(), "Please select an image", Toast.LENGTH_SHORT).show();
@@ -173,19 +177,18 @@ public class MyProductsFragment extends Fragment {
     private void fetchUserProducts() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("products")
-                .whereEqualTo("userId", currentUserId) // Fetch products uploaded by the current user
-                .whereEqualTo("status", "approved") // Ensure they are approved
+                .whereEqualTo("userId", currentUserId) // Filter by current user's ID
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        approvedProducts.clear(); // Clear the current list for My Products
+                        approvedProducts.clear(); // Clear existing list
                         for (QueryDocumentSnapshot document : task.getResult()) {
                             Product product = document.toObject(Product.class);
-                            approvedProducts.add(product); // Add each product by the current user to the list
+                            approvedProducts.add(product); // Add each approved product for this user
                         }
-                        productAdapter.notifyDataSetChanged(); // Notify adapter to refresh the list
+                        productAdapter.notifyDataSetChanged(); // Refresh adapter to display the list
                     } else {
-                        Toast.makeText(getContext(), "Error fetching user products", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "Error fetching products", Toast.LENGTH_SHORT).show();
                     }
                 });
     }

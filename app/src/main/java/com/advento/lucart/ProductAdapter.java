@@ -16,6 +16,7 @@ import com.bumptech.glide.Glide;
 import java.util.List;
 
 public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductViewHolder> {
+
     private final List<Product> productList;
     private final Context context;
 
@@ -36,21 +37,23 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
         Product product = productList.get(position);
 
         holder.nameTextView.setText(product.getProductName());
-        holder.priceTextView.setText(product.getProductPrice());
+        holder.priceTextView.setText("₱" + product.getProductPrice());
         holder.descriptionTextView.setText(product.getProductDescription());
+        holder.categoryTextView.setText(product.getCategory()); // Set the category text
 
         // Load the product image using Glide
         Glide.with(context)
                 .load(product.getProductImage())
                 .into(holder.imageView);
 
-        // Set click listener to open ProductOverview with product details
         holder.itemView.setOnClickListener(v -> {
             Intent intent = new Intent(context, ProductOverview.class);
-            intent.putExtra("productImage", product.getProductImage());
+            intent.putExtra("productId", product.getProductId());
             intent.putExtra("productName", product.getProductName());
             intent.putExtra("productPrice", product.getProductPrice());
             intent.putExtra("productDescription", product.getProductDescription());
+            intent.putExtra("productCategory", product.getCategory());
+            intent.putExtra("productImage", product.getProductImage());
             context.startActivity(intent);
         });
     }
@@ -60,8 +63,9 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
         return productList.size();
     }
 
+
     public static class ProductViewHolder extends RecyclerView.ViewHolder {
-        TextView nameTextView, priceTextView, descriptionTextView;
+        TextView nameTextView, priceTextView, descriptionTextView, categoryTextView; // Add categoryTextView
         ImageView imageView;
 
         public ProductViewHolder(@NonNull View itemView) {
@@ -69,6 +73,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
             nameTextView = itemView.findViewById(R.id.nameTextView);
             priceTextView = itemView.findViewById(R.id.priceTextView);
             descriptionTextView = itemView.findViewById(R.id.descriptionTextView);
+            categoryTextView = itemView.findViewById(R.id.categoryTextView); // Initialize categoryTextView
             imageView = itemView.findViewById(R.id.imageView);
         }
     }

@@ -38,4 +38,46 @@
     <string name="log_out">Log out</string>
     <string name="login">Login</string>
     <string name="choose_image">Choose Image</string>
+    <string name="productimageview">productImageView</string>
+    <string name="its_name">its Name</string>
+    <string name="its_price">its Price</string>
+    <string name="the_description">The Description</string>
+    <string name="the_stock">the Stock:</string>
+    <string name="add_to_cart">Add To Cart</string>
+    <string name="_1">1</string>
+    <string name="addbutton">addButton</string>
+    <string name="minus">minus</string>
+    <string name="favoritesadd">favoritesAdd</string>
+    <string name="decrease">Decrease</string>
+    <string name="increase">Increase</string>
+    <string name="backbtn">Backbtn</string>
+    <string name="electronics">Electronics</string>
+    <string name="accessories">Accessories</string>
+    <string name="clothes">Clothes</string>
+    <string name="foods">Foods</string>
+    <string name="_0_00">₱0.00</string>
+    <string name="food">Food</string>
+    <string name="category">Category</string>
+    <string name="order_now">Order Now</string>
+    <string name="quantity">Quantity:</string>
+    <string name="plus">plus</string>
+    <string name="imageproduct">imageProduct</string>
+    <string name="price">Price</string>
+    <string name="favorite">favorite</string>
+    <string name="lorem_ipsum_dolor_sit_amet_consectetur_adipiscing_elit_sed_do_eiusmod_tempor_incididunt_ut_labore_et_dolore_magna_aliqua_ut_enim_ad_minim_veniam_quis_nostrud_exercitation_ullamco_laboris_nisi_ut_aliquip_ex_ea_commodo_consequat">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</string>
+    <string name="mode_of_payment">Mode Of Payment</string>
+    <string name="cash_on_delivery">Cash On Delivery</string>
+    <string name="your_cart_is_empty">Your cart is empty</string>
+    <string name="filter">filter</string>
+    <string name="notif">notif</string>
+    <string name="lu">Lu</string>
+    <string name="notifications">Notifications</string>
+    <string name="bakbuton">bakButon</string>
+
+    <string-array name="product_categories">
+        <item>Foods</item>
+        <item>Clothes</item>
+        <item>Accessories</item>
+        <item>Electronics</item>
+    </string-array>
 </resources>

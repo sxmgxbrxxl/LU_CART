@@ -2,34 +2,33 @@ package com.advento.lucart;
 
 import android.content.res.ColorStateList;
 import android.os.Bundle;
+import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import com.advento.lucart.databinding.ActivityProductOverviewBinding;
 import com.bumptech.glide.Glide;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class ProductOverview extends AppCompatActivity {
 
     private ActivityProductOverviewBinding binding;
+    private FirebaseFirestore db;
+    private FirebaseAuth mAuth;
+    private int quantity = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        EdgeToEdge.enable(this);
+        setContentView(R.layout.activity_product_overview);
 
         binding = ActivityProductOverviewBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
+        // Initialize Firebase
+        db = FirebaseFirestore.getInstance();
+        mAuth = FirebaseAuth.getInstance();
 
         setSupportActionBar(binding.toolbar);
 
@@ -38,6 +37,7 @@ public class ProductOverview extends AppCompatActivity {
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         // Retrieve data from intent
+        String productId = getIntent().getStringExtra("productId"); // Make sure to pass this from previous activity
         String productImage = getIntent().getStringExtra("productImage");
         String productName = getIntent().getStringExtra("productName");
         String productPrice = getIntent().getStringExtra("productPrice");
@@ -53,10 +53,44 @@ public class ProductOverview extends AppCompatActivity {
         binding.tvProductPrice.setText("₱ " + productPrice);
         binding.tvProductDescription.setText(productDescription);
 
+        // Setup quantity buttons
+        binding.buttonIncrease.setOnClickListener(v -> {
+            quantity++;
+            binding.tvQuantity.setText(String.valueOf(quantity));
+        });
+
+        binding.buttonDecrease.setOnClickListener(v -> {
+            if (quantity > 1) {
+                quantity--;
+                binding.tvQuantity.setText(String.valueOf(quantity));
+            }
+        });
+
+        // Setup Add to Cart button
+        binding.AddToCart.setOnClickListener(v -> {
+            // Convert price string to double (remove ₱ and any spaces)
+            String priceStr = productPrice.replace("₱", "").replace(" ", "");
+            double price;
+            try {
+                price = Double.parseDouble(priceStr);
+            } catch (NumberFormatException e) {
+                Toast.makeText(this, "Invalid price format", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            addToCart(
+                    productId,
+                    productName,
+                    price,
+                    productImage,
+                    quantity
+            );
+        });
+
         // Favorites Animation
         binding.fabFavorite.setOnClickListener(v -> {
             boolean isSelected = binding.fabFavorite.isSelected();
-            binding.fabFavorite.setSelected(!isSelected); // Toggle selected state
+            binding.fabFavorite.setSelected(!isSelected);
 
             if (binding.fabFavorite.isSelected()) {
                 binding.fabFavorite.setImageTintList(ColorStateList.valueOf(getResources().getColor(R.color.main_green)));
@@ -65,6 +99,30 @@ public class ProductOverview extends AppCompatActivity {
             }
         });
     }
+
+    private void addToCart(String productId, String name, double price, String imageUrl, int quantity) {
+        String userId = mAuth.getCurrentUser().getUid();
+
+        // Create cart item object matching your CartItem class
+        CartItem cartItem = new CartItem(
+                productId,
+                name,
+                price,
+                imageUrl,
+                quantity,
+                userId
+        );
+
+        // Add to Firestore using the same structure as in MyCartFragment
+        db.collection("carts")
+                .document(userId)
+                .collection("items")
+                .document(productId) // Using productId as document ID to prevent duplicates
+                .set(cartItem)
+                .addOnSuccessListener(aVoid -> Toast.makeText(ProductOverview.this, "Added to cart successfully!", Toast.LENGTH_SHORT).show())
+                .addOnFailureListener(e -> Toast.makeText(ProductOverview.this, "Failed to add to cart: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+    }
+
 
     @Override
     public boolean onSupportNavigateUp() {

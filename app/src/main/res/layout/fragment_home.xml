@@ -32,6 +32,7 @@
                         android:id="@+id/logo"
                         android:layout_width="50dp"
                         android:layout_height="50dp"
+                        android:contentDescription="@string/lu"
                         android:src="@drawable/ic_lucart_nobg"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
@@ -51,12 +52,14 @@
                         app:layout_constraintStart_toEndOf="@+id/logo"
                         app:layout_constraintTop_toTopOf="parent" />
 
-                    <ImageView
+                    <ImageButton
                         android:id="@+id/ivBell"
-                        android:layout_width="25dp"
-                        android:layout_height="25dp"
-                        android:layout_marginEnd="32dp"
-                        android:src="@drawable/ic_bell_filled"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_marginEnd="17dp"
+                        android:contentDescription="@string/notif"
+                        android:background="@android:color/transparent"
+                        android:src="@drawable/ic_notif"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
@@ -91,6 +94,9 @@
                     android:id="@+id/btnFilter"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
+                    android:text="@string/filter"
+                    android:textSize="11sp"
+                    android:textColor="@android:color/transparent"
                     android:background="@drawable/bg_filter"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />

@@ -52,6 +52,7 @@
                         android:id="@+id/ivProductImage"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:contentDescription="@string/imageproduct"
                         android:scaleType="centerCrop"/>
 
                     <View
@@ -96,9 +97,9 @@
                             android:layout_gravity="center_horizontal|start"
                             android:fontFamily="@font/montserrat_bold"
                             android:padding="15dp"
-                            android:text="Price"
+                            android:text="@string/price"
                             android:textSize="18sp"
-                            android:textColor="@color/main_green" />
+                            android:textColor="@color/dark_green" />
 
                     </LinearLayout>
 
@@ -150,6 +151,7 @@
                     android:layout_marginTop="2dp"
                     android:layout_marginEnd="20dp"
                     android:layout_marginBottom="10dp"
+                    android:contentDescription="@string/favorite"
                     android:src="@drawable/ic_heart"
                     app:elevation="5dp"
                     app:backgroundTint="@drawable/custom_fab"
@@ -200,7 +202,7 @@
                             android:paddingBottom="20dp"
                             android:fontFamily="@font/montserrat"
                             android:textColor="@color/black"
-                            android:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."/>
+                            android:text="@string/lorem_ipsum_dolor_sit_amet_consectetur_adipiscing_elit_sed_do_eiusmod_tempor_incididunt_ut_labore_et_dolore_magna_aliqua_ut_enim_ad_minim_veniam_quis_nostrud_exercitation_ullamco_laboris_nisi_ut_aliquip_ex_ea_commodo_consequat"/>
 
                     </LinearLayout>
 
@@ -236,8 +238,8 @@
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/montserrat_bold"
                             android:paddingTop="10dp"
-                            android:text="Mode Of Payment"
-                            android:paddingStart="20dp"
+                            android:text="@string/mode_of_payment"
+                            android:padding="10dp"
                             android:textSize="18sp"
                             android:textColor="@color/black"/>
 
@@ -247,10 +249,10 @@
                             android:layout_height="match_parent"
                             android:paddingStart="20dp"
                             android:paddingEnd="20dp"
-                            android:paddingBottom="20dp"
+                            android:paddingBottom="10dp"
                             android:fontFamily="@font/montserrat"
                             android:textColor="@color/black"
-                            android:text="Cash On Delivery"/>
+                            android:text="@string/cash_on_delivery"/>
 
                     </LinearLayout>
 
@@ -281,7 +283,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:layout_marginTop="10dp"
-                android:paddingEnd="15dp"
+                android:padding="10dp"
                 android:gravity="end">
 
                 <TextView
@@ -290,7 +292,7 @@
                     android:layout_gravity="center"
                     android:layout_marginEnd="10dp"
                     android:fontFamily="@font/montserrat_bold"
-                    android:text="Quantity: "
+                    android:text="@string/quantity"
                     android:textColor="@color/black"/>
 
                 <ImageButton
@@ -298,37 +300,44 @@
                     android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:layout_marginEnd="10dp"
-                    android:scaleType="fitXY"
+                    android:background="@drawable/circler"
+                    android:contentDescription="@string/minus"
                     android:src="@drawable/ic_minus"/>
 
                 <TextView
                     android:id="@+id/tvQuantity"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:gravity="center"
                     android:layout_marginEnd="10dp"
-                    android:background="@drawable/custom_quantity"
-                    android:text="1"
-                    android:textSize="18sp" />
+                    android:background="@drawable/round_border"
+                    android:text="@string/_1"
+                    android:textColor="@color/superduperdark_green"
+                    android:textSize="20sp" />
 
                 <ImageButton
                     android:id="@+id/button_increase"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
-                    android:scaleType="fitXY"
+                    android:contentDescription="@string/plus"
+                    android:background="@drawable/circler"
                     android:src="@drawable/ic_add"/>
 
             </LinearLayout>
 
             <LinearLayout
+                style="?android:attr/buttonBarStyle"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:paddingTop="10dp"
                 android:paddingEnd="15dp"
+                android:paddingStart="0dp"
                 android:paddingBottom="10dp"
                 android:orientation="horizontal">
 
                 <Button
+                    android:id="@+id/AddToCart"
+                    style="?android:attr/buttonBarButtonStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -336,15 +345,17 @@
                     android:background="@drawable/custom_addtocart"
                     android:text="Add to Cart"
                     android:fontFamily="@font/montserrat_semibold"
-                    android:textColor="@color/superduperdark_green"/>
+                    android:textColor="@color/superduperdark_green" />
 
                 <Button
+                    android:id="@+id/OrderBtn"
+                    style="?android:attr/buttonBarButtonStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_marginStart="5dp"
                     android:background="@drawable/custom_ordernow"
-                    android:text="Order Now"
+                    android:text="@string/order_now"
                     android:fontFamily="@font/montserrat_semibold"
                     android:textColor="@color/white"/>
 

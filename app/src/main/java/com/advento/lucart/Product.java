@@ -8,12 +8,13 @@ public class Product {
     private String productImage;
     private String status;
     private String userId;
+    private String category; // Add this field for the product category
 
     public Product() {
         // Default constructor required for calls to DataSnapshot.getValue(Product.class)
     }
 
-    public Product(String productName, String productPrice, String productDescription, String productImage, String productId, String status, String userId) {
+    public Product(String productName, String productPrice, String productDescription, String productImage, String productId, String status, String userId, String category) {
         this.productName = productName;
         this.productPrice = productPrice;
         this.productDescription = productDescription;
@@ -21,9 +22,10 @@ public class Product {
         this.productId = productId;
         this.status = status;
         this.userId = userId;
+        this.category = category;
     }
 
-    // Getter methods
+    // Getter and Setter methods
     public String getProductId() {
         return productId;
     }
@@ -78,5 +80,13 @@ public class Product {
 
     public void setUserId(String userId) {
         this.userId = userId;
+    }
+
+    public String getCategory() {
+        return category; // Getter for category
+    }
+
+    public void setCategory(String category) {
+        this.category = category; // Setter for category
     }
 }

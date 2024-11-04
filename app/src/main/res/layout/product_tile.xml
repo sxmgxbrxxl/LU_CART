@@ -61,6 +61,15 @@
                     android:textSize="18sp" />
             </LinearLayout>
 
+            <TextView android:id="@+id/categoryTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/category"
+            android:fontFamily="@font/montserrat_semibold"
+            android:textColor="@android:color/white"
+            android:textSize="14sp"
+            android:layout_marginTop="4dp"/>
+
             <TextView
                 android:id="@+id/descriptionTextView"
                 android:layout_width="wrap_content"

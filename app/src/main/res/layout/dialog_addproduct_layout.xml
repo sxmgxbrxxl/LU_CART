@@ -45,9 +45,10 @@
 
         <EditText
             android:id="@+id/editTextProductName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
             android:layout_weight="1"
+            android:autofillHints=""
             android:fontFamily="@font/montserrat"
             android:inputType="text" />
 
@@ -68,9 +69,10 @@
         <EditText
             android:id="@+id/editTextProductPrice"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="50dp"
+            android:autofillHints=""
             android:textAlignment="center"
-            android:hint="₱0.00"
+            android:hint="@string/_0_00"
             android:layout_weight="1"
             android:fontFamily="@font/montserrat"
             android:inputType="numberDecimal" />
@@ -90,8 +92,8 @@
 
         <EditText
             android:id="@+id/editTextProductDescription"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
             android:layout_weight="1"
             android:fontFamily="@font/montserrat"
             android:inputType="text" />
@@ -111,12 +113,36 @@
 
         <EditText
             android:id="@+id/editTextStockNumber"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
             android:layout_weight="1"
+            android:autofillHints=""
             android:fontFamily="@font/montserrat"
             android:inputType="number" />
 
     </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="10dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Category:"
+            android:textColor="@color/black"
+            android:fontFamily="@font/montserrat_semibold"/>
+
+        <Spinner
+            android:id="@+id/spinnerCategory"
+            android:layout_width="0dp"
+            android:layout_height="50dp"
+            android:layout_weight="1"
+            android:entries="@array/product_categories" />
+
+    </LinearLayout>
+
 
 </LinearLayout>
