@@ -97,6 +97,8 @@ public class CreateAccountEmail extends AppCompatActivity {
         String password = getIntent().getStringExtra("PASSWORD");
         String firstName = binding.etFirstName.getText().toString().trim();
         String lastName = binding.etLastName.getText().toString().trim();
+        String birthday = binding.etBirthday.getText().toString().trim();
+        String phoneNumber = binding.etPhoneNumber.getText().toString().trim();
 
         if (TextUtils.isEmpty(firstName) || TextUtils.isEmpty(lastName)) {
             showToast("Please fill in all fields.");
@@ -111,7 +113,7 @@ public class CreateAccountEmail extends AppCompatActivity {
         // Upload photo to Firebase Storage and get the URL
         uploadPhotoToFirebase(photoUri, userId, downloadUrl -> {
             String photoUrl = downloadUrl.toString();
-            User user = new User(firstName, lastName, email, password, photoUrl);
+            User user = new User(firstName, lastName, email, password, birthday, phoneNumber, photoUrl);
 
             db = FirebaseDatabase.getInstance("https://lu-cart-firebase-default-rtdb.asia-southeast1.firebasedatabase.app");
             reference = db.getReference("users");

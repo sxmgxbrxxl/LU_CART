@@ -26,6 +26,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
     private final FirebaseFirestore db;
     private final String userId;
     private final CartItemClickListener listener;
+    private boolean isEditMode = false;
 
     // Interface for click events
     public interface CartItemClickListener {
@@ -68,6 +69,35 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
         // Handle quantity changes
         holder.btnIncrease.setOnClickListener(v -> updateQuantity(item, position, 1));
         holder.btnDecrease.setOnClickListener(v -> updateQuantity(item, position, -1));
+
+        // Set visibility of ivDelete based on isEditMode
+        holder.ivDelete.setVisibility(isEditMode ? View.VISIBLE : View.GONE);
+
+        // Handle delete button click
+        holder.ivDelete.setOnClickListener(v -> {
+            if (listener != null) {
+                listener.onDeleteItem(item, holder.getAdapterPosition());
+            }
+        });
+    }
+
+    public void onDeleteItem(CartItem item, int position) {
+        // Remove item from Firestore
+        db.collection("carts")
+                .document(userId)
+                .collection("items")
+                .document(item.getProductId())
+                .delete()
+                .addOnSuccessListener(aVoid -> {
+                    // Remove item from local list and notify adapter
+                    cartItems.remove(position);
+                    notifyItemRemoved(position);
+                    notifyItemRangeChanged(position, cartItems.size());
+                    Toast.makeText(context, "Item removed from cart", Toast.LENGTH_SHORT).show();
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(context, "Failed to delete item", Toast.LENGTH_SHORT).show();
+                });
     }
 
     private void updateQuantity(CartItem item, int position, int delta) {
@@ -102,8 +132,13 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
         return cartItems.size();
     }
 
+    public void setEditMode(boolean isEditMode) {
+        this.isEditMode = isEditMode;
+        notifyDataSetChanged();  // Refresh all items to show/hide delete buttons
+    }
+
     static class CartViewHolder extends RecyclerView.ViewHolder {
-        ImageView ivImage;
+        ImageView ivImage, ivDelete;
         TextView tvName, tvPrice, tvQuantity;
         Button btnIncrease, btnDecrease;
 
@@ -111,6 +146,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
             super(itemView);
             ivImage = itemView.findViewById(R.id.ivCartItem);
             tvName = itemView.findViewById(R.id.tvCartItemName);
+            ivDelete = itemView.findViewById(R.id.ivDelete);
             tvPrice = itemView.findViewById(R.id.tvCartItemPrice);
             tvQuantity = itemView.findViewById(R.id.tvQuantity);
             btnIncrease = itemView.findViewById(R.id.btnIncrease);

@@ -13,14 +13,13 @@
         android:text="TEXT MESSAGE"
         android:fontFamily="@font/montserrat"
         android:textAlignment="center"
-        android:textSize="18sp"
         android:textColor="@android:color/black" />
 
     <Button
         android:id="@+id/dialog_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/montserrat_bold"
+        android:fontFamily="@font/montserrat_semibold"
         android:text="PROCEED TO LOGIN PAGE"
         android:layout_marginTop="20dp" />
 

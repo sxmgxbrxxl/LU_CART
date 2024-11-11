@@ -15,7 +15,9 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.advento.lucart.databinding.FragmentHomeBinding;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -34,11 +36,11 @@ public class HomeFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_home, container, false);
+        FragmentHomeBinding binding = FragmentHomeBinding.inflate(inflater, container, false);
 
         // Initialize Firestore and RecyclerView
         db = FirebaseFirestore.getInstance();
-        RecyclerView recyclerView = view.findViewById(R.id.recycler_view_products);
+        RecyclerView recyclerView = binding.recyclerViewProducts;
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         // Initialize product list and adapter
@@ -48,17 +50,26 @@ public class HomeFragment extends Fragment {
         recyclerView.setAdapter(productAdapter);
 
         // Initialize SearchView
-        searchView = view.findViewById(R.id.searchView);
+        searchView = binding.searchView;
         setupSearchFunction();
+
 
         // Load approved products from Firestore
         loadApprovedProducts();
 
+        binding.swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                loadApprovedProducts();
+                binding.swipeRefreshLayout.setRefreshing(false);
+            }
+        });
+
         // Set up filter button click to show filter dialog
-        Button filterButton = view.findViewById(R.id.btnFilter);
+        Button filterButton = binding.btnFilter;
         filterButton.setOnClickListener(v -> showFilterDialog());
 
-        return view;
+        return binding.getRoot();
     }
 
     private void loadApprovedProducts() {

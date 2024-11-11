@@ -20,7 +20,7 @@
             app:cardCornerRadius="15dp">
 
             <ImageView
-                android:id="@+id/ivCartItem"
+                android:id="@+id/ivFavoriteItem"
                 android:layout_width="130dp"
                 android:layout_height="130dp"
                 android:src="@drawable/try_graham"
@@ -44,64 +44,44 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:id="@+id/tvCartItemName"
+                    android:id="@+id/tvFavoriteItemName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Product Name"
                     android:fontFamily="@font/montserrat_bold"
+                    android:text="Product Name"
                     android:textColor="@color/black" />
-                
+
                 <ImageView
-                    android:id="@+id/ivDelete"
+                    android:id="@+id/ivDeleteFavorite"
                     android:layout_width="20dp"
                     android:layout_height="20dp"
-                    android:src="@drawable/ic_minus_circle"
-                    android:contentDescription="Delete item"
-                    android:visibility="gone"/>
+                    android:visibility="gone"
+                    android:src="@drawable/ic_heart_broke"
+                    android:contentDescription="Delete favorite"/>
 
             </LinearLayout>
-
 
             <TextView
-                android:id="@+id/tvCartItemPrice"
+                android:id="@+id/tvFavoriteItemPrice"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="50dp"
-                android:text="Product Price"
+                android:layout_marginBottom="35dp"
                 android:fontFamily="@font/montserrat_semibold"
+                android:text="Favorites Timestamp"
                 android:textColor="@color/black"/>
 
-            <LinearLayout
+            <Button
+                android:id="@+id/btnProductOverview"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:orientation="horizontal">
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnDecrease"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:text="-" />
-
-                <TextView
-                    android:id="@+id/tvQuantity"
-                    android:layout_width="40dp"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:fontFamily="@font/montserrat_semibold"
-                    android:textColor="@color/black"
-                    android:textSize="16sp" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnIncrease"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:text="+" />
-
-            </LinearLayout>
+                android:fontFamily="@font/montserrat_semibold"
+                android:background="@drawable/custom_ordernow"
+                android:textColor="@color/white"
+                android:text="Product Overview"/>
 
         </LinearLayout>
 
     </LinearLayout>
+
 </androidx.cardview.widget.CardView>

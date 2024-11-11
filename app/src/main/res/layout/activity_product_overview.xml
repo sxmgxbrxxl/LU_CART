@@ -31,7 +31,16 @@
                 app:layout_constraintStart_toStartOf="@id/scrollView"
                 app:layout_constraintEnd_toEndOf="@id/scrollView"
                 app:layout_constraintTop_toTopOf="@id/scrollView"
-                app:title=""/>
+                app:title="">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/montserrat_semibold"
+                    android:text="Product Overview"
+                    android:textColor="@color/black"/>
+
+            </androidx.appcompat.widget.Toolbar>
 
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
@@ -97,6 +106,8 @@
                             android:layout_gravity="center_horizontal|start"
                             android:fontFamily="@font/montserrat_bold"
                             android:padding="15dp"
+                            android:layout_marginStart="5dp"
+                            android:layout_marginEnd="5dp"
                             android:text="@string/price"
                             android:textSize="18sp"
                             android:textColor="@color/dark_green" />
@@ -136,6 +147,7 @@
                             android:layout_height="match_parent"
                             android:fontFamily="@font/montserrat_bold"
                             android:padding="15dp"
+                            android:layout_marginStart="5dp"
                             android:text="Product Name"
                             android:textSize="18sp"
                             android:textColor="@color/black" />
@@ -176,7 +188,7 @@
                     android:layout_marginEnd="20dp"
                     android:layout_marginBottom="10dp"
                     app:cardElevation="5dp"
-                    app:cardCornerRadius="30dp">
+                    app:cardCornerRadius="20dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -189,8 +201,8 @@
                             android:fontFamily="@font/montserrat_bold"
                             android:paddingTop="10dp"
                             android:paddingStart="20dp"
+                            android:layout_marginBottom="5dp"
                             android:text="Product Description"
-                            android:textSize="18sp"
                             android:textColor="@color/black"/>
 
                         <TextView
@@ -226,7 +238,7 @@
                     android:layout_marginEnd="20dp"
                     android:layout_marginBottom="10dp"
                     app:cardElevation="5dp"
-                    app:cardCornerRadius="30dp">
+                    app:cardCornerRadius="20dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -238,9 +250,9 @@
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/montserrat_bold"
                             android:paddingTop="10dp"
+                            android:paddingStart="20dp"
+                            android:layout_marginBottom="5dp"
                             android:text="@string/mode_of_payment"
-                            android:padding="10dp"
-                            android:textSize="18sp"
                             android:textColor="@color/black"/>
 
                         <TextView
@@ -282,8 +294,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginTop="10dp"
-                android:padding="10dp"
+                android:paddingEnd="15dp"
+                android:paddingTop="10dp"
+                android:paddingBottom="5dp"
                 android:gravity="end">
 
                 <TextView
@@ -297,8 +310,8 @@
 
                 <ImageButton
                     android:id="@+id/button_decrease"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
                     android:layout_marginEnd="10dp"
                     android:background="@drawable/circler"
                     android:contentDescription="@string/minus"
@@ -306,19 +319,19 @@
 
                 <TextView
                     android:id="@+id/tvQuantity"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
                     android:gravity="center"
                     android:layout_marginEnd="10dp"
                     android:background="@drawable/round_border"
+                    android:fontFamily="@font/montserrat_semibold"
                     android:text="@string/_1"
-                    android:textColor="@color/superduperdark_green"
-                    android:textSize="20sp" />
+                    android:textColor="@color/superduperdark_green" />
 
                 <ImageButton
                     android:id="@+id/button_increase"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
                     android:contentDescription="@string/plus"
                     android:background="@drawable/circler"
                     android:src="@drawable/ic_add"/>
@@ -329,15 +342,14 @@
                 style="?android:attr/buttonBarStyle"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:paddingTop="10dp"
+                android:paddingTop="5dp"
                 android:paddingEnd="15dp"
                 android:paddingStart="0dp"
-                android:paddingBottom="10dp"
+                android:paddingBottom="5dp"
                 android:orientation="horizontal">
 
                 <Button
                     android:id="@+id/AddToCart"
-                    style="?android:attr/buttonBarButtonStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -349,7 +361,6 @@
 
                 <Button
                     android:id="@+id/OrderBtn"
-                    style="?android:attr/buttonBarButtonStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"

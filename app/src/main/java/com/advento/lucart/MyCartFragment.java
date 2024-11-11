@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -30,6 +31,10 @@ public class MyCartFragment extends Fragment implements CartAdapter.CartItemClic
     private ProgressBar progressBar;
     private TextView tvTotalPrice;
     private TextView tvEmptyCart;
+    private ImageButton ivEdit;
+
+    private boolean isEditMode = false;
+
     private double totalPrice = 0.0;
 
     public MyCartFragment() {
@@ -45,6 +50,7 @@ public class MyCartFragment extends Fragment implements CartAdapter.CartItemClic
         progressBar = view.findViewById(R.id.progressBar);
         tvTotalPrice = view.findViewById(R.id.tvTotalPrice);
         tvEmptyCart = view.findViewById(R.id.tvEmptyCart);
+        ivEdit = view.findViewById(R.id.ivEdit);
 
         // Initialize Firebase
         db = FirebaseFirestore.getInstance();
@@ -58,6 +64,23 @@ public class MyCartFragment extends Fragment implements CartAdapter.CartItemClic
 
         // Load cart items
         loadCartItems();
+
+        //Edit button condition
+        showEdit();
+
+        // Toggle edit mode when ivEdit is clicked
+        ivEdit.setOnClickListener(v -> {
+            isEditMode = !isEditMode; // Toggle edit mode
+
+            // Set the image resource based on edit mode
+            if (isEditMode) {
+                ivEdit.setImageResource(R.drawable.ic_check); // Replace with your new image
+            } else {
+                ivEdit.setImageResource(R.drawable.ic_edit); // Replace with your original image
+            }
+
+            adapter.setEditMode(isEditMode); // Notify adapter to show/hide delete buttons
+        });
 
         return view;
     }
@@ -95,7 +118,19 @@ public class MyCartFragment extends Fragment implements CartAdapter.CartItemClic
 
                     updateTotalPrice();
                     adapter.notifyDataSetChanged();
+
+                    //Show Edit Button
+                    showEdit();
                 });
+    }
+
+    private void showEdit() {
+        // Assuming ivEdit is initialized as an ImageView and cartItems is your cart items list
+        if (cartItems != null && !cartItems.isEmpty()) {
+            ivEdit.setVisibility(View.VISIBLE);
+        } else {
+            ivEdit.setVisibility(View.GONE);
+        }
     }
 
     private void showLoading(boolean show) {
@@ -127,14 +162,32 @@ public class MyCartFragment extends Fragment implements CartAdapter.CartItemClic
 
     @Override
     public void onDeleteItem(CartItem item, int position) {
+        // First, remove the item from the local list and update the adapter
         cartItems.remove(position);
         adapter.notifyItemRemoved(position);
+
+        // Update the total price
         totalPrice -= (item.getPrice() * item.getQuantity());
         updateTotalPrice();
 
-        if (cartItems.isEmpty()) {
-            updateUI(true);
-        }
+        // Delete the item from Firestore
+        db.collection("carts")
+                .document(userId)
+                .collection("items")
+                .document(item.getProductId()) // Assuming getProductId() gives the unique ID for the product
+                .delete()
+                .addOnSuccessListener(aVoid -> {
+                    if (cartItems.isEmpty()) {
+                        updateUI(true);
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    // Handle failure case
+                    Toast.makeText(getContext(), "Failed to delete item from cart", Toast.LENGTH_SHORT).show();
+                    // Optionally, you could undo the item removal if Firestore deletion fails
+                    cartItems.add(position, item);
+                    adapter.notifyItemInserted(position);
+                });
     }
 
     @Override

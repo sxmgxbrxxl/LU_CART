@@ -13,11 +13,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductViewHolder> {
-
     private final List<Product> productList;
+    private final Set<String> selectedItems = new HashSet<>();
     private final Context context;
 
     public ProductAdapter(Context context, List<Product> productList) {
@@ -37,23 +39,24 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
         Product product = productList.get(position);
 
         holder.nameTextView.setText(product.getProductName());
-        holder.priceTextView.setText("₱" + product.getProductPrice());
+        holder.priceTextView.setText(product.getProductPrice());
         holder.descriptionTextView.setText(product.getProductDescription());
-        holder.categoryTextView.setText(product.getCategory()); // Set the category text
+        holder.categoryTextView.setText(product.getCategory());
 
         // Load the product image using Glide
         Glide.with(context)
                 .load(product.getProductImage())
                 .into(holder.imageView);
 
+        // Set click listener to open ProductOverview with product details
         holder.itemView.setOnClickListener(v -> {
             Intent intent = new Intent(context, ProductOverview.class);
             intent.putExtra("productId", product.getProductId());
+            intent.putExtra("productImage", product.getProductImage());
             intent.putExtra("productName", product.getProductName());
             intent.putExtra("productPrice", product.getProductPrice());
             intent.putExtra("productDescription", product.getProductDescription());
             intent.putExtra("productCategory", product.getCategory());
-            intent.putExtra("productImage", product.getProductImage());
             context.startActivity(intent);
         });
     }
@@ -63,17 +66,16 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
         return productList.size();
     }
 
-
     public static class ProductViewHolder extends RecyclerView.ViewHolder {
-        TextView nameTextView, priceTextView, descriptionTextView, categoryTextView; // Add categoryTextView
+        TextView nameTextView, priceTextView, descriptionTextView, categoryTextView;
         ImageView imageView;
 
         public ProductViewHolder(@NonNull View itemView) {
             super(itemView);
             nameTextView = itemView.findViewById(R.id.nameTextView);
             priceTextView = itemView.findViewById(R.id.priceTextView);
+            categoryTextView = itemView.findViewById(R.id.categoryTextView);
             descriptionTextView = itemView.findViewById(R.id.descriptionTextView);
-            categoryTextView = itemView.findViewById(R.id.categoryTextView); // Initialize categoryTextView
             imageView = itemView.findViewById(R.id.imageView);
         }
     }

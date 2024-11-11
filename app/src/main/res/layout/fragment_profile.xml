@@ -21,8 +21,8 @@
 
             <ImageView
                 android:id="@+id/ivLogo"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:src="@drawable/ic_lucart_nobg"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -36,7 +36,7 @@
                 android:fontFamily="@font/montserrat_bold"
                 android:text="Profile"
                 android:textColor="@color/black"
-                android:textSize="24sp"
+                android:textSize="20sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/ivLogo"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -45,7 +45,7 @@
                 android:id="@+id/ivSettings"
                 android:layout_width="25dp"
                 android:layout_height="25dp"
-                android:layout_marginEnd="32dp"
+                android:layout_marginEnd="25dp"
                 android:src="@drawable/ic_setting"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -59,7 +59,7 @@
         android:id="@+id/ProfileContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="8dp"
+        android:padding="15dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tbProfile">
@@ -69,7 +69,6 @@
             android:layout_width="150dp"
             android:layout_height="150dp"
             android:scaleType="centerCrop"
-            android:src="@drawable/ic_placeholder"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -80,9 +79,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:textColor="@color/black"
-            android:text="Sam Gabriel"
-            android:textSize="32sp"
-            android:fontFamily="@font/montserrat_semibold"
+            android:textSize="25sp"
+            android:fontFamily="@font/montserrat_bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/ivDisplayPhoto" />
@@ -93,8 +91,7 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/montserrat_semibold"
             android:textColor="@color/black"
-            android:text="Advento"
-            android:textSize="24sp"
+            android:textSize="20sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tvFirstName" />
@@ -104,16 +101,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/black"
-            android:textSize="16sp"
             android:layout_marginTop="8dp"
-            android:text="smgbrl101010@gmail.com"
             android:fontFamily="@font/montserrat"
             app:layout_constraintTop_toBottomOf="@id/tvLastName"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/CardContainer"
@@ -127,7 +121,7 @@
             android:id="@+id/btnMyProfile"
             android:layout_width="130dp"
             android:layout_height="130dp"
-            app:cardElevation="10dp"
+            app:cardElevation="5dp"
             app:cardCornerRadius="20dp"
             app:layout_constraintBottom_toTopOf="@+id/btnTransactions"
             app:layout_constraintEnd_toStartOf="@+id/btnFavorites"
@@ -154,6 +148,7 @@
                     android:layout_gravity="bottom|center"
                     android:paddingBottom="20dp"
                     android:text="My Profile"
+                    android:textSize="13sp"
                     android:fontFamily="@font/montserrat_semibold"
                     android:textColor="@color/black"/>
 
@@ -164,7 +159,7 @@
             android:id="@+id/btnFavorites"
             android:layout_width="130dp"
             android:layout_height="130dp"
-            app:cardElevation="10dp"
+            app:cardElevation="5dp"
             app:cardCornerRadius="20dp"
             app:layout_constraintBottom_toTopOf="@+id/btnSignOut"
             app:layout_constraintEnd_toEndOf="parent"
@@ -191,6 +186,7 @@
                     android:layout_gravity="bottom|center"
                     android:paddingBottom="20dp"
                     android:text="Favorites"
+                    android:textSize="13sp"
                     android:fontFamily="@font/montserrat_semibold"
                     android:textColor="@color/black"/>
 
@@ -201,7 +197,7 @@
             android:id="@+id/btnTransactions"
             android:layout_width="130dp"
             android:layout_height="130dp"
-            app:cardElevation="10dp"
+            app:cardElevation="5dp"
             app:cardCornerRadius="20dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/btnSignOut"
@@ -228,6 +224,7 @@
                     android:layout_gravity="bottom|center"
                     android:paddingBottom="20dp"
                     android:text="Transactions"
+                    android:textSize="13sp"
                     android:fontFamily="@font/montserrat_semibold"
                     android:textColor="@color/black"/>
 
@@ -238,7 +235,7 @@
             android:id="@+id/btnSignOut"
             android:layout_width="130dp"
             android:layout_height="130dp"
-            app:cardElevation="10dp"
+            app:cardElevation="5dp"
             app:cardCornerRadius="20dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -265,6 +262,7 @@
                     android:layout_gravity="bottom|center"
                     android:paddingBottom="20dp"
                     android:text="Sign Out"
+                    android:textSize="13sp"
                     android:fontFamily="@font/montserrat_semibold"
                     android:textColor="@color/black"/>
             </FrameLayout>

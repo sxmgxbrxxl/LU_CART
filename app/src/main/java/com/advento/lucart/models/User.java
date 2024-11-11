@@ -1,44 +1,30 @@
 package com.advento.lucart.models;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-
 public class User {
-    private String email;
-    private String password;
+
     private String firstName;
     private String lastName;
-    private String photoUrl; // Add photo URL field
+    private String email;
+    private String password;  // If this is needed
+    private String birthday;
+    private String phoneNumber;
+    private String photoUrl;  // Add photoUrl to store the user's photo URL
 
-    // Default constructor required for calls to DataSnapshot.getValue(User.class)
-    public User() {}
+    // No-argument constructor required for Firebase
+    public User() {
+    }
 
-    // Updated constructor to include photoUrl
-    public User(String firstName, String lastName, String email, String password, String photoUrl) {
+    public User(String firstName, String lastName, String email, String password, String birthday, String phoneNumber, String photoUrl) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
-        this.password = hashPassword(password);
-        this.photoUrl = photoUrl;  // Assign the photo URL
+        this.password = password;
+        this.birthday = birthday;
+        this.phoneNumber = phoneNumber;
+        this.photoUrl = photoUrl;
     }
 
     // Getters and setters
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = hashPassword(password);
-    }
-
     public String getFirstName() {
         return firstName;
     }
@@ -55,26 +41,43 @@ public class User {
         this.lastName = lastName;
     }
 
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getBirthday() {
+        return birthday;
+    }
+
+    public void setBirthday(String birthday) {
+        this.birthday = birthday;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
     public String getPhotoUrl() {
         return photoUrl;
     }
 
     public void setPhotoUrl(String photoUrl) {
         this.photoUrl = photoUrl;
-    }
-
-    // Password hashing method
-    private String hashPassword(String password) {
-        try {
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            byte[] hash = digest.digest(password.getBytes());
-            StringBuilder hexString = new StringBuilder();
-            for (byte b : hash) {
-                hexString.append(String.format("%02x", b));
-            }
-            return hexString.toString();
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        }
     }
 }

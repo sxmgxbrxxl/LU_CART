@@ -17,6 +17,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.bumptech.glide.Glide;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -36,6 +37,8 @@ public class ProfileFragment extends Fragment {
     private DatabaseReference reference;
     private GoogleSignInClient googleSignInClient;
     private FragmentProfileBinding binding;
+    private BottomNavigationView bottomNavigationView;
+    private boolean isUserDataLoaded = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -58,7 +61,7 @@ public class ProfileFragment extends Fragment {
 
         // Load user data after the view is created
         loadData();
-        
+
         // Initialize Google Sign-In client
         initializeGoogleSignInClient();
     }
@@ -68,6 +71,12 @@ public class ProfileFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout using ViewBinding
         binding = FragmentProfileBinding.inflate(inflater, container, false);
+
+        bottomNavigationView = requireActivity().findViewById(R.id.bottomNavigationView);
+
+        // Disable fragment navigation until user data is loaded
+        setFragmentNavigationEnabled(false);
+        setBottomNavEnabled(false);
 
         binding.ivSettings.setOnClickListener(v -> {
             startActivity(new Intent(getActivity(), Settings.class));
@@ -122,12 +131,18 @@ public class ProfileFragment extends Fragment {
                         Glide.with(requireContext())
                                 .load(photoUrl)
                                 .circleCrop()
-                                .placeholder(R.drawable.ic_placeholder)
                                 .into(binding.ivDisplayPhoto);
                     } else {
                         // Optionally set a default image or placeholder if no URL is found
                         binding.ivDisplayPhoto.setImageResource(R.drawable.ic_placeholder);
                     }
+                    // Set flag to true after loading is done
+                    isUserDataLoaded = true;
+
+                    // Enable fragment navigation
+                    setFragmentNavigationEnabled(true);
+                    setBottomNavEnabled(true);
+
                 } else {
                     Log.e("ProfileFragment", "No data found for the user.");
                 }
@@ -139,6 +154,23 @@ public class ProfileFragment extends Fragment {
                 Log.e("ProfileFragment", "Database error: " + error.getMessage());
             }
         });
+    }
+
+    private void setFragmentNavigationEnabled(boolean enabled) {
+        // Enable or disable the fragment navigation buttons
+        binding.ivSettings.setEnabled(enabled);
+        binding.btnMyProfile.setEnabled(enabled);
+        binding.btnFavorites.setEnabled(enabled);
+        binding.btnTransactions.setEnabled(enabled);
+    }
+
+    private void setBottomNavEnabled(boolean enabled) {
+        // Disable/Enable bottom navigation menu items
+        if (bottomNavigationView != null) {
+            for (int i = 0; i < bottomNavigationView.getMenu().size(); i++) {
+                bottomNavigationView.getMenu().getItem(i).setEnabled(enabled);
+            }
+        }
     }
 
     private void signOut() {

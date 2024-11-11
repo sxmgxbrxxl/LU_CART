@@ -8,4 +8,5 @@
     <color name="superdark_green">#1d5e2d</color>
     <color name="superduperdark_green">#16423C</color>
     <color name="white_green">#C4DAD2</color>
+    <color name="warning_red">#Ff0000</color>
 </resources>

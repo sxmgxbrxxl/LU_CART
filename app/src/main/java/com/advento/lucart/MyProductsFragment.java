@@ -86,6 +86,7 @@ public class MyProductsFragment extends Fragment {
                 .setView(dialogView)
                 .setPositiveButton("Add", (dialog, which) -> {
                     // Validate user inputs
+                    String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
                     String productName = editTextProductName.getText().toString().trim();
                     String productPrice = editTextProductPrice.getText().toString().trim();
                     String productDescription = editTextProductDescription.getText().toString().trim();
@@ -101,7 +102,7 @@ public class MyProductsFragment extends Fragment {
                     if (imageUri != null) {
                         // Upload image to Firebase Storage
                         StorageReference storageRef = FirebaseStorage.getInstance().getReference()
-                                .child("product_images/" + System.currentTimeMillis() + ".jpg");
+                                .child("product_images/" + userId + ".jpg");
 
                         storageRef.putFile(imageUri)
                                 .addOnSuccessListener(taskSnapshot -> storageRef.getDownloadUrl().addOnSuccessListener(uri -> {
