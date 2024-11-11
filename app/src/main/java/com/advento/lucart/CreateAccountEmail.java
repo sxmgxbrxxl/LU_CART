@@ -70,7 +70,9 @@ public class CreateAccountEmail extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
 
         binding.btnSave.setOnClickListener(v -> saveUserInfo());
-        binding.circularImageView.setOnClickListener(v -> showImagePickerOptions());
+        binding.ivTakePhoto.setOnClickListener(v -> openCamera());
+        binding.ivChoosePhoto.setOnClickListener(v -> openGallery());
+        binding.ivRemovePhoto.setOnClickListener(v -> removePhoto());
     }
 
     // Add this method in your class
@@ -128,31 +130,6 @@ public class CreateAccountEmail extends AppCompatActivity {
                 }
             });
         });
-    }
-
-    private void showImagePickerOptions() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Select Image Source");
-        String[] options = {"Take Photo", "Choose from Gallery", "Remove Photo"};
-
-        builder.setItems(options, (dialog, which) -> {
-            if (which == 0) {
-                if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-                    openCamera();
-                } else {
-                    ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, CAMERA_REQUEST_CODE);
-                }
-            } else if (which == 1) {
-                if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_IMAGES) == PackageManager.PERMISSION_GRANTED) {
-                    openGallery();
-                } else {
-                    ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_MEDIA_IMAGES}, GALLERY_REQUEST_CODE);
-                }
-            } else if (which == 2) {
-                removePhoto();
-            }
-        });
-        builder.show();
     }
 
     private void openCamera() {

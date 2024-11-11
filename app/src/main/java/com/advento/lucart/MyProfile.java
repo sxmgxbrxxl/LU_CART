@@ -70,7 +70,7 @@ public class MyProfile extends AppCompatActivity {
         binding.ivEdit.setOnClickListener(v -> toggleEditMode());
 
         // Set up the change photo button click listener
-        binding.btnChangePhoto.setOnClickListener(v -> openImagePicker());
+        binding.ivChoosePhoto.setOnClickListener(v -> openImagePicker());
 
         setSupportActionBar(binding.toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
