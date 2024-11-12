@@ -1,5 +1,6 @@
 package com.advento.lucart;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,8 +27,19 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
     @Override
     public void onBindViewHolder(@NonNull NotificationViewHolder holder, int position) {
         Notification notification = notificationList.get(position);
-        holder.titleTextView.setText(notification.getTitle());
-        holder.messageTextView.setText(notification.getMessage());
+
+        // Log the notification data for debugging
+        Log.d("NotificationAdapter", "Title: " + notification.getTitle() + ", Message: " + notification.getMessage());
+        Log.d("NotificationAdapter", "Timestamp: " + notification.getDate());
+        Log.d("NotificationAdapter", "Status: " + notification.getStatus());
+
+        // Get title and message
+        String title = notification.getTitle();
+        String message = notification.getMessage();
+
+        // Set default text if title or message is empty or null
+        holder.titleTextView.setText(title != null && !title.isEmpty() ? title : "No Title");
+        holder.messageTextView.setText(message != null && !message.isEmpty() ? message : "No Message");
     }
 
     @Override
@@ -45,4 +57,3 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
         }
     }
 }
-

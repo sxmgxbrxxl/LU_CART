@@ -34,9 +34,9 @@ public class MyProductsFragment extends Fragment {
 
     private Uri imageUri;
     private ImageView imageViewProduct;
-    private ProductAdapter productAdapter;
     private List<Product> approvedProducts;
     private String currentUserId;
+    private ProductAdapter adapter;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -48,18 +48,28 @@ public class MyProductsFragment extends Fragment {
 
         binding.ivAddProduct.setOnClickListener(v -> showAddProductDialog());
 
+        // Initialize RecyclerView and product list
         RecyclerView recyclerView = binding.rvApprovedProducts;
-        approvedProducts = new ArrayList<>(); // This will be fetched from the database
-        productAdapter = new ProductAdapter(getContext(), approvedProducts);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        recyclerView.setAdapter(productAdapter);
+        approvedProducts = new ArrayList<>(); // This will be populated from the database
 
-        binding.swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                fetchApprovedProducts();
-                binding.swipeRefreshLayout.setRefreshing(false);
-            }
+        // Initialize adapter with click listener to navigate to MyProductOverview
+        adapter = new ProductAdapter(getContext(), approvedProducts, product -> {
+            Intent intent = new Intent(getContext(), MyProductOverview.class);
+            intent.putExtra("productId", product.getProductId());
+            intent.putExtra("productName", product.getProductName());
+            intent.putExtra("productPrice", product.getProductPrice());
+            intent.putExtra("productDescription", product.getProductDescription());
+            intent.putExtra("productCategory", product.getCategory());
+            intent.putExtra("productImage", product.getProductImage());
+            startActivity(intent);
+        });
+
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerView.setAdapter(adapter); // Set the adapter on the RecyclerView
+
+        binding.swipeRefreshLayout.setOnRefreshListener(() -> {
+            fetchApprovedProducts();
+            binding.swipeRefreshLayout.setRefreshing(false);
         });
 
         // Fetch approved products from Firestore on fragment creation
@@ -86,7 +96,6 @@ public class MyProductsFragment extends Fragment {
                 .setView(dialogView)
                 .setPositiveButton("Add", (dialog, which) -> {
                     // Validate user inputs
-                    String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
                     String productName = editTextProductName.getText().toString().trim();
                     String productPrice = editTextProductPrice.getText().toString().trim();
                     String productDescription = editTextProductDescription.getText().toString().trim();
@@ -102,7 +111,7 @@ public class MyProductsFragment extends Fragment {
                     if (imageUri != null) {
                         // Upload image to Firebase Storage
                         StorageReference storageRef = FirebaseStorage.getInstance().getReference()
-                                .child("product_images/" + userId + ".jpg");
+                                .child("product_images/" + System.currentTimeMillis() + ".jpg");
 
                         storageRef.putFile(imageUri)
                                 .addOnSuccessListener(taskSnapshot -> storageRef.getDownloadUrl().addOnSuccessListener(uri -> {
@@ -133,7 +142,6 @@ public class MyProductsFragment extends Fragment {
         builder.create().show();
     }
 
-
     private void openImagePicker() {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("image/*");
@@ -149,45 +157,43 @@ public class MyProductsFragment extends Fragment {
         }
     }
 
-    // Method to fetch approved products from Firestore
     @SuppressLint("NotifyDataSetChanged")
     private void fetchApprovedProducts() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("products")
-                .whereEqualTo("status", "approved") // Fetch only approved products for homepage
+                .whereEqualTo("status", "approved")
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        approvedProducts.clear(); // Clear the current list
+                        approvedProducts.clear();
                         for (QueryDocumentSnapshot document : task.getResult()) {
                             Product product = document.toObject(Product.class);
-                            approvedProducts.add(product); // Add each approved product to the list
+                            approvedProducts.add(product);
                         }
-                        productAdapter.notifyDataSetChanged(); // Notify adapter to refresh the list
+                        adapter.notifyDataSetChanged();
                     } else {
                         Toast.makeText(getContext(), "Error fetching products", Toast.LENGTH_SHORT).show();
                     }
                 });
 
-        // Fetch products specific to the current user for "My Products"
         fetchUserProducts();
     }
 
-    // Method to fetch approved products by the current user
     @SuppressLint("NotifyDataSetChanged")
     private void fetchUserProducts() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("products")
-                .whereEqualTo("userId", currentUserId) // Filter by current user's ID
+                .whereEqualTo("userId", currentUserId)
+                .whereEqualTo("status", "approved")
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        approvedProducts.clear(); // Clear existing list
+                        approvedProducts.clear();
                         for (QueryDocumentSnapshot document : task.getResult()) {
                             Product product = document.toObject(Product.class);
-                            approvedProducts.add(product); // Add each approved product for this user
+                            approvedProducts.add(product);
                         }
-                        productAdapter.notifyDataSetChanged(); // Refresh adapter to display the list
+                        adapter.notifyDataSetChanged();
                     } else {
                         Toast.makeText(getContext(), "Error fetching products", Toast.LENGTH_SHORT).show();
                     }

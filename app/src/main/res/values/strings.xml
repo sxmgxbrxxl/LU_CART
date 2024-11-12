@@ -73,6 +73,7 @@
     <string name="lu">Lu</string>
     <string name="notifications">Notifications</string>
     <string name="bakbuton">bakButon</string>
+    <string name="remove_product">remove product</string>
 
     <string-array name="product_categories">
         <item>Foods</item>

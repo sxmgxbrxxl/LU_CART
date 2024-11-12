@@ -1,7 +1,6 @@
 package com.advento.lucart;
 
 import android.content.Context;
-import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,18 +12,29 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductViewHolder> {
-    private final List<Product> productList;
-    private final Set<String> selectedItems = new HashSet<>();
-    private final Context context;
 
-    public ProductAdapter(Context context, List<Product> productList) {
+    private final List<Product> productList;
+    private final Context context;
+    private final OnProductClickListener productClickListener;
+    private final boolean isPendingList;
+
+    // Constructor for using OnProductClickListener
+    public ProductAdapter(Context context, List<Product> productList, OnProductClickListener listener) {
         this.context = context;
         this.productList = productList;
+        this.productClickListener = listener;
+        this.isPendingList = false; // default value if not provided
+    }
+
+    // Overloaded constructor that accepts a boolean instead of a listener
+    public ProductAdapter(Context context, List<Product> productList, boolean isPendingList) {
+        this.context = context;
+        this.productList = productList;
+        this.productClickListener = null; // No listener in this case
+        this.isPendingList = isPendingList;
     }
 
     @NonNull
@@ -39,7 +49,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
         Product product = productList.get(position);
 
         holder.nameTextView.setText(product.getProductName());
-        holder.priceTextView.setText(product.getProductPrice());
+        holder.priceTextView.setText("₱" + product.getProductPrice());
         holder.descriptionTextView.setText(product.getProductDescription());
         holder.categoryTextView.setText(product.getCategory());
 
@@ -48,17 +58,10 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
                 .load(product.getProductImage())
                 .into(holder.imageView);
 
-        // Set click listener to open ProductOverview with product details
-        holder.itemView.setOnClickListener(v -> {
-            Intent intent = new Intent(context, ProductOverview.class);
-            intent.putExtra("productId", product.getProductId());
-            intent.putExtra("productImage", product.getProductImage());
-            intent.putExtra("productName", product.getProductName());
-            intent.putExtra("productPrice", product.getProductPrice());
-            intent.putExtra("productDescription", product.getProductDescription());
-            intent.putExtra("productCategory", product.getCategory());
-            context.startActivity(intent);
-        });
+        // Set click listener only if productClickListener is provided
+        if (productClickListener != null) {
+            holder.itemView.setOnClickListener(v -> productClickListener.onProductClick(product));
+        }
     }
 
     @Override
@@ -74,9 +77,13 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
             super(itemView);
             nameTextView = itemView.findViewById(R.id.nameTextView);
             priceTextView = itemView.findViewById(R.id.priceTextView);
-            categoryTextView = itemView.findViewById(R.id.categoryTextView);
             descriptionTextView = itemView.findViewById(R.id.descriptionTextView);
+            categoryTextView = itemView.findViewById(R.id.categoryTextView);
             imageView = itemView.findViewById(R.id.imageView);
         }
+    }
+
+    public interface OnProductClickListener {
+        void onProductClick(Product product);
     }
 }

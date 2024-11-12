@@ -1,35 +1,50 @@
 package com.advento.lucart;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.advento.lucart.databinding.ActivityNotificationsBinding;
+import com.google.firebase.Timestamp;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class Notifications extends AppCompatActivity {
 
     private ActivityNotificationsBinding binding;
+    private NotificationAdapter notificationAdapter;
+    private final List<Notification> notificationList = new ArrayList<>();
+    private FirebaseFirestore db;
+    private static final int NOTIFICATION_PERMISSION_REQUEST_CODE = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Enable edge-to-edge layout
         EdgeToEdge.enable(this);
 
-        // Inflate the layout with view binding
         binding = ActivityNotificationsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        // Apply window insets for edge-to-edge experience
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -43,29 +58,81 @@ public class Notifications extends AppCompatActivity {
             getSupportActionBar().setDisplayShowTitleEnabled(false);
         }
 
-        // Set up the toolbar with back navigation
-        setSupportActionBar(binding.toolbar);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-            getSupportActionBar().setDisplayShowHomeEnabled(true);
-            getSupportActionBar().setDisplayShowTitleEnabled(false);
-        }
+        requestNotificationPermission();
 
-        // Initialize the RecyclerView and add sample notifications
+        db = FirebaseFirestore.getInstance();
         setupRecyclerView();
+        loadNotifications();
+    }
+
+    private void requestNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
+                    != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.POST_NOTIFICATIONS},
+                        NOTIFICATION_PERMISSION_REQUEST_CODE);
+            } else {
+                Toast.makeText(this, "Notification permission already granted", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            Toast.makeText(this, "Notifications are enabled by default on this device", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode == NOTIFICATION_PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Toast.makeText(this, "Notification permission granted", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "Notification permission denied", Toast.LENGTH_SHORT).show();
+            }
+        }
     }
 
     private void setupRecyclerView() {
-        // Initialize the list of notifications
-        List<Notification> notificationList = new ArrayList<>();
-        notificationList.add(new Notification("Welcome", "Thank you for joining LU Cart!"));
-        notificationList.add(new Notification("New Feature", "You can now filter products by category."));
-        notificationList.add(new Notification("Sale Alert", "20% off on select items!"));
-
-        // Set up the RecyclerView with the NotificationAdapter
-        NotificationAdapter notificationAdapter = new NotificationAdapter(notificationList);
+        notificationAdapter = new NotificationAdapter(notificationList);
         binding.recyclerViewNotifications.setLayoutManager(new LinearLayoutManager(this));
         binding.recyclerViewNotifications.setAdapter(notificationAdapter);
+    }
+
+    private void loadNotifications() {
+        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        CollectionReference notificationsRef = db.collection("users")
+                .document(userId)
+                .collection("notifications");
+
+        notificationsRef.orderBy("timestamp", Query.Direction.DESCENDING)
+                .addSnapshotListener((value, error) -> {
+                    if (error != null) {
+                        Toast.makeText(this, "Error loading notifications", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+
+                    notificationList.clear();
+                    for (QueryDocumentSnapshot document : value) {
+                        try {
+                            Notification notification = document.toObject(Notification.class);
+
+                            // Log to check if the fields are populated correctly
+                            Log.d("Notification", "Notification Loaded: " + notification.toString());
+
+                            // Ensure timestamp is handled as a Long (milliseconds)
+                            Long timestamp = document.getLong("timestamp");
+                            if (timestamp != null) {
+                                notification.setTimestamp(timestamp);  // Set the Long value
+                            }
+
+                            notificationList.add(notification);
+                        } catch (RuntimeException e) {
+                            Toast.makeText(this, "Error loading a notification: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                    notificationAdapter.notifyDataSetChanged();
+                });
     }
 
     @Override

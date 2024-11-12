@@ -1,5 +1,6 @@
 package com.advento.lucart;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -7,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -15,9 +17,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
-import com.advento.lucart.databinding.FragmentHomeBinding;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -36,40 +36,48 @@ public class HomeFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        FragmentHomeBinding binding = FragmentHomeBinding.inflate(inflater, container, false);
+        View view = inflater.inflate(R.layout.fragment_home, container, false);
 
         // Initialize Firestore and RecyclerView
         db = FirebaseFirestore.getInstance();
-        RecyclerView recyclerView = binding.recyclerViewProducts;
+        RecyclerView recyclerView = view.findViewById(R.id.recycler_view_products);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         // Initialize product list and adapter
         productList = new ArrayList<>();
-        allProducts = new ArrayList<>();  // Initialize to hold all products
-        productAdapter = new ProductAdapter(getContext(), productList);
+        allProducts = new ArrayList<>();
+
+        // Setting up adapter with item click functionality
+        productAdapter = new ProductAdapter(getContext(), productList, product -> {
+            Intent intent = new Intent(getContext(), ProductOverview.class);
+            intent.putExtra("productId", product.getProductId());
+            intent.putExtra("productName", product.getProductName());
+            intent.putExtra("productPrice", product.getProductPrice());
+            intent.putExtra("productDescription", product.getProductDescription());
+            intent.putExtra("productCategory", product.getCategory());
+            intent.putExtra("productImage", product.getProductImage());
+            startActivity(intent);
+        });
         recyclerView.setAdapter(productAdapter);
 
         // Initialize SearchView
-        searchView = binding.searchView;
+        searchView = view.findViewById(R.id.searchView);
         setupSearchFunction();
-
 
         // Load approved products from Firestore
         loadApprovedProducts();
 
-        binding.swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                loadApprovedProducts();
-                binding.swipeRefreshLayout.setRefreshing(false);
-            }
-        });
-
         // Set up filter button click to show filter dialog
-        Button filterButton = binding.btnFilter;
+        Button filterButton = view.findViewById(R.id.btnFilter);
         filterButton.setOnClickListener(v -> showFilterDialog());
 
-        return binding.getRoot();
+        ImageButton ivBell = view.findViewById(R.id.ivBell);
+        ivBell.setOnClickListener(v -> {
+            Intent intent = new Intent(getContext(), Notifications.class);
+            startActivity(intent);
+        });
+
+        return view;
     }
 
     private void loadApprovedProducts() {
@@ -111,7 +119,6 @@ public class HomeFragment extends Fragment {
                 if (!TextUtils.isEmpty(newText) && !newText.isEmpty()) {
                     filterProducts(newText);
                 } else {
-                    // If no text entered, show all products
                     productList.clear();
                     productList.addAll(allProducts);
                     productAdapter.notifyDataSetChanged();

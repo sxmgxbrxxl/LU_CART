@@ -1,10 +1,17 @@
 package com.advento.lucart;
 
+import static java.security.AccessController.getContext;
+
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NotificationCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -16,21 +23,26 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class PendingProductsActivity extends AppCompatActivity {
+
+    private static final String CHANNEL_ID = "product_approval_channel";
 
     private ProductAdapter productAdapter;
     private List<Product> pendingProducts;
     private FirebaseFirestore firestore;
+    private ProductAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         EdgeToEdge.enable(this);
-
         setContentView(R.layout.activity_pending_products);
+
+        createNotificationChannel();
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -45,16 +57,36 @@ public class PendingProductsActivity extends AppCompatActivity {
         FloatingActionButton fabApprove = findViewById(R.id.fab_approve_all);
 
         pendingProducts = new ArrayList<>();
-        productAdapter = new ProductAdapter(this, pendingProducts);
+        productAdapter = new ProductAdapter(this, pendingProducts, true);
         recyclerView.setAdapter(productAdapter);
+
+        adapter = new ProductAdapter(PendingProductsActivity.this, pendingProducts, product -> {
+            Intent intent = new Intent(PendingProductsActivity.this,MyProductOverview.class);
+            intent.putExtra("productId", product.getProductId());
+            intent.putExtra("productName", product.getProductName());
+            intent.putExtra("productPrice", product.getProductPrice());
+            intent.putExtra("productDescription", product.getProductDescription());
+            intent.putExtra("productCategory", product.getCategory());
+            intent.putExtra("productImage", product.getProductImage());
+            startActivity(intent);
+        });
 
         fetchPendingProducts();
 
-        // Set the click listener for the approve button
         fabApprove.setOnClickListener(v -> approveAllProducts());
     }
 
-    // get the users uploaded product in firestore to display in the recycler view
+    private void createNotificationChannel() {
+        CharSequence name = "Product Approval Notifications";
+        String description = "Notifications for approved products";
+        int importance = NotificationManager.IMPORTANCE_DEFAULT;
+        NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, importance);
+        channel.setDescription(description);
+
+        NotificationManager notificationManager = getSystemService(NotificationManager.class);
+        notificationManager.createNotificationChannel(channel);
+    }
+
     private void fetchPendingProducts() {
         firestore.collection("products")
                 .whereEqualTo("status", "pending")
@@ -73,7 +105,6 @@ public class PendingProductsActivity extends AppCompatActivity {
                 });
     }
 
-    // Method to approve all pending products
     private void approveAllProducts() {
         if (pendingProducts.isEmpty()) {
             Toast.makeText(this, "No products to approve", Toast.LENGTH_SHORT).show();
@@ -90,11 +121,70 @@ public class PendingProductsActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             Toast.makeText(PendingProductsActivity.this, "Approved: " + product.getProductName(), Toast.LENGTH_SHORT).show();
                             pendingProducts.remove(product);
-                            productAdapter.notifyDataSetChanged(); // Refresh list
+                            productAdapter.notifyDataSetChanged();
+                            sendApprovalNotificationToUser(product.getUserId(), product.getProductName());
+
+                            // Step 2: Add a notification document for the user
+                            addNotificationForUser(product.getUserId(), product.getProductName());
                         } else {
                             Toast.makeText(PendingProductsActivity.this, "Failed to approve product: " + product.getProductName(), Toast.LENGTH_SHORT).show();
                         }
                     });
         }
+    }
+
+
+    private void addNotificationForUser(String userId, String productName) {
+        // Create notification data
+        Map<String, Object> notificationData = new HashMap<>();
+        notificationData.put("title", "Inapprove ko na product mo lods :)"); // Set title
+        notificationData.put("message", "Your product \"" + productName + "\" has been approved."); // Set message
+        notificationData.put("status", "approved");
+        notificationData.put("userId", userId);
+        notificationData.put("timestamp", System.currentTimeMillis());
+
+
+        firestore.collection("users")
+                .document(userId)
+                .collection("notifications")
+                .add(notificationData)
+                .addOnSuccessListener(documentReference -> {
+                    // Notify success
+                    Toast.makeText(this, "Notification added for " + productName, Toast.LENGTH_SHORT).show();
+                })
+                .addOnFailureListener(e -> {
+                    // Handle failure
+                    Toast.makeText(this, "Failed to add notification for " + productName, Toast.LENGTH_SHORT).show();
+                });
+    }
+
+
+    private void sendApprovalNotificationToUser(String userId, String productName) {
+        firestore.collection("users")
+                .document(userId)
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        String userDeviceToken = documentSnapshot.getString("deviceToken");
+
+                        if (userDeviceToken != null) {
+                            sendApprovalNotification(productName);
+                        }
+                    }
+                })
+                .addOnFailureListener(e ->
+                        Toast.makeText(PendingProductsActivity.this, "Failed to retrieve user information", Toast.LENGTH_SHORT).show()
+                );
+    }
+
+    private void sendApprovalNotification(String productName) {
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
+                .setSmallIcon(R.drawable.ic_check) // Use your own icon here
+                .setContentTitle("Product Approved")
+                .setContentText("Your product \"" + productName + "\" has been approved.")
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT);
+
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.notify((int) System.currentTimeMillis(), builder.build());
     }
 }
