@@ -19,7 +19,6 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.database.FirebaseDatabase;
 
 public class Settings extends AppCompatActivity {
 
@@ -27,7 +26,6 @@ public class Settings extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private FirebaseFirestore db;
     private FirebaseStorage storage;
-    private FirebaseDatabase realtimeDb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,7 +39,6 @@ public class Settings extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         db = FirebaseFirestore.getInstance();
         storage = FirebaseStorage.getInstance();
-        realtimeDb = FirebaseDatabase.getInstance("https://lu-cart-firebase-default-rtdb.asia-southeast1.firebasedatabase.app");
 
         // Set up window insets and padding
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
@@ -59,7 +56,7 @@ public class Settings extends AppCompatActivity {
 
         // Night mode toggle
         binding.scNightMode.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            int color = ContextCompat.getColor(this, R.color.sub_green);
+            int color = ContextCompat.getColor(this, R.color.five_green);
             if (isChecked) {
                 binding.scNightMode.getTrackDrawable().setColorFilter(color, PorterDuff.Mode.SRC_IN);
             } else {
@@ -70,7 +67,7 @@ public class Settings extends AppCompatActivity {
 
         // Notifications toggle
         binding.scNotifications.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            int color = ContextCompat.getColor(this, R.color.sub_green);
+            int color = ContextCompat.getColor(this, R.color.five_green);
             if (isChecked) {
                 binding.scNotifications.getTrackDrawable().setColorFilter(color, PorterDuff.Mode.SRC_IN);
             } else {
@@ -109,40 +106,54 @@ public class Settings extends AppCompatActivity {
         String userId = user.getUid();
         Log.d("DeleteUser", "User ID: " + userId);
 
-        // Delete Firestore User Data
         db.collection("users").document(userId).delete()
                 .addOnSuccessListener(aVoid -> deleteUserCart(userId, user))
                 .addOnFailureListener(e -> handleError("Firestore user data", e));
-
     }
 
     private void deleteUserCart(String userId, FirebaseUser user) {
         db.collection("carts").document(userId).delete()
-                .addOnSuccessListener(aVoid -> deleteRealtimeDbUser(userId, user))
+                .addOnSuccessListener(aVoid -> deleteBusinessDocument(userId, user))
                 .addOnFailureListener(e -> handleError("Firestore cart data", e));
     }
 
-    private void deleteRealtimeDbUser(String userId, FirebaseUser user) {
-        realtimeDb.getReference("users").child(userId).removeValue()
+    private void deleteBusinessDocument(String userId, FirebaseUser user) {
+        db.collection("business").document(userId).delete()
                 .addOnSuccessListener(aVoid -> deleteProfilePhoto(userId, user))
-                .addOnFailureListener(e -> handleError("Realtime Database user data", e));
+                .addOnFailureListener(e -> handleError("Firestore business data", e));
     }
 
     private void deleteProfilePhoto(String userId, FirebaseUser user) {
         StorageReference profilePicRef = storage.getReference().child("profile_photos/" + userId + ".jpg");
         profilePicRef.delete()
-                .addOnSuccessListener(aVoid -> deleteUserProductImages(userId, user))
+                .addOnSuccessListener(aVoid -> deleteBusinessProfilePhotos(userId, user))
                 .addOnFailureListener(e -> {
                     handleError("Profile photo", e);
-                    deleteUserProductImages(userId, user);  // Continue with product images even if profile photo deletion fails
+                    deleteBusinessProfilePhotos(userId, user); // Continue even if profile photo deletion fails
                 });
     }
 
+    private void deleteBusinessProfilePhotos(String userId, FirebaseUser user) {
+        StorageReference businessPhotosRef = storage.getReference().child("business_profile_photos/" + userId);
+        businessPhotosRef.listAll().addOnSuccessListener(listResult -> {
+            for (StorageReference fileRef : listResult.getItems()) {
+                fileRef.delete()
+                        .addOnSuccessListener(aVoid -> Log.d("DeleteUser", "Deleted business photo: " + fileRef.getPath()))
+                        .addOnFailureListener(e -> handleError("Business photo", e));
+            }
+            deleteUserProductImages(userId, user);
+        }).addOnFailureListener(e -> {
+            handleError("Listing business photos", e);
+            deleteUserProductImages(userId, user);
+        });
+    }
+
     private void deleteUserProductImages(String userId, FirebaseUser user) {
-        StorageReference userProductsRef = storage.getReference().child("product_images/" + userId + ".jpg");
+        StorageReference userProductsRef = storage.getReference().child("product_images/" + userId);
         userProductsRef.listAll().addOnSuccessListener(listResult -> {
             for (StorageReference fileRef : listResult.getItems()) {
-                fileRef.delete().addOnSuccessListener(aVoid -> Log.d("DeleteUser", "Deleted product image: " + fileRef.getPath()))
+                fileRef.delete()
+                        .addOnSuccessListener(aVoid -> Log.d("DeleteUser", "Deleted product image: " + fileRef.getPath()))
                         .addOnFailureListener(e -> handleError("Product image", e));
             }
             deleteUserAuthentication(user);
@@ -152,7 +163,6 @@ public class Settings extends AppCompatActivity {
         });
     }
 
-    // Handle user deletion from Authentication
     private void deleteUserAuthentication(FirebaseUser user) {
         user.delete()
                 .addOnSuccessListener(aVoid -> {

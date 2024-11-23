@@ -3,15 +3,15 @@
 
 
     <!-- Background color -->
-    <solid android:color="@color/white" />
+    <solid android:color="@color/two_green" />
 
     <!-- Border color and width -->
     <stroke
         android:width="1dp"
-        android:color="@color/main_green" />
+        android:color="@color/seven_green" />
 
     <!-- Rounded corners -->
-    <corners android:radius="13dp" />
+    <corners android:radius="360dp" />
 
     <!-- Padding inside the shape -->
     <padding

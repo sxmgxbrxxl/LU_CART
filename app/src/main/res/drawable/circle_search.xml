@@ -3,12 +3,12 @@
     android:shape="rectangle">
 
     <!-- Background color -->
-    <solid android:color="@color/sub_green" />
+    <solid android:color="@color/five_green" />
 
     <!-- Border color and width -->
     <stroke
         android:width="3dp"
-        android:color="@color/main_green" />
+        android:color="@color/six_green" />
 
     <!-- Rounded corners -->
     <corners android:radius="360dp" />

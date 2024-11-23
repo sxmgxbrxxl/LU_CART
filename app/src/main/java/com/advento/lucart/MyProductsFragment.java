@@ -1,16 +1,20 @@
 package com.advento.lucart;
 
 import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -80,66 +84,72 @@ public class MyProductsFragment extends Fragment {
 
     @SuppressLint("NotifyDataSetChanged")
     private void showAddProductDialog() {
-        LayoutInflater inflater = LayoutInflater.from(getContext());
-        View dialogView = inflater.inflate(R.layout.dialog_addproduct_layout, null);
+        Dialog dialog = new Dialog(requireContext());
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.dialog_addproduct_layout);
 
-        imageViewProduct = dialogView.findViewById(R.id.ivProductImage);
-        Button buttonUploadPhoto = dialogView.findViewById(R.id.buttonUploadPhoto);
-        EditText editTextProductName = dialogView.findViewById(R.id.editTextProductName);
-        EditText editTextProductPrice = dialogView.findViewById(R.id.editTextProductPrice);
-        EditText editTextProductDescription = dialogView.findViewById(R.id.editTextProductDescription);
-        EditText editTextStockNumber = dialogView.findViewById(R.id.editTextStockNumber);
-        Spinner spinnerCategory = dialogView.findViewById(R.id.spinnerCategory);
+        imageViewProduct = dialog.findViewById(R.id.ivProductImage);
+        Button buttonUploadPhoto = dialog.findViewById(R.id.buttonUploadPhoto);
+        EditText editTextProductName = dialog.findViewById(R.id.editTextProductName);
+        EditText editTextProductPrice = dialog.findViewById(R.id.editTextProductPrice);
+        EditText editTextProductDescription = dialog.findViewById(R.id.editTextProductDescription);
+        EditText editTextStockNumber = dialog.findViewById(R.id.editTextStockNumber);
+        Spinner spinnerCategory = dialog.findViewById(R.id.spinnerCategory);
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-        builder.setTitle("Add Product")
-                .setView(dialogView)
-                .setPositiveButton("Add", (dialog, which) -> {
-                    // Validate user inputs
-                    String productName = editTextProductName.getText().toString().trim();
-                    String productPrice = editTextProductPrice.getText().toString().trim();
-                    String productDescription = editTextProductDescription.getText().toString().trim();
-                    String stockNumber = editTextStockNumber.getText().toString().trim();
-                    String category = spinnerCategory.getSelectedItem().toString();
-                    String status = "pending"; // Default status for admin approval
+        Button addButton = dialog.findViewById(R.id.btnAdd);
+        Button cancelButton = dialog.findViewById(R.id.btnCancel);
 
-                    if (productName.isEmpty() || productPrice.isEmpty() || productDescription.isEmpty() || stockNumber.isEmpty()) {
-                        Toast.makeText(getContext(), "All fields are required", Toast.LENGTH_SHORT).show();
-                        return;
-                    }
+        addButton.setOnClickListener(view -> {
+            String productName = editTextProductName.getText().toString().trim();
+            String productPrice = editTextProductPrice.getText().toString().trim();
+            String productDescription = editTextProductDescription.getText().toString().trim();
+            String stockNumber = editTextStockNumber.getText().toString().trim();
+            String category = spinnerCategory.getSelectedItem().toString();
+            String status = "pending"; //Default for Admin
 
-                    if (imageUri != null) {
-                        // Upload image to Firebase Storage
-                        StorageReference storageRef = FirebaseStorage.getInstance().getReference()
-                                .child("product_images/" + System.currentTimeMillis() + ".jpg");
+            if (productName.isEmpty() || productPrice.isEmpty() || productDescription.isEmpty() || stockNumber.isEmpty()) {
+                Toast.makeText(getContext(), "All fields are required", Toast.LENGTH_SHORT).show();
+                return;
+            }
 
-                        storageRef.putFile(imageUri)
-                                .addOnSuccessListener(taskSnapshot -> storageRef.getDownloadUrl().addOnSuccessListener(uri -> {
-                                    // Create new product with image URL
-                                    Product newProduct = new Product(productName, productPrice, productDescription,
-                                            uri.toString(), "", status, currentUserId, category);
+            if (imageUri != null) {
+                // Upload image to Firebase Storage
+                StorageReference storageRef = FirebaseStorage.getInstance().getReference()
+                        .child("product_images/" + System.currentTimeMillis() + ".jpg");
 
-                                    // Save product to Firestore
-                                    FirebaseFirestore db = FirebaseFirestore.getInstance();
-                                    db.collection("products").add(newProduct)
-                                            .addOnSuccessListener(documentReference -> db.collection("products")
-                                                    .document(documentReference.getId())
-                                                    .update("productId", documentReference.getId())
-                                                    .addOnSuccessListener(aVoid -> {
-                                                        Toast.makeText(getContext(), "Product added to pending list", Toast.LENGTH_SHORT).show();
-                                                        fetchUserProducts(); // Refresh the user’s products
-                                                    }))
-                                            .addOnFailureListener(e -> Toast.makeText(getContext(), "Error adding product", Toast.LENGTH_SHORT).show());
-                                }))
-                                .addOnFailureListener(e -> Toast.makeText(getContext(), "Image upload failed", Toast.LENGTH_SHORT).show());
-                    } else {
-                        Toast.makeText(getContext(), "Please select an image", Toast.LENGTH_SHORT).show();
-                    }
-                })
-                .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
+                storageRef.putFile(imageUri)
+                        .addOnSuccessListener(taskSnapshot -> storageRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                            // Create new product with image URL
+                            Product newProduct = new Product(productName, productPrice, productDescription,
+                                    uri.toString(), "", status, currentUserId, category);
+
+                            // Save product to Firestore
+                            FirebaseFirestore db = FirebaseFirestore.getInstance();
+                            db.collection("products").add(newProduct)
+                                    .addOnSuccessListener(documentReference -> db.collection("products")
+                                            .document(documentReference.getId())
+                                            .update("productId", documentReference.getId())
+                                            .addOnSuccessListener(aVoid -> {
+                                                Toast.makeText(getContext(), "Product added to pending list", Toast.LENGTH_SHORT).show();
+                                                fetchUserProducts(); // Refresh the user’s products
+                                            }))
+                                    .addOnFailureListener(e -> Toast.makeText(getContext(), "Error adding product", Toast.LENGTH_SHORT).show());
+                        }))
+                        .addOnFailureListener(e -> Toast.makeText(getContext(), "Image upload failed", Toast.LENGTH_SHORT).show());
+            } else {
+                Toast.makeText(getContext(), "Please select an image", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        cancelButton.setOnClickListener(v -> dialog.dismiss());
 
         buttonUploadPhoto.setOnClickListener(v -> openImagePicker());
-        builder.create().show();
+
+        dialog.show();
+        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
+        dialog.getWindow().setGravity(Gravity.BOTTOM);
     }
 
     private void openImagePicker() {

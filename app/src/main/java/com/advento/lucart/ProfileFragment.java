@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.advento.lucart.databinding.FragmentProfileBinding;
 import com.facebook.login.LoginManager;
@@ -25,6 +26,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -37,8 +39,6 @@ public class ProfileFragment extends Fragment {
     private DatabaseReference reference;
     private GoogleSignInClient googleSignInClient;
     private FragmentProfileBinding binding;
-    private BottomNavigationView bottomNavigationView;
-    private boolean isUserDataLoaded = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -71,12 +71,6 @@ public class ProfileFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout using ViewBinding
         binding = FragmentProfileBinding.inflate(inflater, container, false);
-
-        bottomNavigationView = requireActivity().findViewById(R.id.bottomNavigationView);
-
-        // Disable fragment navigation until user data is loaded
-        setFragmentNavigationEnabled(false);
-        setBottomNavEnabled(false);
 
         binding.ivSettings.setOnClickListener(v -> {
             startActivity(new Intent(getActivity(), Settings.class));
@@ -114,75 +108,47 @@ public class ProfileFragment extends Fragment {
     }
 
     private void loadData() {
-        reference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if (snapshot.exists()) {
-                    String firstName = snapshot.child("firstName").getValue(String.class);
-                    String lastName = snapshot.child("lastName").getValue(String.class);
-                    String email = snapshot.child("email").getValue(String.class);
-                    String photoUrl = snapshot.child("photoUrl").getValue(String.class);
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
-                    binding.tvFirstName.setText(firstName);
-                    binding.tvLastName.setText(lastName);
-                    binding.tvEmailAddress.setText(email);
+        db.collection("users").document(userId)
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        String firstName = documentSnapshot.getString("firstName");
+                        String lastName = documentSnapshot.getString("lastName");
+                        String email = documentSnapshot.getString("email");
+                        String photoUrl = documentSnapshot.getString("photoUrl");
 
-                    if (photoUrl != null && !photoUrl.isEmpty()) {
-                        Glide.with(requireContext())
-                                .load(photoUrl)
-                                .circleCrop()
-                                .into(binding.ivDisplayPhoto);
+                        binding.tvFirstName.setText(firstName);
+                        binding.tvLastName.setText(lastName);
+                        binding.tvEmailAddress.setText(email);
+
+                        if (photoUrl != null && !photoUrl.isEmpty()) {
+                            Glide.with(requireContext())
+                                    .load(photoUrl)
+                                    .circleCrop()
+                                    .into(binding.ivDisplayPhoto);
+                        } else {
+                            binding.ivDisplayPhoto.setImageResource(R.drawable.ic_photo_placeholder);
+                        }
                     } else {
-                        // Optionally set a default image or placeholder if no URL is found
-                        binding.ivDisplayPhoto.setImageResource(R.drawable.ic_placeholder);
+                        Log.e("ProfileFragment", "No data found for the user.");
                     }
-                    // Set flag to true after loading is done
-                    isUserDataLoaded = true;
-
-                    // Enable fragment navigation
-                    setFragmentNavigationEnabled(true);
-                    setBottomNavEnabled(true);
-
-                } else {
-                    Log.e("ProfileFragment", "No data found for the user.");
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                // Log the error message
-                Log.e("ProfileFragment", "Database error: " + error.getMessage());
-            }
-        });
-    }
-
-    private void setFragmentNavigationEnabled(boolean enabled) {
-        // Enable or disable the fragment navigation buttons
-        binding.ivSettings.setEnabled(enabled);
-        binding.btnMyProfile.setEnabled(enabled);
-        binding.btnFavorites.setEnabled(enabled);
-        binding.btnTransactions.setEnabled(enabled);
-    }
-
-    private void setBottomNavEnabled(boolean enabled) {
-        // Disable/Enable bottom navigation menu items
-        if (bottomNavigationView != null) {
-            for (int i = 0; i < bottomNavigationView.getMenu().size(); i++) {
-                bottomNavigationView.getMenu().getItem(i).setEnabled(enabled);
-            }
-        }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("ProfileFragment", "Error fetching user data: " + e.getMessage());
+                    Toast.makeText(getContext(), "Failed to load profile data", Toast.LENGTH_SHORT).show();
+                });
     }
 
     private void signOut() {
-        // Firebase sign out
         auth.signOut();
 
-        // Google sign out
         googleSignInClient.signOut().addOnCompleteListener(requireActivity(), task -> {
-            // Facebook sign out
+
             LoginManager.getInstance().logOut();
 
-            // Redirect to SplashScreen
             Intent intent = new Intent(requireActivity(), SplashScreen.class);
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);

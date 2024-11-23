@@ -2,10 +2,10 @@
 <androidx.cardview.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_width="150dp"
+    android:layout_height="150dp"
     android:layout_margin="10dp"
-    app:cardBackgroundColor="@color/sub_green"
+    app:cardBackgroundColor="@color/five_green"
     app:cardElevation="5dp"
     app:cardMaxElevation="12dp"
     app:cardPreventCornerOverlap="true"
@@ -13,7 +13,7 @@
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="200dp">
+        android:layout_height="match_parent">
 
         <ImageView
             android:id="@+id/imageView"
@@ -24,7 +24,7 @@
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="200dp"
+            android:layout_height="match_parent"
             android:layout_gravity="bottom"
             android:background="@drawable/gradient_overlay" />
 
@@ -32,61 +32,36 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
-            android:orientation="vertical"
-            android:padding="16dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/nameTextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:text="Graham Balls"
-                    android:fontFamily="@font/montserrat_bold"
-                    android:textColor="@android:color/white"
-                    android:textSize="20sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/priceTextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_marginStart="10dp"
-                    android:text="$1.99"
-                    android:fontFamily="@font/montserrat_semibold"
-                    android:textColor="@color/white"
-                    android:textSize="20sp" />
-
-            </LinearLayout>
+            android:padding="10dp"
+            android:orientation="vertical">
 
             <TextView
-                android:id="@+id/categoryTextView"
-                android:layout_width="match_parent"
+                android:id="@+id/nameTextView"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/category"
+                android:fontFamily="@font/montserrat_bold"
+                android:text="Graham Balls"
+                android:textColor="@color/two_green"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/priceTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:fontFamily="@font/montserrat_semibold"
-                android:textStyle="italic"
-                android:textColor="@color/white" />
-
-            <TextView
-                android:id="@+id/descriptionTextView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Marshmallows coated with Graham Crackers mixture with a splash of variety of toppings"
-                android:fontFamily="@font/montserrat"
-                android:textColor="@color/white" />
+                android:text="$1.99"
+                android:textColor="@color/two_green"
+                android:textSize="12sp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Tap to view more details"
-                android:textSize="10sp"
+                android:layout_marginBottom="10dp"
                 android:fontFamily="@font/montserrat"
-                android:textColor="@color/white"
-                android:layout_marginBottom="10dp"/>
+                android:text="Tap to view more details"
+                android:textColor="@color/two_green"
+                android:textSize="10sp" />
+
         </LinearLayout>
 
     </FrameLayout>

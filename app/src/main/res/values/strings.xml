@@ -43,7 +43,7 @@
     <string name="its_price">its Price</string>
     <string name="the_description">The Description</string>
     <string name="the_stock">the Stock:</string>
-    <string name="add_to_cart">Add To Cart</string>
+    <string name="add_to_cart">Add to cart</string>
     <string name="_1">1</string>
     <string name="addbutton">addButton</string>
     <string name="minus">minus</string>
@@ -74,11 +74,4 @@
     <string name="notifications">Notifications</string>
     <string name="bakbuton">bakButon</string>
     <string name="remove_product">remove product</string>
-
-    <string-array name="product_categories">
-        <item>Foods</item>
-        <item>Clothes</item>
-        <item>Accessories</item>
-        <item>Electronics</item>
-    </string-array>
 </resources>

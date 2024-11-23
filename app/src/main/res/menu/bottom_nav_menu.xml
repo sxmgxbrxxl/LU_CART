@@ -12,9 +12,9 @@
         android:icon="@drawable/ic_cart_filled" />
 
     <item
-        android:id="@+id/miMyProducts"
-        android:title="My Products"
-        android:icon="@drawable/ic_sell_filled" />
+        android:id="@+id/miFavorites"
+        android:title="Favorites"
+        android:icon="@drawable/ic_heart_filled" />
 
     <item
         android:id="@+id/miProfile"

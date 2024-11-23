@@ -83,7 +83,7 @@ public class EmailVerification extends AppCompatActivity {
                 if (task.isSuccessful()) {
                     if (currentUser.isEmailVerified()) {
                         // User's email is verified, allow them to proceed
-                        Intent intent = new Intent(EmailVerification.this, CreateAccountEmail.class);
+                        Intent intent = new Intent(EmailVerification.this, Roles.class);
                         intent.putExtra("EMAIL", currentUser.getEmail());
                         intent.putExtra("PASSWORD", getIntent().getStringExtra("PASSWORD"));
                         startActivity(intent);

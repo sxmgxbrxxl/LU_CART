@@ -66,7 +66,6 @@ public class ProductOverview extends AppCompatActivity {
         // Set data to views
         binding.tvProductName.setText(productName);
         binding.tvProductPrice.setText("₱ " + productPrice);
-        binding.tvProductDescription.setText(productDescription);
 
         // Setup quantity buttons
         binding.buttonIncrease.setOnClickListener(v -> {
@@ -82,7 +81,7 @@ public class ProductOverview extends AppCompatActivity {
         });
 
         // Setup Add to Cart button
-        binding.AddToCart.setOnClickListener(v -> {
+        binding.btnAddToCart.setOnClickListener(v -> {
             // Convert price string to double (remove ₱ and any spaces)
             String priceStr = productPrice.replace("₱", "").replace(" ", "");
             double price;
@@ -105,15 +104,15 @@ public class ProductOverview extends AppCompatActivity {
         checkIfFavorite(productId);
 
         //FAB FUNCTION
-        binding.fabFavorite.setOnClickListener(v -> {
-            boolean isSelected = binding.fabFavorite.isSelected();
-            binding.fabFavorite.setSelected(!isSelected);
+        binding.ivFavorite.setOnClickListener(v -> {
+            boolean isSelected = binding.ivFavorite.isSelected();
+            binding.ivFavorite.setSelected(!isSelected);
 
-            if (binding.fabFavorite.isSelected()) {
-                binding.fabFavorite.setImageTintList(ColorStateList.valueOf(getResources().getColor(R.color.main_green)));
+            if (binding.ivFavorite.isSelected()) {
+                binding.ivFavorite.setImageTintList(ColorStateList.valueOf(getResources().getColor(R.color.six_green)));
                 addProductToFavorites(productId, productName, productPrice, productImage, productDescription); // Add to favorites
             } else {
-                binding.fabFavorite.setImageTintList(ColorStateList.valueOf(getResources().getColor(R.color.white)));
+                binding.ivFavorite.setImageTintList(ColorStateList.valueOf(getResources().getColor(R.color.white)));
                 removeProductFromFavorites(productId); // Remove from favorites
             }
         });
@@ -129,11 +128,11 @@ public class ProductOverview extends AppCompatActivity {
                 .get()
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
-                        binding.fabFavorite.setSelected(true);
-                        binding.fabFavorite.setImageTintList(ColorStateList.valueOf(getResources().getColor(R.color.main_green)));
+                        binding.ivFavorite.setSelected(true);
+                        binding.ivFavorite.setImageTintList(ColorStateList.valueOf(getResources().getColor(R.color.six_green)));
                     } else {
-                        binding.fabFavorite.setSelected(false);
-                        binding.fabFavorite.setImageTintList(ColorStateList.valueOf(getResources().getColor(R.color.white)));
+                        binding.ivFavorite.setSelected(false);
+                        binding.ivFavorite.setImageTintList(ColorStateList.valueOf(getResources().getColor(R.color.white)));
                     }
                 })
                 .addOnFailureListener(e -> Toast.makeText(this, "Error checking favorite status: " + e.getMessage(), Toast.LENGTH_SHORT).show());

@@ -61,7 +61,7 @@ public class PendingProductsActivity extends AppCompatActivity {
         recyclerView.setAdapter(productAdapter);
 
         adapter = new ProductAdapter(PendingProductsActivity.this, pendingProducts, product -> {
-            Intent intent = new Intent(PendingProductsActivity.this,MyProductOverview.class);
+            Intent intent = new Intent(PendingProductsActivity.this, MyProductOverview.class);
             intent.putExtra("productId", product.getProductId());
             intent.putExtra("productName", product.getProductName());
             intent.putExtra("productPrice", product.getProductPrice());

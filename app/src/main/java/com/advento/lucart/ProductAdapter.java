@@ -50,8 +50,6 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
 
         holder.nameTextView.setText(product.getProductName());
         holder.priceTextView.setText("₱" + product.getProductPrice());
-        holder.descriptionTextView.setText(product.getProductDescription());
-        holder.categoryTextView.setText(product.getCategory());
 
         // Load the product image using Glide
         Glide.with(context)
@@ -70,15 +68,13 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
     }
 
     public static class ProductViewHolder extends RecyclerView.ViewHolder {
-        TextView nameTextView, priceTextView, descriptionTextView, categoryTextView;
+        TextView nameTextView, priceTextView, categoryTextView;
         ImageView imageView;
 
         public ProductViewHolder(@NonNull View itemView) {
             super(itemView);
             nameTextView = itemView.findViewById(R.id.nameTextView);
             priceTextView = itemView.findViewById(R.id.priceTextView);
-            descriptionTextView = itemView.findViewById(R.id.descriptionTextView);
-            categoryTextView = itemView.findViewById(R.id.categoryTextView);
             imageView = itemView.findViewById(R.id.imageView);
         }
     }

@@ -21,25 +21,26 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class EmailLogin extends AppCompatActivity {
 
     ActivityEmailLoginBinding binding;
 
     private FirebaseAuth auth;
+    private FirebaseFirestore db;
 
-    // admin UID
-    private static final String ADMIN_UID = "JlmXtJLguLOSoe7HCJ3JOXBVnJ52";
+    //ADMIN UID FIXED
+    private static final String ADMIN1_UID = "JlmXtJLguLOSoe7HCJ3JOXBVnJ52";
+    private static final String ADMIN2_UID = "kVfHiX6EI5bnRYAawNwS3Dw4Bf72";
 
-    //admin admin
     @Override
     public void onStart() {
         super.onStart();
-        // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = auth.getCurrentUser();
         if (currentUser != null) {
-            // Check if the current user is the admin
-            if (currentUser.getUid().equals(ADMIN_UID)) {
+            if (currentUser.getUid().equals(ADMIN1_UID)||currentUser.getUid().equals(ADMIN2_UID)) {
                 startActivity(new Intent(EmailLogin.this, AdminDashboard.class));
             } else {
                 startActivity(new Intent(EmailLogin.this, Home.class));
@@ -57,6 +58,7 @@ public class EmailLogin extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         auth = FirebaseAuth.getInstance();
+        db = FirebaseFirestore.getInstance();
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -70,7 +72,11 @@ public class EmailLogin extends AppCompatActivity {
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
-        binding.btnSave.setOnClickListener(v -> {
+        binding.tvForgotPassword.setOnClickListener(v -> {
+            startActivity(new Intent(EmailLogin.this, ForgotPassword.class));
+        });
+
+        binding.btnLogin.setOnClickListener(v -> {
             String userEmail = binding.etEmail.getText().toString().trim();
             String userPassword = binding.etPassword.getText().toString().trim();
 
@@ -85,26 +91,45 @@ public class EmailLogin extends AppCompatActivity {
             }
 
             auth.signInWithEmailAndPassword(userEmail, userPassword)
-                    .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
-                            if (task.isSuccessful()) {
-                                FirebaseUser user = auth.getCurrentUser();
-                                // Check if the current user is the admin
-                                if (user != null && user.getUid().equals(ADMIN_UID)) {
-                                    Toast.makeText(EmailLogin.this, "Authentication Successful, Admin Access Granted", Toast.LENGTH_SHORT).show();
-                                    startActivity(new Intent(EmailLogin.this, AdminDashboard.class));
-                                } else {
-                                    Toast.makeText(EmailLogin.this, "Authentication Successful, User Access Granted", Toast.LENGTH_SHORT).show();
-                                    startActivity(new Intent(EmailLogin.this, Home.class)); // or any other user activity
-                                }
-                            } else {
-                                // If sign in fails, display a message to the user.
-                                Toast.makeText(EmailLogin.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            FirebaseUser user = auth.getCurrentUser();
+                            if (user != null) {
+                                String userUID = user.getUid();
+                                checkAccountType(userUID);
                             }
+                        } else {
+                            Toast.makeText(EmailLogin.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
                         }
                     });
         });
+    }
+
+    private void checkAccountType(String userUID) {
+        db.collection("business").document(userUID).get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        Toast.makeText(this, "Welcome, Business Account!", Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(EmailLogin.this, BusinessHome.class));
+                    } else {
+                        db.collection("users").document(userUID).get()
+                                .addOnSuccessListener(userSnapshot -> {
+                                    if (userSnapshot.exists()) {
+                                        // User account
+                                        Toast.makeText(this, "Welcome, User Account!", Toast.LENGTH_SHORT).show();
+                                        startActivity(new Intent(EmailLogin.this, Home.class));
+                                    } else {
+                                        Toast.makeText(this, "Account type not recognized.", Toast.LENGTH_SHORT).show();
+                                    }
+                                })
+                                .addOnFailureListener(e -> {
+                                    Toast.makeText(this, "Error checking user account: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                });
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "Error checking business account: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
     }
 
     @Override

@@ -10,12 +10,13 @@
     <Toolbar
         android:id="@+id/tbProfile"
         android:layout_width="match_parent"
-        android:layout_height="70dp"
+        android:layout_height="80dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/clTopBar"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
@@ -23,29 +24,32 @@
                 android:id="@+id/ivLogo"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
+                android:contentDescription="@string/lu"
                 android:src="@drawable/ic_lucart_nobg"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"/>
 
             <TextView
-                android:id="@+id/tvProfile"
+                android:id="@+id/tvFavorites"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:fontFamily="@font/montserrat_bold"
+                android:fontFamily="@font/montserrat_semibold"
                 android:text="Profile"
-                android:textColor="@color/black"
+                android:textColor="@color/eleven_green"
                 android:textSize="20sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/ivLogo"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <ImageView
+            <ImageButton
                 android:id="@+id/ivSettings"
                 android:layout_width="25dp"
                 android:layout_height="25dp"
                 android:layout_marginEnd="25dp"
+                android:background="@android:color/transparent"
+                android:scaleType="centerCrop"
                 android:src="@drawable/ic_setting"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"

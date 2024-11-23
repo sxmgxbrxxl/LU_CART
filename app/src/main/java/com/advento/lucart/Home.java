@@ -31,21 +31,21 @@ public class Home extends AppCompatActivity {
         });
 
         Fragment homeFragment = new HomeFragment();
-        Fragment myProductsFragment = new MyProductsFragment();
         Fragment myCartFragment = new MyCartFragment();
+        Fragment favoritesFragment = new FavoritesFragment();
         Fragment profileFragment = new ProfileFragment();
 
         setCurrentFragment(homeFragment);
 
-        binding.bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
+        binding.bnvUser.setOnNavigationItemSelectedListener(item -> {
             int itemId = item.getItemId();
 
             if (itemId == R.id.miHome) {
                 setCurrentFragment(homeFragment);
             } else if (itemId == R.id.miCart) {
                 setCurrentFragment(myCartFragment);
-            } else if (itemId == R.id.miMyProducts) {
-                setCurrentFragment(myProductsFragment);
+            } else if (itemId == R.id.miFavorites) {
+                setCurrentFragment(favoritesFragment);
             } else if (itemId == R.id.miProfile) {
                 setCurrentFragment(profileFragment);
             }

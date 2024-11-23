@@ -38,7 +38,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
                 android:layout_marginEnd="20dp"
-                app:cardBackgroundColor="@color/sub_green"
+                app:cardBackgroundColor="@color/five_green"
                 app:cardElevation="10dp"
                 app:cardMaxElevation="12dp"
                 app:cardPreventCornerOverlap="true"
@@ -98,7 +98,7 @@
                             android:fontFamily="@font/montserrat_bold"
                             android:padding="15dp"
                             android:text="Category"
-                            android:textColor="@color/superduperdark_green"
+                            android:textColor="@color/eleven_green"
                             android:textSize="18sp" />
 
                     </LinearLayout>
@@ -140,7 +140,7 @@
                             android:fontFamily="@font/montserrat_bold"
                             android:padding="15dp"
                             android:text="@string/price"
-                            android:textColor="@color/dark_green"
+                            android:textColor="@color/eight_green"
                             android:textSize="18sp" />
 
                     </LinearLayout>

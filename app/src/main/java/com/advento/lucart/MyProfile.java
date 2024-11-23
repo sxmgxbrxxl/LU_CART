@@ -1,15 +1,20 @@
 package com.advento.lucart;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
-import android.widget.Button;
-import android.widget.ImageButton;
+import android.util.Log;
+import android.view.Gravity;
+import android.view.ViewGroup;
+import android.view.Window;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -27,7 +32,16 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 public class MyProfile extends AppCompatActivity {
+
+    private static final int CAMERA_REQUEST_CODE = 100;
+    private static final int GALLERY_REQUEST_CODE = 101;
 
     private ActivityMyProfileBinding binding;
     private FirebaseDatabase db;
@@ -36,17 +50,16 @@ public class MyProfile extends AppCompatActivity {
     private FirebaseUser user;
     private boolean isEditing = false;
     private Uri selectedImageUri;
-    private static final int PICK_IMAGE_REQUEST = 1;
+    private Uri photoUri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        EdgeToEdge.enable(this);
-
         binding = ActivityMyProfileBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        // Apply system bar insets
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -56,26 +69,26 @@ public class MyProfile extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
 
-        // Check if user is signed in
         if (user != null) {
             db = FirebaseDatabase.getInstance("https://lu-cart-firebase-default-rtdb.asia-southeast1.firebasedatabase.app/");
             reference = db.getReference("users").child(user.getUid());
         } else {
-
+            Toast.makeText(this, "User not signed in.", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
         }
 
         fetchUserData();
 
-        // Set up the edit button click listener
         binding.ivEdit.setOnClickListener(v -> toggleEditMode());
-
-        // Set up the change photo button click listener
-        binding.ivChoosePhoto.setOnClickListener(v -> openImagePicker());
+        binding.fabPhoto.setOnClickListener(v -> showDialog());
 
         setSupportActionBar(binding.toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setDisplayShowHomeEnabled(true);
+            getSupportActionBar().setDisplayShowTitleEnabled(false);
+        }
     }
 
     private void fetchUserData() {
@@ -96,9 +109,11 @@ public class MyProfile extends AppCompatActivity {
                             Glide.with(MyProfile.this)
                                     .load(user.getPhotoUrl())
                                     .circleCrop()
-                                    .into(binding.ivDisplayPhoto); // Assuming you have an ImageView for the profile photo
+                                    .into(binding.ivDisplayPhoto);
                         }
                     }
+                } else {
+                    Toast.makeText(MyProfile.this, "No user data found.", Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -112,12 +127,11 @@ public class MyProfile extends AppCompatActivity {
     private void toggleEditMode() {
         if (isEditing) {
             saveUserData();
-            binding.ivEdit.setImageResource(R.drawable.ic_edit); // Change to edit icon
+            binding.ivEdit.setImageResource(R.drawable.ic_edit);
         } else {
-            binding.ivEdit.setImageResource(R.drawable.ic_check); // Change to save icon
+            binding.ivEdit.setImageResource(R.drawable.ic_check);
         }
         isEditing = !isEditing;
-
         setFieldsEditable(isEditing);
     }
 
@@ -137,8 +151,6 @@ public class MyProfile extends AppCompatActivity {
         String password = binding.etPassword.getText().toString();
         String birthday = binding.etBirthday.getText().toString();
         String phoneNumber = binding.etPhoneNumber.getText().toString();
-
-        // If the photo URL has been changed, use the new URL; otherwise, retain the old one.
         String photoUrl = selectedImageUri != null ? selectedImageUri.toString() : null;
 
         User updatedUser = new User(firstName, lastName, email, password, birthday, phoneNumber, photoUrl);
@@ -152,24 +164,90 @@ public class MyProfile extends AppCompatActivity {
         });
     }
 
+    private void showDialog() {
+        Dialog dialog = new Dialog(this);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.dialog_photo);
+
+        TextView takePhoto = dialog.findViewById(R.id.tvTakePhoto);
+        TextView choosePhoto = dialog.findViewById(R.id.tvChoosePhoto);
+        TextView removePhoto = dialog.findViewById(R.id.tvRemovePhoto);
+
+        takePhoto.setOnClickListener(v -> {
+            openCamera();
+            dialog.dismiss();
+        });
+        choosePhoto.setOnClickListener(v -> {
+            openImagePicker();
+            dialog.dismiss();
+        });
+        removePhoto.setOnClickListener(v -> {
+            removePhoto();
+            dialog.dismiss();
+        });
+
+        dialog.show();
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+            dialog.getWindow().setGravity(Gravity.BOTTOM);
+        }
+    }
+
+    private void openCamera() {
+        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (cameraIntent.resolveActivity(getPackageManager()) != null) {
+            File photoFile = createImageFile();
+            if (photoFile != null) {
+                photoUri = FileProvider.getUriForFile(this, "com.advento.lucart.fileprovider", photoFile);
+                cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
+                startActivityForResult(cameraIntent, CAMERA_REQUEST_CODE);
+            } else {
+                Toast.makeText(this, "Failed to create image file.", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private File createImageFile() {
+        try {
+            String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
+            String imageFileName = "JPEG_" + timeStamp + "_";
+            File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+            return File.createTempFile(imageFileName, ".jpg", storageDir);
+        } catch (IOException e) {
+            Log.e("CreateImageFile", "Error creating image file", e);
+            return null;
+        }
+    }
 
     private void openImagePicker() {
-        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("image/*");
-        startActivityForResult(intent, PICK_IMAGE_REQUEST);
+        startActivityForResult(intent, GALLERY_REQUEST_CODE);
+    }
+
+    private void removePhoto() {
+        Glide.with(this)
+                .load(R.drawable.ic_photo_placeholder)
+                .circleCrop()
+                .into(binding.ivDisplayPhoto);
+        selectedImageUri = null;
+        Toast.makeText(this, "Photo removed.", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
+        if (requestCode == CAMERA_REQUEST_CODE && resultCode == RESULT_OK) {
+            uploadImageToFirebase(photoUri);
+        } else if (requestCode == GALLERY_REQUEST_CODE && resultCode == RESULT_OK && data != null) {
             selectedImageUri = data.getData();
-            uploadImageToFirebase();
+            uploadImageToFirebase(selectedImageUri);
         }
     }
 
-    private void uploadImageToFirebase() {
+    private void uploadImageToFirebase(Uri selectedImageUri) {
         if (selectedImageUri != null) {
             StorageReference storageReference = FirebaseStorage.getInstance().getReference("profile_photos")
                     .child(mAuth.getCurrentUser().getUid() + ".jpg");

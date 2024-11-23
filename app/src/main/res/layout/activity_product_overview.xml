@@ -12,7 +12,6 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/tbBottomButtons"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
@@ -21,258 +20,204 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <androidx.appcompat.widget.Toolbar
-                android:id="@+id/toolbar"
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@android:color/transparent"
-                android:minHeight="?attr/actionBarSize"
-                android:theme="?attr/actionBarTheme"
-                app:layout_constraintStart_toStartOf="@id/scrollView"
-                app:layout_constraintEnd_toEndOf="@id/scrollView"
-                app:layout_constraintTop_toTopOf="@id/scrollView"
-                app:title="">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/montserrat_semibold"
-                    android:text="Product Overview"
-                    android:textColor="@color/black"/>
-
-            </androidx.appcompat.widget.Toolbar>
-
-            <androidx.cardview.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="20dp"
-                app:cardBackgroundColor="@color/sub_green"
-                app:cardElevation="10dp"
-                app:cardMaxElevation="12dp"
-                app:cardPreventCornerOverlap="true"
-                app:cardCornerRadius="20dp">
+                android:layout_height="wrap_content">
 
                 <FrameLayout
                     android:layout_width="match_parent"
-                    android:layout_height="200dp">
+                    android:layout_height="350dp"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent">
 
                     <ImageView
                         android:id="@+id/ivProductImage"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:contentDescription="@string/imageproduct"
+                        android:src="@drawable/try_graham"
                         android:scaleType="centerCrop"/>
 
                     <View
                         android:layout_width="match_parent"
-                        android:layout_height="200dp"
+                        android:layout_height="match_parent"
                         android:layout_gravity="bottom"
-                        android:background="@drawable/gradient_overlay" />
+                        android:background="@drawable/gradient_overview" />
 
                 </FrameLayout>
 
-            </androidx.cardview.widget.CardView>
-
-            <LinearLayout
-                android:id="@+id/llProductPrice"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                app:layout_constraintTop_toBottomOf="@id/llProductName">
-
-                <androidx.cardview.widget.CardView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:cardCornerRadius="40dp"
-                    android:layout_marginTop="20dp"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginBottom="10dp"
-                    android:layout_marginEnd="20dp"
-                    app:cardElevation="5dp"
-                    app:layout_constraintEnd_toEndOf="parent"
+                <androidx.appcompat.widget.Toolbar
+                    android:id="@+id/toolbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="60dp"
+                    android:background="@android:color/transparent"
+                    android:minHeight="?attr/actionBarSize"
+                    android:theme="?attr/actionBarTheme"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/llProductName">
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:title="">
 
-                    <LinearLayout
+                    <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal">
+                        android:layout_gravity="center"
+                        android:fontFamily="@font/montserrat_semibold"
+                        android:text="Overview"
+                        android:textColor="@color/two_green"/>
 
-                        <TextView
-                            android:id="@+id/tvProductPrice"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center_horizontal|start"
-                            android:fontFamily="@font/montserrat_bold"
-                            android:padding="15dp"
-                            android:layout_marginStart="5dp"
-                            android:layout_marginEnd="5dp"
-                            android:text="@string/price"
-                            android:textSize="18sp"
-                            android:textColor="@color/dark_green" />
+                    <ImageView
+                        android:id="@+id/ivFavorite"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_gravity="end"
+                        android:padding="4dp"
+                        android:layout_marginEnd="20dp"
+                        android:src="@drawable/ic_heart_filled"/>
 
-                    </LinearLayout>
+                </androidx.appcompat.widget.Toolbar>
 
-                </androidx.cardview.widget.CardView>
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
-            </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="15dp"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
+            android:orientation="horizontal">
 
-            <LinearLayout
-                android:id="@+id/llProductName"
-                android:layout_width="match_parent"
+            <TextView
+                android:id="@+id/tvProductName"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                app:layout_constraintTop_toBottomOf="@id/ivProductImage">
+                android:layout_weight="1"
+                android:fontFamily="@font/montserrat_bold"
+                android:layout_marginStart="5dp"
+                android:text="Product Name"
+                android:textSize="20sp"
+                android:textColor="@color/eleven_green" />
 
-                <androidx.cardview.widget.CardView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="2dp"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginEnd="10dp"
-                    android:layout_marginBottom="10dp"
-                    android:layout_weight="1"
-                    app:cardCornerRadius="40dp"
-                    app:cardElevation="5dp">
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
-                        <TextView
-                            android:id="@+id/tvProductName"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:fontFamily="@font/montserrat_bold"
-                            android:padding="15dp"
-                            android:layout_marginStart="5dp"
-                            android:text="Product Name"
-                            android:textSize="18sp"
-                            android:textColor="@color/black" />
-
-                    </LinearLayout>
-
-                </androidx.cardview.widget.CardView>
-
-                <com.google.android.material.floatingactionbutton.FloatingActionButton
-                    android:id="@+id/fabFavorite"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="2dp"
-                    android:layout_marginEnd="20dp"
-                    android:layout_marginBottom="10dp"
-                    android:contentDescription="@string/favorite"
-                    android:src="@drawable/ic_heart"
-                    app:elevation="5dp"
-                    app:backgroundTint="@drawable/custom_fab"
-                    app:rippleColor="@color/sub_green" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/llProductDescription"
-                android:layout_width="match_parent"
+            <TextView
+                android:id="@+id/tvProductPrice"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                app:layout_constraintTop_toBottomOf="@id/llProductName"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent">
-
-                <androidx.cardview.widget.CardView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="2dp"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginEnd="20dp"
-                    android:layout_marginBottom="10dp"
-                    app:cardElevation="5dp"
-                    app:cardCornerRadius="20dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="@font/montserrat_bold"
-                            android:paddingTop="10dp"
-                            android:paddingStart="20dp"
-                            android:layout_marginBottom="5dp"
-                            android:text="Product Description"
-                            android:textColor="@color/black"/>
-
-                        <TextView
-                            android:id="@+id/tvProductDescription"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:paddingStart="20dp"
-                            android:paddingEnd="20dp"
-                            android:paddingBottom="20dp"
-                            android:fontFamily="@font/montserrat"
-                            android:textColor="@color/black"
-                            android:text="@string/lorem_ipsum_dolor_sit_amet_consectetur_adipiscing_elit_sed_do_eiusmod_tempor_incididunt_ut_labore_et_dolore_magna_aliqua_ut_enim_ad_minim_veniam_quis_nostrud_exercitation_ullamco_laboris_nisi_ut_aliquip_ex_ea_commodo_consequat"/>
-
-                    </LinearLayout>
-
-                </androidx.cardview.widget.CardView>
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                app:layout_constraintTop_toBottomOf="@id/llProductDescription"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent">
-
-                <androidx.cardview.widget.CardView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="2dp"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginEnd="20dp"
-                    android:layout_marginBottom="10dp"
-                    app:cardElevation="5dp"
-                    app:cardCornerRadius="20dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:orientation="vertical">
-
-                        <TextView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:fontFamily="@font/montserrat_bold"
-                            android:paddingTop="10dp"
-                            android:paddingStart="20dp"
-                            android:layout_marginBottom="5dp"
-                            android:text="@string/mode_of_payment"
-                            android:textColor="@color/black"/>
-
-                        <TextView
-                            android:id="@+id/tvModeOfPayment"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:paddingStart="20dp"
-                            android:paddingEnd="20dp"
-                            android:paddingBottom="10dp"
-                            android:fontFamily="@font/montserrat"
-                            android:textColor="@color/black"
-                            android:text="@string/cash_on_delivery"/>
-
-                    </LinearLayout>
-
-                </androidx.cardview.widget.CardView>
-
-            </LinearLayout>
+                android:layout_weight="0"
+                android:layout_marginEnd="10dp"
+                android:fontFamily="@font/montserrat_bold"
+                android:layout_marginStart="5dp"
+                android:text="Price"
+                android:textSize="20sp"
+                android:textColor="@color/eleven_green" />
 
         </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/montserrat_semibold"
+                android:paddingStart="25dp"
+                android:paddingEnd="20dp"
+                android:paddingBottom="10dp"
+                android:textSize="16sp"
+                android:text="Category"/>
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="365dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginBottom="10dp"
+                app:cardCornerRadius="15dp"
+                app:cardElevation="5dp">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <com.google.android.material.tabs.TabLayout
+                        android:id="@+id/tlTitles"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:tabIndicatorColor="@color/eleven_green"
+                        app:tabSelectedTextColor="@color/eleven_green"
+                        app:tabTextColor="@android:color/darker_gray"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent">
+
+                        <com.google.android.material.tabs.TabItem
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Description"/>
+
+                        <com.google.android.material.tabs.TabItem
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Ingredients"/>
+
+                    </com.google.android.material.tabs.TabLayout>
+
+                    <androidx.viewpager2.widget.ViewPager2
+                        android:id="@+id/vpProductDescription"
+                        android:layout_width="match_parent"
+                        android:layout_height="150dp"
+                        app:layout_constraintTop_toBottomOf="@id/tlTitles"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"/>
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </androidx.cardview.widget.CardView>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="end"
+                    android:orientation="horizontal"
+                    android:paddingTop="10dp"
+                    android:paddingEnd="20dp"
+                    android:paddingBottom="5dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginEnd="10dp"
+                        android:fontFamily="@font/montserrat_bold"
+                        android:text="@string/quantity"
+                        android:textColor="@color/black" />
+
+                    <ImageButton
+                        android:id="@+id/button_decrease"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_marginEnd="10dp"
+                        android:background="@drawable/circler"
+                        android:contentDescription="@string/minus"
+                        android:src="@drawable/ic_minus" />
+
+                    <TextView
+                        android:id="@+id/tvQuantity"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_marginEnd="10dp"
+                        android:background="@drawable/round_border"
+                        android:fontFamily="@font/montserrat_semibold"
+                        android:gravity="center"
+                        android:text="@string/_1"
+                        android:textColor="@color/eleven_green" />
+
+                    <ImageButton
+                        android:id="@+id/button_increase"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:background="@drawable/circler"
+                        android:contentDescription="@string/plus"
+                        android:src="@drawable/ic_add" />
+
+                </LinearLayout>
+
+            </LinearLayout>
 
     </ScrollView>
 
@@ -280,7 +225,8 @@
         android:id="@+id/tbBottomButtons"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/white"
+        android:layout_margin="20dp"
+        android:background="@drawable/circler"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
@@ -292,55 +238,6 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingEnd="15dp"
-                android:paddingTop="10dp"
-                android:paddingBottom="5dp"
-                android:gravity="end">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginEnd="10dp"
-                    android:fontFamily="@font/montserrat_bold"
-                    android:text="@string/quantity"
-                    android:textColor="@color/black"/>
-
-                <ImageButton
-                    android:id="@+id/button_decrease"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:layout_marginEnd="10dp"
-                    android:background="@drawable/circler"
-                    android:contentDescription="@string/minus"
-                    android:src="@drawable/ic_minus"/>
-
-                <TextView
-                    android:id="@+id/tvQuantity"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:gravity="center"
-                    android:layout_marginEnd="10dp"
-                    android:background="@drawable/round_border"
-                    android:fontFamily="@font/montserrat_semibold"
-                    android:text="@string/_1"
-                    android:textColor="@color/superduperdark_green" />
-
-                <ImageButton
-                    android:id="@+id/button_increase"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:contentDescription="@string/plus"
-                    android:background="@drawable/circler"
-                    android:src="@drawable/ic_add"/>
-
-            </LinearLayout>
-
-            <LinearLayout
-                style="?android:attr/buttonBarStyle"
-                android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:paddingTop="5dp"
                 android:paddingEnd="15dp"
@@ -348,27 +245,27 @@
                 android:paddingBottom="5dp"
                 android:orientation="horizontal">
 
-                <Button
-                    android:id="@+id/AddToCart"
+                <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:layout_marginEnd="5dp"
-                    android:background="@drawable/custom_addtocart"
-                    android:text="Add to Cart"
+                    android:textColor="@color/two_green"
                     android:fontFamily="@font/montserrat_semibold"
-                    android:textColor="@color/superduperdark_green" />
+                    android:textSize="14sp"
+                    android:text="Total Price"/>
 
                 <Button
-                    android:id="@+id/OrderBtn"
+                    android:id="@+id/btnAddToCart"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginStart="5dp"
-                    android:background="@drawable/custom_ordernow"
-                    android:text="@string/order_now"
+                    android:layout_weight="0"
+                    android:drawablePadding="10dp"
+                    android:drawableStart="@drawable/ic_addtocart"
+                    android:background="@drawable/custom_addtocart"
+                    android:text="@string/add_to_cart"
+                    android:textAllCaps="false"
                     android:fontFamily="@font/montserrat_semibold"
-                    android:textColor="@color/white"/>
+                    android:textColor="@color/eleven_green"/>
 
             </LinearLayout>
 

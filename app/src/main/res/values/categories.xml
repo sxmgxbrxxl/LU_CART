@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="product_categories">
+        <item>Foods</item>
+        <item>Clothes</item>
+        <item>Accessories</item>
+        <item>Electronics</item>
+    </string-array>
+</resources>

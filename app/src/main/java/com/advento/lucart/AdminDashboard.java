@@ -11,10 +11,14 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.advento.lucart.databinding.ActivityAdminDashboardBinding;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 public class AdminDashboard extends AppCompatActivity {
 
     private ActivityAdminDashboardBinding binding;
+    private FirebaseAuth auth;
+    private static final String ADMIN1_UID = "JlmXtJLguLOSoe7HCJ3JOXBVnJ52";
+    private static final String ADMIN2_UID = "kVfHiX6EI5bnRYAawNwS3Dw4Bf72";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +34,20 @@ public class AdminDashboard extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        auth = FirebaseAuth.getInstance();
+
+        FirebaseUser currentUser = auth.getCurrentUser();
+
+        if (currentUser != null) {
+            if (currentUser.getUid().equals(ADMIN1_UID)) {
+                binding.tvWelcome.setText("Welcome, Mr. Tubelliza!");
+            } else if (currentUser.getUid().equals(ADMIN2_UID)) {
+                binding.tvWelcome.setText("Welcome, Mr. Advento!");
+            } else {
+                binding.tvWelcome.setText("Welcome, Administrator!");
+            }
+        }
 
         binding.btnPendingProducts.setOnClickListener(v -> {
             startActivity(new Intent(AdminDashboard.this, PendingProductsActivity.class));

@@ -40,52 +40,43 @@
 
     </androidx.appcompat.widget.Toolbar>
 
-    <ImageView
-        android:id="@+id/ivDisplayPhoto"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
-        android:layout_marginTop="20dp"
-        android:scaleType="centerCrop"
-        android:src="@drawable/ic_placeholder"
+    <FrameLayout
+        android:id="@+id/PhotoLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/toolbar" />
+        app:layout_constraintTop_toBottomOf="@id/toolbar">
 
-    <LinearLayout
-        android:id="@+id/photoControl"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:orientation="horizontal"
-        app:layout_constraintTop_toBottomOf="@id/ivDisplayPhoto"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        <ImageView
+            android:id="@+id/ivDisplayPhoto"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_marginTop="20dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_photo_placeholder"/>
 
-        <com.google.android.material.imageview.ShapeableImageView
-            android:id="@+id/ivChoosePhoto"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_margin="10dp"
-            android:src="@drawable/ic_choose_photo" />
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fabPhoto"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:foreground="@drawable/ic_placeholder"
+            android:layout_gravity="bottom|end"/>
 
-        <com.google.android.material.imageview.ShapeableImageView
-            android:id="@+id/ivRemovePhoto"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_margin="10dp"
-            android:src="@drawable/ic_remove_photo" />
-    </LinearLayout>
+    </FrameLayout>
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cvPersonalDetails"
         android:layout_width="325dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
         app:cardCornerRadius="25dp"
         app:cardElevation="5dp"
         app:contentPadding="10dp"
         app:cardUseCompatPadding="true"
-        app:layout_constraintTop_toBottomOf="@id/photoControl"
+        app:layout_constraintTop_toBottomOf="@id/PhotoLayout"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
@@ -103,7 +94,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/montserrat_bold"
                     android:text="Personal Details"
-                    android:textColor="@color/main_green"
+                    android:textColor="@color/six_green"
                     android:textSize="20sp" />
 
                 <LinearLayout
@@ -253,7 +244,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/montserrat_bold"
                     android:text="Other Details"
-                    android:textColor="@color/main_green"
+                    android:textColor="@color/six_green"
                     android:textSize="20sp" />
 
                 <LinearLayout

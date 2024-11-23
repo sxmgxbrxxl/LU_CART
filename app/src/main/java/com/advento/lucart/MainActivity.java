@@ -67,14 +67,12 @@ public class MainActivity extends AppCompatActivity {
 
         VideoView videoView = findViewById(R.id.vvAnimation);
 
-        // Set video URI (place your video in res/raw folder and reference it)
         Uri videoUri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.raw_anim);
         videoView.setVideoURI(videoUri);
 
-        // Loop the video
         videoView.setOnPreparedListener(mp -> {
-            mp.setLooping(true); // Set looping
-            videoView.start(); // Start the video
+            mp.setLooping(true);
+            videoView.start();
         });
 
         initializeFirebaseAndFacebook();

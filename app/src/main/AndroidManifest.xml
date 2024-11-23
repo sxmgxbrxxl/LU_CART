@@ -30,6 +30,18 @@
         android:theme="@style/Theme.LUCART"
         tools:targetApi="29">
         <activity
+            android:name=".BusinessHome"
+            android:exported="false" />
+        <activity
+            android:name=".CreateBusinessAccount"
+            android:exported="false" />
+        <activity
+            android:name=".Roles"
+            android:exported="false" />
+        <activity
+            android:name=".ForgotPassword"
+            android:exported="false" />
+        <activity
             android:name=".MyProductOverview"
             android:exported="false" />
         <activity
@@ -71,7 +83,7 @@
             android:name=".EmailVerification"
             android:exported="false" />
         <activity
-            android:name=".CreateAccountEmail"
+            android:name=".CreatePersonalAccount"
             android:exported="false" />
         <activity
             android:name=".EmailSignUp"

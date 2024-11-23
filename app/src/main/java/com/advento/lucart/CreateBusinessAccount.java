@@ -1,38 +1,38 @@
 package com.advento.lucart;
 
-import android.Manifest;
-import android.content.DialogInterface;
+import android.app.Dialog;
 import android.content.Intent;
-import android.graphics.Bitmap;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.ViewGroup;
+import android.view.Window;
+import android.widget.TextView;
 import android.widget.Toast;
-import android.content.pm.PackageManager;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.advento.lucart.databinding.ActivityCreateAccountEmailBinding;
+import com.advento.lucart.databinding.ActivityCreateBusinessAccountBinding;
+import com.advento.lucart.models.Business;
 import com.advento.lucart.models.User;
 import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.storage.UploadTask;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -42,9 +42,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-public class CreateAccountEmail extends AppCompatActivity {
+public class CreateBusinessAccount extends AppCompatActivity {
 
-    private ActivityCreateAccountEmailBinding binding;
+    ActivityCreateBusinessAccountBinding binding;
     private FirebaseAuth mAuth;
     private FirebaseDatabase db;
     private DatabaseReference reference;
@@ -58,7 +58,7 @@ public class CreateAccountEmail extends AppCompatActivity {
 
         EdgeToEdge.enable(this);
 
-        binding = ActivityCreateAccountEmailBinding.inflate(getLayoutInflater());
+        binding = ActivityCreateBusinessAccountBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
@@ -69,26 +69,22 @@ public class CreateAccountEmail extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
 
-        binding.btnSave.setOnClickListener(v -> saveUserInfo());
-        binding.ivTakePhoto.setOnClickListener(v -> openCamera());
-        binding.ivChoosePhoto.setOnClickListener(v -> openGallery());
-        binding.ivRemovePhoto.setOnClickListener(v -> removePhoto());
+        binding.fabPhoto.setOnClickListener(v -> showDialog());
+        binding.btnSave.setOnClickListener(v -> saveBusinessAccount());
+
+        setSupportActionBar(binding.toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+
     }
 
-    // Add this method in your class
-    private void uploadPhotoToFirebase(Uri photoUri, String userId, OnSuccessListener<Uri> onSuccessListener) {
-        StorageReference storageRef = FirebaseStorage.getInstance().getReference();
-        StorageReference photoRef = storageRef.child("profile_photos/" + userId + ".jpg");
-
-        photoRef.putFile(photoUri)
-                .addOnSuccessListener(taskSnapshot -> photoRef.getDownloadUrl().addOnSuccessListener(onSuccessListener))
-                .addOnFailureListener(e -> {
-                    Log.e("FirebaseStorage", "Photo upload failed", e);
-                    showToast("Photo upload failed");
-                });
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
     }
 
-    private void saveUserInfo() {
+    private void saveBusinessAccount() {
         if (mAuth.getCurrentUser() == null) {
             showToast("User not authenticated");
             return;
@@ -97,12 +93,9 @@ public class CreateAccountEmail extends AppCompatActivity {
         String userId = mAuth.getCurrentUser().getUid();
         String email = getIntent().getStringExtra("EMAIL");
         String password = getIntent().getStringExtra("PASSWORD");
-        String firstName = binding.etFirstName.getText().toString().trim();
-        String lastName = binding.etLastName.getText().toString().trim();
-        String birthday = binding.etBirthday.getText().toString().trim();
-        String phoneNumber = binding.etPhoneNumber.getText().toString().trim();
+        String businessName = binding.etBusinessName.getText().toString().trim();
 
-        if (TextUtils.isEmpty(firstName) || TextUtils.isEmpty(lastName)) {
+        if (TextUtils.isEmpty(businessName)) {
             showToast("Please fill in all fields.");
             return;
         }
@@ -112,24 +105,71 @@ public class CreateAccountEmail extends AppCompatActivity {
             return;
         }
 
-        // Upload photo to Firebase Storage and get the URL
         uploadPhotoToFirebase(photoUri, userId, downloadUrl -> {
             String photoUrl = downloadUrl.toString();
-            User user = new User(firstName, lastName, email, password, birthday, phoneNumber, photoUrl);
+            Business business = new Business(businessName, email, password, photoUrl);
 
-            db = FirebaseDatabase.getInstance("https://lu-cart-firebase-default-rtdb.asia-southeast1.firebasedatabase.app");
-            reference = db.getReference("users");
+            FirebaseFirestore firestore = FirebaseFirestore.getInstance();
 
-            reference.child(userId).setValue(user).addOnCompleteListener(task -> {
-                if (task.isSuccessful()) {
-                    showToast("User information saved successfully");
-                    startActivity(new Intent(CreateAccountEmail.this, Home.class));
-                } else {
-                    Log.e("SaveUserInfo", "Failed to save user information: " + task.getException());
-                    showToast("Failed to save user information");
-                }
-            });
+            firestore.collection("business")
+                    .document(userId)
+                    .set(business)
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            showToast("Business information saved successfully");
+                            startActivity(new Intent(CreateBusinessAccount.this, BusinessHome.class));
+                        } else {
+                            Log.e("BusinessUserInfo", "Failed to save business information: " + task.getException());
+                            showToast("Failed to save business information");
+                        }
+                    });
         });
+    }
+
+
+    private void uploadPhotoToFirebase(Uri photoUri, String userId, OnSuccessListener<Uri> onSuccessListener) {
+        StorageReference storageRef = FirebaseStorage.getInstance().getReference();
+        StorageReference photoRef = storageRef.child("business_profile_photos/" + userId + ".jpg");
+
+        photoRef.putFile(photoUri)
+                .addOnSuccessListener(taskSnapshot -> photoRef.getDownloadUrl().addOnSuccessListener(onSuccessListener))
+                .addOnFailureListener(e -> {
+                    Log.e("FirebaseStorage", "Photo upload failed", e);
+                    showToast("Photo upload failed");
+                });
+    }
+
+    private void showDialog() {
+        Dialog dialog = new Dialog(this);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(R.layout.dialog_photo);
+
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setWindowAnimations(R.style.DialogAnimation);
+        }
+
+        TextView takePhoto = dialog.findViewById(R.id.tvTakePhoto);
+        TextView choosePhoto = dialog.findViewById(R.id.tvChoosePhoto);
+        TextView removePhoto = dialog.findViewById(R.id.tvRemovePhoto);
+
+        takePhoto.setOnClickListener(v -> {
+            openCamera();
+            dialog.dismiss();
+        });
+        choosePhoto.setOnClickListener(v -> {
+            openImagePicker();
+            dialog.dismiss();
+        });
+        removePhoto.setOnClickListener(v -> {
+            removePhoto();
+            dialog.dismiss();
+        });
+
+        dialog.show();
+        dialog.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        dialog.getWindow().getAttributes().windowAnimations = R.style.DialogAnimation;
+        dialog.getWindow().setGravity(Gravity.BOTTOM);
     }
 
     private void openCamera() {
@@ -160,16 +200,17 @@ public class CreateAccountEmail extends AppCompatActivity {
         }
     }
 
-    private void openGallery() {
-        Intent galleryIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-        startActivityForResult(galleryIntent, GALLERY_REQUEST_CODE);
+    private void openImagePicker() {
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("image/*");
+        startActivityForResult(intent, GALLERY_REQUEST_CODE);
     }
 
     private void removePhoto() {
         Glide.with(this)
-                .load(R.drawable.ic_placeholder) // Load the default image
-                .into(binding.circularImageView);
-        photoUri = null; // Clear the photo URI
+                .load(R.drawable.ic_photo_placeholder)
+                .into(binding.ivDisplayPhoto);
+        photoUri = null;
         showToast("Photo removed");
     }
 
@@ -184,7 +225,7 @@ public class CreateAccountEmail extends AppCompatActivity {
 
         if (requestCode == GALLERY_REQUEST_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                openGallery();
+                openImagePicker();
             } else {
                 showToast("Gallery permission denied");
             }
@@ -207,7 +248,7 @@ public class CreateAccountEmail extends AppCompatActivity {
                 Glide.with(this)
                         .load(photoUri)
                         .circleCrop() // This applies the circular crop transformation
-                        .into(binding.circularImageView);
+                        .into(binding.ivDisplayPhoto);
             } else if (requestCode == GALLERY_REQUEST_CODE && data != null) {
                 Uri selectedImageUri = data.getData();
                 photoUri = selectedImageUri;
@@ -215,21 +256,9 @@ public class CreateAccountEmail extends AppCompatActivity {
                 Glide.with(this)
                         .load(selectedImageUri)
                         .circleCrop() // This applies the circular crop transformation
-                        .into(binding.circularImageView);
+                        .into(binding.ivDisplayPhoto);
             }
         }
-    }
-
-    @Override
-    public void onBackPressed() {
-        new AlertDialog.Builder(this)
-                .setCancelable(false)
-                .setTitle("Exit?")
-                .setMessage("Are you sure you want to go back? Your progress will be lost.")
-                .setPositiveButton("Yes", (dialog, which) -> super.onBackPressed())
-                .setNegativeButton("No", (dialog, which) -> dialog.dismiss())
-                .create()
-                .show();
     }
 
     private void showToast(String message) {

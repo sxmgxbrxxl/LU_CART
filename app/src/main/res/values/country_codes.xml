@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="select_country">Select Country</string>
+    <string-array name="country_codes">
+        <item>+63 (Philippines)</item>
+        <item>+1 (USA)</item>
+        <item>+91 (India)</item>
+    </string-array>
+</resources>
