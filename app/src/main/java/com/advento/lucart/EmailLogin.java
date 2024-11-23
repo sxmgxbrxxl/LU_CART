@@ -96,7 +96,12 @@ public class EmailLogin extends AppCompatActivity {
                             FirebaseUser user = auth.getCurrentUser();
                             if (user != null) {
                                 String userUID = user.getUid();
-                                checkAccountType(userUID);
+                                if (userUID.equals( ADMIN1_UID ) || userUID.equals( ADMIN2_UID)) {
+                                    startActivity(new Intent(EmailLogin.this, AdminDashboard.class));
+                                    return;
+                                } else {
+                                    checkAccountType(userUID);
+                                }
                             }
                         } else {
                             Toast.makeText(EmailLogin.this, "Authentication failed.", Toast.LENGTH_SHORT).show();
@@ -115,7 +120,6 @@ public class EmailLogin extends AppCompatActivity {
                         db.collection("users").document(userUID).get()
                                 .addOnSuccessListener(userSnapshot -> {
                                     if (userSnapshot.exists()) {
-                                        // User account
                                         Toast.makeText(this, "Welcome, User Account!", Toast.LENGTH_SHORT).show();
                                         startActivity(new Intent(EmailLogin.this, Home.class));
                                     } else {
