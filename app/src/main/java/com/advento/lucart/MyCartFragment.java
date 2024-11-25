@@ -1,9 +1,11 @@
 package com.advento.lucart;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -22,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-public class MyCartFragment extends Fragment implements CartAdapter.CartItemClickListener {
+public class MyCartFragment extends Fragment implements CartAdapter.CartItemClickListener   {
     private RecyclerView recyclerView;
     private CartAdapter adapter;
     private List<CartItem> cartItems;
@@ -67,6 +69,18 @@ public class MyCartFragment extends Fragment implements CartAdapter.CartItemClic
 
         //Edit button condition
         showEdit();
+
+        Button btnCheckout = view.findViewById(R.id.btnCheckOut);
+        btnCheckout.setOnClickListener(v -> {
+            if (cartItems.isEmpty()) {
+                Toast.makeText(getContext(), "Your cart is empty!", Toast.LENGTH_SHORT).show();
+            } else {
+                Intent intent = new Intent(getContext(), activity_checkout.class);
+                intent.putExtra("cartItems", new ArrayList<>(cartItems));  // Pass cart items
+                intent.putExtra("totalPrice", totalPrice);  // Pass total price
+                startActivity(intent);
+            }
+        });
 
         // Toggle edit mode when ivEdit is clicked
         ivEdit.setOnClickListener(v -> {

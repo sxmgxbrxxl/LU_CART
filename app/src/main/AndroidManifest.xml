@@ -30,6 +30,9 @@
         android:theme="@style/Theme.LUCART"
         tools:targetApi="29">
         <activity
+            android:name=".activity_checkout"
+            android:exported="false" />
+        <activity
             android:name=".BusinessHome"
             android:exported="false" />
         <activity

@@ -245,15 +245,6 @@
                 android:paddingBottom="5dp"
                 android:orientation="horizontal">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:textColor="@color/two_green"
-                    android:fontFamily="@font/montserrat_semibold"
-                    android:textSize="14sp"
-                    android:text="Total Price"/>
-
                 <Button
                     android:id="@+id/btnAddToCart"
                     android:layout_width="wrap_content"
@@ -266,6 +257,16 @@
                     android:textAllCaps="false"
                     android:fontFamily="@font/montserrat_semibold"
                     android:textColor="@color/eleven_green"/>
+
+                <TextView
+                    android:id="@+id/totalP"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Total Price:"
+                    android:textColor="@color/black"
+                    android:fontFamily="@font/montserrat_semibold"
+                    android:textSize="15sp"
+                    android:layout_marginStart="20dp"/>
 
             </LinearLayout>
 

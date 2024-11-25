@@ -19,7 +19,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ProductOverview extends AppCompatActivity {
+public class    ProductOverview extends AppCompatActivity {
 
     private ActivityProductOverviewBinding binding;
     private FirebaseFirestore db;

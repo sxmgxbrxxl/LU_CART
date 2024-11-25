@@ -1,6 +1,8 @@
 package com.advento.lucart;
 
-public class CartItem {
+import java.io.Serializable;
+
+public class CartItem implements Serializable {
     private String productId;
     private String name;
     private double price;
@@ -74,6 +76,4 @@ public class CartItem {
     public double getTotalPrice() {
         return price * quantity;
     }
-
-
 }
