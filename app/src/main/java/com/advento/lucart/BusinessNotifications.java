@@ -17,8 +17,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
-import com.advento.lucart.databinding.ActivityNotificationsBinding;
-import com.google.firebase.Timestamp;
+import com.advento.lucart.databinding.ActivityBusinessNotificationsBinding;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -26,12 +25,11 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
-public class Notifications extends AppCompatActivity {
+public class BusinessNotifications extends AppCompatActivity {
 
-    private ActivityNotificationsBinding binding;
+    private ActivityBusinessNotificationsBinding binding;
     private NotificationAdapter notificationAdapter;
     private final List<Notification> notificationList = new ArrayList<>();
     private FirebaseFirestore db;
@@ -43,7 +41,7 @@ public class Notifications extends AppCompatActivity {
 
         EdgeToEdge.enable(this);
 
-        binding = ActivityNotificationsBinding.inflate(getLayoutInflater());
+        binding = ActivityBusinessNotificationsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
@@ -107,7 +105,7 @@ public class Notifications extends AppCompatActivity {
 
     private void loadNotifications() {
         String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        CollectionReference notificationsRef = db.collection("users")
+        CollectionReference notificationsRef = db.collection("business")
                 .document(userId)
                 .collection("notifications");
 

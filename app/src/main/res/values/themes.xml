@@ -1,11 +1,13 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Base.Theme.LUCART" parent="Theme.AppCompat.Light.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
-    </style>
+    <style name="Base.Theme.LUCART" parent="Theme.MaterialComponents.Light.NoActionBar">
 
-    <style name="Theme.LUCART" parent="Base.Theme.LUCART" />
+        <item name="android:statusBarColor">@color/six_green</item> <!-- Custom status bar color -->
+        <item name="android:windowLightStatusBar">true</item> <!-- Dark icons for light-colored status bar -->
+        <item name="android:navigationBarColor">@color/two_green</item> <!-- Optional: Customize navigation bar -->
+        <item name="android:fitsSystemWindows">true</item> <!-- Disable edge-to-edge by respecting system windows -->
+
+    </style>
     
     <style name="DialogAnimation">
         

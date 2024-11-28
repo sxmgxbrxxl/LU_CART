@@ -1,5 +1,6 @@
 package com.advento.lucart;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -26,6 +27,10 @@ public class BusinessHomeFragment extends Fragment {
         binding = FragmentBusinessHomeBinding.inflate(inflater, container, false);
 
         db = FirebaseFirestore.getInstance();
+
+        binding.ivBell.setOnClickListener(v -> {
+            startActivity(new Intent(getContext(), BusinessNotifications.class));
+        });
 
         loadGreetings();
 

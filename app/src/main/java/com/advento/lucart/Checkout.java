@@ -2,69 +2,83 @@ package com.advento.lucart;
 
 import android.os.Bundle;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
+import com.advento.lucart.databinding.ActivityCheckoutBinding;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class activity_checkout extends AppCompatActivity {
+public class Checkout extends AppCompatActivity {
+
+    private ActivityCheckoutBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_checkout);
 
-        // Initialize views
-        RecyclerView rvCheckoutItems = findViewById(R.id.rvCheckoutItems);
-        EditText etLocation = findViewById(R.id.etLocation);
-        Spinner spPaymentMethod = findViewById(R.id.spinnerPaymentMethod);
-        TextView tvTotalPrice = findViewById(R.id.tvTotalPrice);
-        Button btnPlaceOrder = findViewById(R.id.btnPlaceOrder);
+        EdgeToEdge.enable(this);
 
-        // Retrieve cart items and total price from the Intent
+        binding = ActivityCheckoutBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
+
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(0, systemBars.top, 0, 0);
+            return insets;
+        });
+
         List<CartItem> cartItems = getCartItemsFromIntent();
         double totalPrice = getIntent().getDoubleExtra("totalPrice", 0.0);
 
-        // Set up RecyclerView
-        rvCheckoutItems.setLayoutManager(new LinearLayoutManager(this));
+        binding.rvCheckoutItems.setLayoutManager(new LinearLayoutManager(this));
         CheckoutAdapter adapter = new CheckoutAdapter(this, cartItems);
-        rvCheckoutItems.setAdapter(adapter);
+        binding.rvCheckoutItems.setAdapter(adapter);
 
-        // Display total price
-        tvTotalPrice.setText(String.format("Total: PHP %.2f", totalPrice));
+        binding.tvTotalPrice.setText(String.format("Total: PHP %.2f", totalPrice));
 
-        // Set up spinner for payment methods
         ArrayAdapter<String> paymentAdapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_spinner_item,
+                R.layout.custom_spinner_item,
                 new String[]{"Cash on Delivery", "Credit Card", "E-Wallet"});
         paymentAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spPaymentMethod.setAdapter(paymentAdapter);
+        binding.spinnerPaymentMethod.setAdapter(paymentAdapter);
 
-        // Handle Place Order button click
-        btnPlaceOrder.setOnClickListener(v -> {
-            String location = etLocation.getText().toString().trim();
-            String paymentMethod = spPaymentMethod.getSelectedItem().toString();
+        ArrayAdapter<String> landmarkAdapter = new ArrayAdapter<>(this,
+                R.layout.custom_spinner_item,
+                new String[]{"New Building", "Oreta", "Gym", "Multipurpose Gym", "Canteen", "LU Rooms"});
+        paymentAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        binding.spinnerLandmark.setAdapter(landmarkAdapter);
+
+        binding.btnPlaceOrder.setOnClickListener(v -> {
+            String location = binding.spinnerLandmark.getSelectedItem().toString() + ", " + binding.etLocation.getText().toString().trim();
+            String paymentMethod = binding.spinnerPaymentMethod.getSelectedItem().toString();
 
             if (location.isEmpty()) {
                 Toast.makeText(this, "Please enter a delivery location", Toast.LENGTH_SHORT).show();
             } else {
-                // Complete the order
                 placeOrder(cartItems, totalPrice, location, paymentMethod);
             }
         });
+
+        setSupportActionBar(binding.tbCheckOut);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
     }
 
     private List<CartItem> getCartItemsFromIntent() {
@@ -72,7 +86,6 @@ public class activity_checkout extends AppCompatActivity {
         Serializable extraCartItems = getIntent().getSerializableExtra("cartItems");
         if (extraCartItems instanceof ArrayList<?>) {
             try {
-                // Safely cast to List<CartItem>
                 cartItems = (List<CartItem>) extraCartItems;
             } catch (ClassCastException e) {
                 Toast.makeText(this, "Failed to load cart items", Toast.LENGTH_SHORT).show();
@@ -82,28 +95,18 @@ public class activity_checkout extends AppCompatActivity {
     }
 
     private void placeOrder(List<CartItem> cartItems, double totalPrice, String location, String paymentMethod) {
-        // Get the current user ID (assuming you have Firebase Authentication set up)
         String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
-        // Create a new transaction object with the status set to "To Ship"
         Transaction transaction = new Transaction(cartItems, userId, "To Ship", location, paymentMethod);
 
-        // Add the transaction to Firestore in the "transactions" collection
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("transactions")
                 .add(transaction)
                 .addOnSuccessListener(documentReference -> {
-                    // Show success message
                     Toast.makeText(this, "Order placed successfully!", Toast.LENGTH_SHORT).show();
-
-                    // Optionally, go to another screen or update the UI
-                    // You can navigate to the user's transaction page or refresh the current page
                 })
                 .addOnFailureListener(e -> {
                     Toast.makeText(this, "Failed to place the order. Please try again.", Toast.LENGTH_SHORT).show();
                 });
     }
-
-
-
 }

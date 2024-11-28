@@ -56,7 +56,7 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.Favo
 
     class FavoriteViewHolder extends RecyclerView.ViewHolder {
         private ImageView imageView;
-        private TextView textName, textPrice, textDescription;
+        private TextView textName, textPrice;
         private ImageView deleteButton;
         private Button overView;
 
@@ -80,6 +80,7 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.Favo
                 intent.putExtra("productId", item.getProductId());
                 intent.putExtra("productImage", item.getProductImage());
                 intent.putExtra("productName", item.getProductName());
+                intent.putExtra("productCategory", item.getProductCategory());
                 intent.putExtra("productPrice", item.getProductPrice());
                 intent.putExtra("productDescription", item.getProductDescription());
                 context.startActivity(intent);

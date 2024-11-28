@@ -75,7 +75,7 @@ public class MyCartFragment extends Fragment implements CartAdapter.CartItemClic
             if (cartItems.isEmpty()) {
                 Toast.makeText(getContext(), "Your cart is empty!", Toast.LENGTH_SHORT).show();
             } else {
-                Intent intent = new Intent(getContext(), activity_checkout.class);
+                Intent intent = new Intent(getContext(), Checkout.class);
                 intent.putExtra("cartItems", new ArrayList<>(cartItems));  // Pass cart items
                 intent.putExtra("totalPrice", totalPrice);  // Pass total price
                 startActivity(intent);

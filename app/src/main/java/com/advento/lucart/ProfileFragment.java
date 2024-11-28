@@ -80,7 +80,7 @@ public class ProfileFragment extends Fragment {
             startActivity(new Intent(getActivity(), MyProfile.class));
         });
 
-        binding.btnFavorites.setOnClickListener(v -> {
+        binding.btnChangeAccount.setOnClickListener(v -> {
             startActivity(new Intent(getActivity(), Favorites.class));
         });
 

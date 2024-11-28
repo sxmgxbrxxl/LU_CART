@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg_lucart"
+    android:background="@drawable/bg_try"
     app:layoutDescription="@xml/activity_home_scene"
     tools:context=".Home">
 
@@ -22,17 +22,16 @@
         android:id="@+id/bnvBusiness"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="30dp"
         android:paddingTop="10dp"
         android:paddingBottom="10dp"
-        android:background="@drawable/circler"
-        app:itemIconTint="@color/white"
-        app:itemTextColor="@color/white"
-        app:itemTextAppearanceActive="@font/montserrat"
-        app:itemTextAppearanceInactive="@font/montserrat"
+        android:background="@color/six_green"
+        app:itemIconTint="@color/two_green"
+        app:itemTextColor="@color/two_green"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:menu="@menu/bottom_nav_menu_business" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:menu="@menu/bottom_nav_menu_business"
+        app:itemTextAppearanceActive="@font/montserrat"
+        app:itemTextAppearanceInactive="@font/montserrat" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

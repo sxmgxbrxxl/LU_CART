@@ -63,7 +63,7 @@ public class MyProductsFragment extends Fragment {
             intent.putExtra("productName", product.getProductName());
             intent.putExtra("productPrice", product.getProductPrice());
             intent.putExtra("productDescription", product.getProductDescription());
-            intent.putExtra("productCategory", product.getCategory());
+            intent.putExtra("productCategory", product.getProductCategory());
             intent.putExtra("productImage", product.getProductImage());
             startActivity(intent);
         });
@@ -104,7 +104,7 @@ public class MyProductsFragment extends Fragment {
             String productPrice = editTextProductPrice.getText().toString().trim();
             String productDescription = editTextProductDescription.getText().toString().trim();
             String stockNumber = editTextStockNumber.getText().toString().trim();
-            String category = spinnerCategory.getSelectedItem().toString();
+            String productCategory = spinnerCategory.getSelectedItem().toString();
             String status = "pending"; //Default for Admin
 
             if (productName.isEmpty() || productPrice.isEmpty() || productDescription.isEmpty() || stockNumber.isEmpty()) {
@@ -120,8 +120,8 @@ public class MyProductsFragment extends Fragment {
                 storageRef.putFile(imageUri)
                         .addOnSuccessListener(taskSnapshot -> storageRef.getDownloadUrl().addOnSuccessListener(uri -> {
                             // Create new product with image URL
-                            Product newProduct = new Product(productName, productPrice, productDescription,
-                                    uri.toString(), "", status, currentUserId, category);
+                            Product newProduct = new Product(productName,productCategory,productPrice, productDescription,
+                                    uri.toString(), "", status, currentUserId);
 
                             // Save product to Firestore
                             FirebaseFirestore db = FirebaseFirestore.getInstance();

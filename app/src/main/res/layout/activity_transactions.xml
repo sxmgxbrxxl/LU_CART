@@ -8,7 +8,7 @@
     tools:context=".Transactions">
 
     <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
+        android:id="@+id/tbTransactions"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="@android:color/transparent"
@@ -17,21 +17,21 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:title="" />
+        app:title="" >
 
-    <TextView
-        android:layout_width="272dp"
-        android:layout_height="46dp"
-        android:fontFamily="@font/montserrat_bold"
-        android:text="@string/transactions"
-        android:textAlignment="center"
-        android:textColor="@color/nine_green"
-        android:textSize="22sp"
-        app:layout_constraintBottom_toBottomOf="@+id/toolbar"
-        app:layout_constraintEnd_toEndOf="@+id/toolbar"
-        app:layout_constraintStart_toStartOf="@+id/toolbar"
-        app:layout_constraintTop_toTopOf="@+id/toolbar"
-        app:layout_constraintVertical_bias="1.0" />
+        <TextView
+            android:id="@+id/tvTransactions"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_gravity="center"
+            android:fontFamily="@font/montserrat_bold"
+            android:text="@string/transactions"
+            android:textAlignment="center"
+            android:textColor="@color/eleven_green"
+            android:textSize="20sp" />
+
+    </androidx.appcompat.widget.Toolbar>
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabLayout"
@@ -40,7 +40,7 @@
         app:tabIndicatorColor="@color/nine_green"
         app:tabSelectedTextColor="@color/nine_green"
         app:tabTextColor="@color/black"
-        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        app:layout_constraintTop_toBottomOf="@id/tbTransactions"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 

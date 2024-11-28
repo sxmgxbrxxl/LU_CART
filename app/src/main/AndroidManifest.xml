@@ -27,10 +27,31 @@
         android:requestLegacyExternalStorage="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.LUCART"
+        android:theme="@style/Base.Theme.LUCART"
         tools:targetApi="29">
         <activity
-            android:name=".activity_checkout"
+            android:name=".Others"
+            android:exported="false" />
+        <activity
+            android:name=".Accessories"
+            android:exported="false" />
+        <activity
+            android:name=".Electronics"
+            android:exported="false" />
+        <activity
+            android:name=".Clothes"
+            android:exported="false" />
+        <activity
+            android:name=".Foods"
+            android:exported="false" />
+        <activity
+            android:name=".Search"
+            android:exported="false" />
+        <activity
+            android:name=".Checkout"
+            android:exported="false" />
+        <activity
+            android:name=".BusinessNotifications"
             android:exported="false" />
         <activity
             android:name=".BusinessHome"
@@ -76,9 +97,7 @@
             android:exported="false" />
         <activity
             android:name=".Home"
-            android:exported="false"
-            android:theme="@style/CustomTheme"
-            android:windowSoftInputMode="adjustPan" />
+            android:exported="false" />
         <activity
             android:name=".EmailLogin"
             android:exported="false" />

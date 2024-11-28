@@ -40,6 +40,7 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
         // Set default text if title or message is empty or null
         holder.titleTextView.setText(title != null && !title.isEmpty() ? title : "No Title");
         holder.messageTextView.setText(message != null && !message.isEmpty() ? message : "No Message");
+        holder.timestampTextView.setText(notification.getDate() != null ? notification.getDate().toString() : "No Timestamp");
     }
 
     @Override
@@ -48,12 +49,13 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
     }
 
     static class NotificationViewHolder extends RecyclerView.ViewHolder {
-        TextView titleTextView, messageTextView;
+        TextView titleTextView, messageTextView, timestampTextView;
 
         public NotificationViewHolder(@NonNull View itemView) {
             super(itemView);
             titleTextView = itemView.findViewById(R.id.tvNotificationTitle);
             messageTextView = itemView.findViewById(R.id.tvNotificationMessage);
+            timestampTextView = itemView.findViewById(R.id.tvNotificationTimestamp);
         }
     }
 }

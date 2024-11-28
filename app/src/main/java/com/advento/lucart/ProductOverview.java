@@ -1,12 +1,13 @@
 package com.advento.lucart;
 
-import android.content.Intent;
 import android.content.res.ColorStateList;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -37,7 +38,7 @@ public class    ProductOverview extends AppCompatActivity {
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            v.setPadding(0, systemBars.top, 0, 0);
             return insets;
         });
 
@@ -45,16 +46,23 @@ public class    ProductOverview extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
 
-        setSupportActionBar(binding.toolbar);
+        setSupportActionBar(binding.tbOverview);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
+        Drawable customBackButton = ContextCompat.getDrawable(this, R.drawable.ic_custom_back_overview);
+        if (customBackButton != null) {
+            customBackButton.setTint(ContextCompat.getColor(this, R.color.two_green));
+            getSupportActionBar().setHomeAsUpIndicator(customBackButton);
+        }
+
         // Retrieve data from intent
         String productId = getIntent().getStringExtra("productId");
         String productImage = getIntent().getStringExtra("productImage");
         String productName = getIntent().getStringExtra("productName");
+        String productCategory = getIntent().getStringExtra("productCategory");
         String productPrice = getIntent().getStringExtra("productPrice");
         String productDescription = getIntent().getStringExtra("productDescription");
 
@@ -65,6 +73,7 @@ public class    ProductOverview extends AppCompatActivity {
 
         // Set data to views
         binding.tvProductName.setText(productName);
+        binding.tvCategory.setText(productCategory);
         binding.tvProductPrice.setText("₱ " + productPrice);
 
         // Setup quantity buttons
@@ -95,6 +104,7 @@ public class    ProductOverview extends AppCompatActivity {
             addToCart(
                     productId,
                     productName,
+                    productCategory,
                     price,
                     productImage,
                     quantity
@@ -103,17 +113,16 @@ public class    ProductOverview extends AppCompatActivity {
 
         checkIfFavorite(productId);
 
-        //FAB FUNCTION
         binding.ivFavorite.setOnClickListener(v -> {
             boolean isSelected = binding.ivFavorite.isSelected();
             binding.ivFavorite.setSelected(!isSelected);
 
             if (binding.ivFavorite.isSelected()) {
                 binding.ivFavorite.setImageTintList(ColorStateList.valueOf(getResources().getColor(R.color.six_green)));
-                addProductToFavorites(productId, productName, productPrice, productImage, productDescription); // Add to favorites
+                addProductToFavorites(productId, productName, productCategory, productPrice, productImage, productDescription);
             } else {
                 binding.ivFavorite.setImageTintList(ColorStateList.valueOf(getResources().getColor(R.color.white)));
-                removeProductFromFavorites(productId); // Remove from favorites
+                removeProductFromFavorites(productId);
             }
         });
     }
@@ -138,13 +147,14 @@ public class    ProductOverview extends AppCompatActivity {
                 .addOnFailureListener(e -> Toast.makeText(this, "Error checking favorite status: " + e.getMessage(), Toast.LENGTH_SHORT).show());
     }
 
-    private void addProductToFavorites(String productId, String productName, String productPrice, String productImage, String productDescription) {
+    private void addProductToFavorites(String productId, String productName, String productCategory, String productPrice, String productImage, String productDescription) {
         String userId = mAuth.getCurrentUser().getUid();
 
         // Create a map or model object for favorite product
         Map<String, Object> favoriteItems = new HashMap<>();
         favoriteItems.put("productId", productId);
         favoriteItems.put("productName", productName);
+        favoriteItems.put("productCategory", productCategory);
         favoriteItems.put("productPrice", productPrice);
         favoriteItems.put("productImage", productImage);
         favoriteItems.put("productDescription", productDescription);
@@ -173,7 +183,7 @@ public class    ProductOverview extends AppCompatActivity {
                 .addOnFailureListener(e -> Toast.makeText(ProductOverview.this, "Failed to remove from favorites: " + e.getMessage(), Toast.LENGTH_SHORT).show());
     }
 
-    private void addToCart(String productId, String name, double price, String imageUrl, int quantity) {
+    private void addToCart(String productId, String name, String productCategory, double price, String imageUrl, int quantity) {
         String userId = mAuth.getCurrentUser().getUid();
 
         // Reference to the cart items collection in Firestore
@@ -198,6 +208,7 @@ public class    ProductOverview extends AppCompatActivity {
                         CartItem cartItem = new CartItem(
                                 productId,
                                 name,
+                                productCategory,
                                 price,
                                 imageUrl,
                                 quantity,

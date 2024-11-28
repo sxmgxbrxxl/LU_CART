@@ -33,7 +33,7 @@ public class Transactions extends AppCompatActivity {
             return insets;
         });
 
-        setSupportActionBar(binding.toolbar);
+        setSupportActionBar(binding.tbTransactions);
 
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);

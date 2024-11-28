@@ -1,31 +1,31 @@
 package com.advento.lucart;
 
 public class Shop {
-    private String name;
-    private String imageUrl;
+    private String businessName;
+    private String photoUrl;
 
     public Shop() {
-        // Empty constructor required for Firestore
+        // Default constructor required for calls to DataSnapshot.getValue(Shop.class)
     }
 
-    public Shop(String name, String imageUrl) {
-        this.name = name;
-        this.imageUrl = imageUrl;
+    public Shop(String businessName, String photoUrl) {
+        this.businessName = businessName;
+        this.photoUrl = photoUrl;
     }
 
-    public String getName() {
-        return name;
+    public String getBusinessName() {
+        return businessName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setBusinessName(String businessName) {
+        this.businessName = businessName;
     }
 
-    public String getImageUrl() {
-        return imageUrl;
+    public String getPhotoUrl() {
+        return photoUrl;
     }
 
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
+    public void setPhotoUrl(String photoUrl) {
+        this.photoUrl = photoUrl;
     }
 }

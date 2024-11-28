@@ -5,6 +5,7 @@ import java.io.Serializable;
 public class CartItem implements Serializable {
     private String productId;
     private String name;
+    private String productCategory;
     private double price;
     private String imageUrl;
     private int quantity;
@@ -13,9 +14,10 @@ public class CartItem implements Serializable {
     // Empty constructor for Firebase
     public CartItem() {}
 
-    public CartItem(String productId, String name, double price, String imageUrl, int quantity, String userId) {
+    public CartItem(String productId, String name, String productCategory, double price, String imageUrl, int quantity, String userId) {
         this.productId = productId;
         this.name = name;
+        this.productCategory = productCategory;
         this.price = price;
         this.imageUrl = imageUrl;
         this.quantity = quantity;
@@ -29,6 +31,9 @@ public class CartItem implements Serializable {
 
     public String getName() {
         return name;
+    }
+    public String getProductCategory() {
+        return productCategory;
     }
 
     public double getPrice() {
@@ -54,6 +59,10 @@ public class CartItem implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public void setProductCategory(String productCategory) {
+        this.productCategory = productCategory;
     }
 
     public void setPrice(double price) {

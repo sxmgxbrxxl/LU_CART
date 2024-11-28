@@ -18,16 +18,10 @@ public class ShopAdapter extends RecyclerView.Adapter<ShopAdapter.ShopViewHolder
 
     private Context context;
     private List<Shop> shopList;
-    private ShopClickListener clickListener;
 
-    public interface ShopClickListener {
-        void onShopClick(Shop shop);
-    }
-
-    public ShopAdapter(Context context, List<Shop> shopList, ShopClickListener clickListener) {
+    public ShopAdapter(Context context, List<Shop> shopList) {
         this.context = context;
         this.shopList = shopList;
-        this.clickListener = clickListener;
     }
 
     @NonNull
@@ -40,10 +34,8 @@ public class ShopAdapter extends RecyclerView.Adapter<ShopAdapter.ShopViewHolder
     @Override
     public void onBindViewHolder(@NonNull ShopViewHolder holder, int position) {
         Shop shop = shopList.get(position);
-        holder.tvShopName.setText(shop.getName());
-        Glide.with(context).load(shop.getImageUrl()).into(holder.ivShopImage);
-
-        holder.itemView.setOnClickListener(v -> clickListener.onShopClick(shop));
+        holder.tvShopName.setText(shop.getBusinessName());
+        Glide.with(context).load(shop.getPhotoUrl()).circleCrop().into(holder.ivShopImage);
     }
 
     @Override
@@ -52,13 +44,13 @@ public class ShopAdapter extends RecyclerView.Adapter<ShopAdapter.ShopViewHolder
     }
 
     public static class ShopViewHolder extends RecyclerView.ViewHolder {
-        ImageView ivShopImage;
         TextView tvShopName;
+        ImageView ivShopImage;
 
         public ShopViewHolder(@NonNull View itemView) {
             super(itemView);
-            ivShopImage = itemView.findViewById(R.id.ivShop);
             tvShopName = itemView.findViewById(R.id.tvShop);
+            ivShopImage = itemView.findViewById(R.id.ivShop);
         }
     }
 }

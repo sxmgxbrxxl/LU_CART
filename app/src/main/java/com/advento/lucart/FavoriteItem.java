@@ -3,6 +3,7 @@ package com.advento.lucart;
 public class FavoriteItem {
     private String productId;
     private String productName;
+    private String productCategory;
     private String productPrice;
     private String productImage;
     private String productDescription;
@@ -10,9 +11,10 @@ public class FavoriteItem {
     public FavoriteItem() {
     }
 
-    public FavoriteItem(String productId, String productName, String productPrice, String productImage, String productDescription) {
+    public FavoriteItem(String productId, String productName, String productCategory, String productPrice, String productImage, String productDescription) {
         this.productId = productId;
         this.productName = productName;
+        this.productCategory = productCategory;
         this.productPrice = productPrice;
         this.productImage = productImage;
         this.productDescription = productDescription;
@@ -25,6 +27,10 @@ public class FavoriteItem {
 
     public String getProductName() {
         return productName;
+    }
+
+    public String getProductCategory() {
+        return productCategory;
     }
 
     public String getProductPrice() {
@@ -45,6 +51,10 @@ public class FavoriteItem {
 
     public void setProductName(String productName) {
         this.productName = productName;
+    }
+
+    public void setProductCategory(String productCategory) {
+        this.productCategory = productCategory;
     }
 
     public void setProductPrice(String productPrice) {

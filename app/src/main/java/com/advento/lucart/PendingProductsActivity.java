@@ -22,9 +22,12 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class PendingProductsActivity extends AppCompatActivity {
@@ -66,7 +69,7 @@ public class PendingProductsActivity extends AppCompatActivity {
             intent.putExtra("productName", product.getProductName());
             intent.putExtra("productPrice", product.getProductPrice());
             intent.putExtra("productDescription", product.getProductDescription());
-            intent.putExtra("productCategory", product.getCategory());
+            intent.putExtra("productCategory", product.getProductCategory());
             intent.putExtra("productImage", product.getProductImage());
             startActivity(intent);
         });
@@ -135,16 +138,18 @@ public class PendingProductsActivity extends AppCompatActivity {
 
 
     private void addNotificationForUser(String userId, String productName) {
-        // Create notification data
+
+        SimpleDateFormat sdf = new SimpleDateFormat("EEE MM-dd HH:mm", Locale.getDefault());
+        String formattedTimestamp = sdf.format(new Date(System.currentTimeMillis()));
+
         Map<String, Object> notificationData = new HashMap<>();
-        notificationData.put("title", "Inapprove ko na product mo lods :)"); // Set title
-        notificationData.put("message", "Your product \"" + productName + "\" has been approved."); // Set message
+        notificationData.put("title", "Product Approved");
+        notificationData.put("message", "Your product \"" + productName + "\" has been approved.");
         notificationData.put("status", "approved");
         notificationData.put("userId", userId);
-        notificationData.put("timestamp", System.currentTimeMillis());
+        notificationData.put("timestamp", formattedTimestamp);
 
-
-        firestore.collection("users")
+        firestore.collection("business")
                 .document(userId)
                 .collection("notifications")
                 .add(notificationData)
@@ -160,7 +165,7 @@ public class PendingProductsActivity extends AppCompatActivity {
 
 
     private void sendApprovalNotificationToUser(String userId, String productName) {
-        firestore.collection("users")
+        firestore.collection("business")
                 .document(userId)
                 .get()
                 .addOnSuccessListener(documentSnapshot -> {
@@ -179,7 +184,7 @@ public class PendingProductsActivity extends AppCompatActivity {
 
     private void sendApprovalNotification(String productName) {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
-                .setSmallIcon(R.drawable.ic_check) // Use your own icon here
+                .setSmallIcon(R.drawable.ic_check)
                 .setContentTitle("Product Approved")
                 .setContentText("Your product \"" + productName + "\" has been approved.")
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT);
