@@ -23,7 +23,6 @@ import java.util.List;
 
 public class Foods extends AppCompatActivity {
 
-    private ActivityFoodsBinding binding;
     private ProductAdapter productAdapter;
     private List<Product> foodProducts;
 
@@ -33,7 +32,7 @@ public class Foods extends AppCompatActivity {
 
         EdgeToEdge.enable(this);
 
-        binding = ActivityFoodsBinding.inflate(getLayoutInflater());
+        com.advento.lucart.databinding.ActivityFoodsBinding binding = ActivityFoodsBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
         // Adjust the layout for system bars

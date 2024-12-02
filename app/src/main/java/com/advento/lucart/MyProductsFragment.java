@@ -5,6 +5,7 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.InputFilter;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -112,6 +113,26 @@ public class MyProductsFragment extends Fragment {
                 return;
             }
 
+            double price;
+            try {
+                price = Double.parseDouble(productPrice);
+            } catch (NumberFormatException e) {
+                Toast.makeText(getContext(), "Invalid price", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if (price > 9999) {
+                Toast.makeText(getContext(), "Product price cannot exceed 9999", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if (imageUri != null) {
+                // Upload image and save product logic
+                // ...
+            } else {
+                Toast.makeText(getContext(), "Please select an image", Toast.LENGTH_SHORT).show();
+            }
+
             if (imageUri != null) {
                 // Upload image to Firebase Storage
                 StorageReference storageRef = FirebaseStorage.getInstance().getReference()
@@ -140,6 +161,8 @@ public class MyProductsFragment extends Fragment {
                 Toast.makeText(getContext(), "Please select an image", Toast.LENGTH_SHORT).show();
             }
         });
+
+        editTextProductPrice.setFilters(new InputFilter[] { new InputFilter.LengthFilter(5) });
 
         cancelButton.setOnClickListener(v -> dialog.dismiss());
 

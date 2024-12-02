@@ -9,20 +9,30 @@ public class CartItem implements Serializable {
     private double price;
     private String imageUrl;
     private int quantity;
+    private String stock; // Add this field to track the stock limit
     private String userId; // Buyer ID
     private String sellerId; // Seller ID
+
+    public int getStockAsInt() {
+        try {
+            return Integer.parseInt(stock);
+        } catch (NumberFormatException e) {
+            return 0; // Default to 0 if parsing fails
+        }
+    }
 
     // No-argument constructor for Firebase
     public CartItem() {}
 
     // Parameterized constructor
-    public CartItem(String productId, String name, String productCategory, double price, String imageUrl, int quantity, String userId, String sellerId) {
+    public CartItem(String productId, String name, String productCategory, double price, String imageUrl, int quantity, String stock, String userId, String sellerId) {
         this.productId = productId;
         this.name = name;
         this.productCategory = productCategory;
         this.price = price;
         this.imageUrl = imageUrl;
         this.quantity = quantity;
+        this.stock = stock; // Initialize stock
         this.userId = userId;
         this.sellerId = sellerId;
     }
@@ -50,6 +60,10 @@ public class CartItem implements Serializable {
 
     public int getQuantity() {
         return quantity;
+    }
+
+    public String getStock() {
+        return stock; // Getter for stock
     }
 
     public String getUserId() {
@@ -85,6 +99,10 @@ public class CartItem implements Serializable {
         this.quantity = quantity;
     }
 
+    public void setStock(String stock) {
+        this.stock = stock; // Setter for stock
+    }
+
     public void setUserId(String userId) {
         this.userId = userId;
     }
@@ -93,7 +111,6 @@ public class CartItem implements Serializable {
         this.sellerId = sellerId;
     }
 
-    // Optional: Calculate total price for this item
     public double getTotalPrice() {
         return price * quantity;
     }

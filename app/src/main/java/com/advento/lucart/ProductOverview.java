@@ -219,20 +219,29 @@ public class ProductOverview extends AppCompatActivity {
     private void addToCart(String productId, String name, String productCategory, double price, String imageUrl, int quantity) {
         String userId = mAuth.getCurrentUser().getUid();
 
-        // First, retrieve the sellerId of the product
-        db.collection("products") // Assuming the products collection is named "products"
+        // Retrieve product details, including stock as a String and sellerId
+        db.collection("products")
                 .document(productId)
                 .get()
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
-                        String sellerId = documentSnapshot.getString("sellerId"); // Adjust the field name if it's different in Firestore
+                        String sellerId = documentSnapshot.getString("sellerId"); // Adjust field name if needed
+                        String stock = documentSnapshot.getString("stock"); // Retrieve stock as a String
 
-                        if (sellerId == null) {
-                            Toast.makeText(this, "Seller information not found.", Toast.LENGTH_SHORT).show();
+                        if (sellerId == null || stock == null) {
+                            Toast.makeText(this, "Product or seller information not found.", Toast.LENGTH_SHORT).show();
                             return;
                         }
 
-                        // Proceed to add the item to the cart
+                        int stockValue;
+                        try {
+                            stockValue = Integer.parseInt(stock); // Convert to int for calculations
+                        } catch (NumberFormatException e) {
+                            Toast.makeText(this, "Invalid stock format.", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                        // Check if the item is already in the cart
                         db.collection("carts")
                                 .document(userId)
                                 .collection("items")
@@ -240,33 +249,49 @@ public class ProductOverview extends AppCompatActivity {
                                 .get()
                                 .addOnSuccessListener(cartSnapshot -> {
                                     if (cartSnapshot.exists()) {
-                                        int newQuantity = cartSnapshot.getLong("quantity") != null ? cartSnapshot.getLong("quantity").intValue() + quantity : quantity;
-                                        // Update existing cart item
-                                        db.collection("carts")
-                                                .document(userId)
-                                                .collection("items")
-                                                .document(productId)
-                                                .update("quantity", newQuantity)
-                                                .addOnSuccessListener(aVoid -> Toast.makeText(ProductOverview.this, "Item added to cart", Toast.LENGTH_SHORT).show())
-                                                .addOnFailureListener(e -> Toast.makeText(ProductOverview.this, "Failed to update cart", Toast.LENGTH_SHORT).show());
+                                        int currentQuantity = cartSnapshot.getLong("quantity") != null
+                                                ? cartSnapshot.getLong("quantity").intValue()
+                                                : 0;
+
+                                        // Calculate new quantity
+                                        int newQuantity = currentQuantity + quantity;
+
+                                        // Ensure the new quantity does not exceed the stock
+                                        if (newQuantity > stockValue) {
+                                            Toast.makeText(this, "Not enough stock available.", Toast.LENGTH_SHORT).show();
+                                        } else {
+                                            // Update the existing cart item
+                                            db.collection("carts")
+                                                    .document(userId)
+                                                    .collection("items")
+                                                    .document(productId)
+                                                    .update("quantity", newQuantity)
+                                                    .addOnSuccessListener(aVoid -> Toast.makeText(ProductOverview.this, "Item added to cart", Toast.LENGTH_SHORT).show())
+                                                    .addOnFailureListener(e -> Toast.makeText(ProductOverview.this, "Failed to update cart", Toast.LENGTH_SHORT).show());
+                                        }
                                     } else {
                                         // Add new item to the cart
-                                        Map<String, Object> cartItem = new HashMap<>();
-                                        cartItem.put("productId", productId);
-                                        cartItem.put("name", name);
-                                        cartItem.put("productCategory", productCategory);
-                                        cartItem.put("price", price);
-                                        cartItem.put("imageUrl", imageUrl);
-                                        cartItem.put("quantity", quantity);
-                                        cartItem.put("sellerId", sellerId);
+                                        if (quantity > stockValue) {
+                                            Toast.makeText(this, "Not enough stock available.", Toast.LENGTH_SHORT).show();
+                                        } else {
+                                            Map<String, Object> cartItem = new HashMap<>();
+                                            cartItem.put("productId", productId);
+                                            cartItem.put("name", name);
+                                            cartItem.put("productCategory", productCategory);
+                                            cartItem.put("price", price);
+                                            cartItem.put("imageUrl", imageUrl);
+                                            cartItem.put("quantity", quantity);
+                                            cartItem.put("sellerId", sellerId);
+                                            cartItem.put("stock", stock); // Store stock as a String
 
-                                        db.collection("carts")
-                                                .document(userId)
-                                                .collection("items")
-                                                .document(productId)
-                                                .set(cartItem)
-                                                .addOnSuccessListener(aVoid -> Toast.makeText(ProductOverview.this, "Item added to cart", Toast.LENGTH_SHORT).show())
-                                                .addOnFailureListener(e -> Toast.makeText(ProductOverview.this, "Failed to add to cart", Toast.LENGTH_SHORT).show());
+                                            db.collection("carts")
+                                                    .document(userId)
+                                                    .collection("items")
+                                                    .document(productId)
+                                                    .set(cartItem)
+                                                    .addOnSuccessListener(aVoid -> Toast.makeText(ProductOverview.this, "Item added to cart", Toast.LENGTH_SHORT).show())
+                                                    .addOnFailureListener(e -> Toast.makeText(ProductOverview.this, "Failed to add to cart", Toast.LENGTH_SHORT).show());
+                                        }
                                     }
                                 })
                                 .addOnFailureListener(e -> Toast.makeText(ProductOverview.this, "Error checking cart: " + e.getMessage(), Toast.LENGTH_SHORT).show());
@@ -274,8 +299,10 @@ public class ProductOverview extends AppCompatActivity {
                         Toast.makeText(this, "Product not found in the database", Toast.LENGTH_SHORT).show();
                     }
                 })
-                .addOnFailureListener(e -> Toast.makeText(this, "Error retrieving sellerId: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                .addOnFailureListener(e -> Toast.makeText(this, "Error retrieving product details: " + e.getMessage(), Toast.LENGTH_SHORT).show());
     }
+
+
 
     @Override
     public boolean onSupportNavigateUp() {

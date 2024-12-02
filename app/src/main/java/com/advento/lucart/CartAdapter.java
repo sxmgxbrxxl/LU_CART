@@ -102,30 +102,43 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.CartViewHolder
 
     private void updateQuantity(CartItem item, int position, int delta) {
         int newQuantity = item.getQuantity() + delta;
-        if (newQuantity > 0) {
-            item.setQuantity(newQuantity);
-            double newTotalPrice = item.getPrice() * newQuantity;
 
-            // Update Firestore
-            db.collection("carts")
-                    .document(userId)
-                    .collection("items")
-                    .document(item.getProductId())
-                    .update("quantity", newQuantity)
-                    .addOnSuccessListener(aVoid -> {
-                        notifyItemChanged(position);
-                        if (listener != null) {
-                            listener.onQuantityChanged(item, position, newTotalPrice);
-                        }
-                    })
-                    .addOnFailureListener(e -> {
-                        Toast.makeText(context, "Failed to update quantity", Toast.LENGTH_SHORT).show();
-                        // Revert the quantity change
-                        item.setQuantity(item.getQuantity() - delta);
-                        notifyItemChanged(position);
-                    });
+        try {
+            // Parse stock from String to int
+            int stock = Integer.parseInt(item.getStock());
+
+            // Ensure quantity is greater than 0 and does not exceed stock
+            if (newQuantity > 0 && newQuantity <= stock) {
+                item.setQuantity(newQuantity);
+                double newTotalPrice = item.getPrice() * newQuantity;
+
+                // Update Firestore
+                db.collection("carts")
+                        .document(userId)
+                        .collection("items")
+                        .document(item.getProductId())
+                        .update("quantity", newQuantity)
+                        .addOnSuccessListener(aVoid -> {
+                            notifyItemChanged(position);
+                            if (listener != null) {
+                                listener.onQuantityChanged(item, position, newTotalPrice);
+                            }
+                        })
+                        .addOnFailureListener(e -> {
+                            Toast.makeText(context, "Failed to update quantity", Toast.LENGTH_SHORT).show();
+                            // Revert the quantity change if failed
+                            item.setQuantity(item.getQuantity() - delta);
+                            notifyItemChanged(position);
+                        });
+            } else if (newQuantity > stock) {
+                Toast.makeText(context, "Cannot increase quantity beyond stock limit", Toast.LENGTH_SHORT).show();
+            }
+        } catch (NumberFormatException e) {
+            Toast.makeText(context, "Invalid stock value", Toast.LENGTH_SHORT).show();
         }
     }
+
+
 
     @Override
     public int getItemCount() {
