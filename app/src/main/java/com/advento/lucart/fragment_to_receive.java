@@ -1,17 +1,20 @@
 package com.advento.lucart;
 
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.fragment.app.Fragment;
 
 public class fragment_to_receive extends Fragment {
 
     public fragment_to_receive() {
         // Required empty public constructor
+    }
+
+    public static fragment_to_receive newInstance() {
+        return new fragment_to_receive();
     }
 
     @Override

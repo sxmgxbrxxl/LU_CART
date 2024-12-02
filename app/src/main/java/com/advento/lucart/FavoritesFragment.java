@@ -54,7 +54,8 @@ public class FavoritesFragment extends Fragment implements FavoritesAdapter.OnDe
 
 
     private void loadFavorites() {
-        if (mAuth.getCurrentUser() == null) {
+        if (mAuth.getCurrentUser() == null || binding == null) {
+            // Ensure that binding is not null before accessing any views
             Toast.makeText(getContext(), "No user is logged in", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -65,6 +66,8 @@ public class FavoritesFragment extends Fragment implements FavoritesAdapter.OnDe
                 .collection("items")
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
+                    if (binding == null) return;  // Check if binding is null before accessing views
+
                     favoriteItemList.clear();
                     if (queryDocumentSnapshots.isEmpty()) {
                         binding.tvEmptyFavorites.setVisibility(View.VISIBLE);
@@ -81,6 +84,8 @@ public class FavoritesFragment extends Fragment implements FavoritesAdapter.OnDe
                     showEdit();
                 })
                 .addOnFailureListener(e -> {
+                    if (binding == null) return;  // Check if binding is null before accessing views
+
                     Toast.makeText(getContext(), "Failed to load favorites: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                     binding.tvEmptyFavorites.setVisibility(View.VISIBLE);
                     binding.rvFavorites.setVisibility(View.GONE);
@@ -89,14 +94,18 @@ public class FavoritesFragment extends Fragment implements FavoritesAdapter.OnDe
 
     private void showEdit() {
         // Show or hide the edit button based on whether favorites exist
-        binding.ivEdit.setVisibility(favoriteItemList.isEmpty() ? View.GONE : View.VISIBLE);
+        if (binding != null) {  // Check if binding is not null before updating the UI
+            binding.ivEdit.setVisibility(favoriteItemList.isEmpty() ? View.GONE : View.VISIBLE);
+        }
     }
 
     private void toggleEditMode() {
         isEditMode = !isEditMode; // Toggle edit mode
 
         // Update the edit button icon
-        binding.ivEdit.setImageResource(isEditMode ? R.drawable.ic_check : R.drawable.ic_edit);
+        if (binding != null) {  // Check if binding is not null
+            binding.ivEdit.setImageResource(isEditMode ? R.drawable.ic_check : R.drawable.ic_edit);
+        }
 
         // Notify adapter to show/hide delete buttons
         adapter.setEditMode(isEditMode);
@@ -115,8 +124,10 @@ public class FavoritesFragment extends Fragment implements FavoritesAdapter.OnDe
                 .delete()
                 .addOnSuccessListener(aVoid -> {
                     if (favoriteItemList.isEmpty()) {
-                        binding.tvEmptyFavorites.setVisibility(View.VISIBLE);
-                        binding.rvFavorites.setVisibility(View.GONE);
+                        if (binding != null) {  // Check if binding is not null
+                            binding.tvEmptyFavorites.setVisibility(View.VISIBLE);
+                            binding.rvFavorites.setVisibility(View.GONE);
+                        }
                     }
                     showEdit();
                 })

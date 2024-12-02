@@ -3,6 +3,7 @@ package com.advento.lucart;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 import android.widget.VideoView;
 
@@ -142,6 +143,9 @@ public class MainActivity extends AppCompatActivity {
         if (task.isSuccessful()) {
             FirebaseUser user = auth.getCurrentUser();
             if (user != null) {
+                String currentUserId = user.getUid(); // Get the UID of the logged-in user
+                Log.d("AUTH", "Current user UID: " + currentUserId);
+
                 // Start Home Activity and pass data
                 Intent intent = new Intent(MainActivity.this, Home.class);
                 intent.putExtra("FIRST_NAME", user.getDisplayName());
@@ -155,6 +159,7 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, "Failed to sign in", Toast.LENGTH_SHORT).show();
         }
     }
+
 
     private void handleFacebookAccessToken(AccessToken token) {
         AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());

@@ -14,33 +14,12 @@
         android:orientation="vertical"
         android:padding="16dp">
 
-        <!-- Product Image -->
-        <ImageView
-            android:id="@+id/ivProductImage"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:layout_gravity="center_horizontal"
-            android:contentDescription="@string/pimage"
-            android:layout_marginBottom="8dp" />
-
-        <!-- Product Name -->
-        <TextView
-            android:id="@+id/tvProductName"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvCartItems"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/pname"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="8dp" />
-
-        <!-- Quantity -->
-        <TextView
-            android:id="@+id/tvQuantity"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/qty"
-            android:textSize="14sp"
-            android:layout_marginBottom="8dp" />
+            android:layout_marginTop="2dp"
+            android:layout_marginBottom="15dp" />
 
         <!-- Total Price -->
         <TextView
@@ -77,5 +56,22 @@
             android:layout_height="wrap_content"
             android:text="@string/mode_of_payment"
             android:textSize="14sp" />
+
+        <!-- Cacnele and delete -->
+        <Button
+            android:id="@+id/btnCancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_gravity="end"
+            android:text="Cancel"
+            android:textAllCaps="false"
+            android:padding="8dp"
+            android:layout_margin="8dp"
+            android:backgroundTint="@color/ten_green"
+            android:textColor="@color/white" />
+
+
+
     </LinearLayout>
 </androidx.cardview.widget.CardView>

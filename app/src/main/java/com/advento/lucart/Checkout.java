@@ -18,6 +18,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class Checkout extends AppCompatActivity {
 
@@ -71,7 +72,7 @@ public class Checkout extends AppCompatActivity {
         });
 
         setSupportActionBar(binding.tbCheckOut);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
     }
 
@@ -95,18 +96,31 @@ public class Checkout extends AppCompatActivity {
     }
 
     private void placeOrder(List<CartItem> cartItems, double totalPrice, String location, String paymentMethod) {
-        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-
-        Transaction transaction = new Transaction(cartItems, userId, "To Ship", location, paymentMethod);
-
+        String buyerId = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("transactions")
-                .add(transaction)
-                .addOnSuccessListener(documentReference -> {
-                    Toast.makeText(this, "Order placed successfully!", Toast.LENGTH_SHORT).show();
-                })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(this, "Failed to place the order. Please try again.", Toast.LENGTH_SHORT).show();
-                });
+
+        // Iterate through each cart item
+        for (CartItem item : cartItems) {
+            // Ensure CartItem has a sellerId field
+            String sellerId = item.getSellerId();
+
+            // Create a transaction for each item
+            Transaction transaction = new Transaction(
+                    List.of(item),  // Wrap item in a List
+                    buyerId,        // Buyer ID
+                    sellerId,       // Seller ID
+                    "To Ship",      // Status
+                    location,       // Delivery location
+                    paymentMethod   // Payment method
+            );
+
+            // Save each transaction to Firestore
+            db.collection("transactions")
+                    .add(transaction)
+                    .addOnSuccessListener(documentReference -> Toast.makeText(this, "Order placed successfully!", Toast.LENGTH_SHORT).show())
+                    .addOnFailureListener(e -> Toast.makeText(this, "Failed to place the order. Please try again.", Toast.LENGTH_SHORT).show());
+        }
     }
+
+
 }

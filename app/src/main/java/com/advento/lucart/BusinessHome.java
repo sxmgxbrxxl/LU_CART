@@ -13,15 +13,13 @@ import com.advento.lucart.databinding.ActivityBusinessHomeBinding;
 
 public class BusinessHome extends AppCompatActivity {
 
-    private ActivityBusinessHomeBinding binding ;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         EdgeToEdge.enable(this);
 
-        binding = ActivityBusinessHomeBinding.inflate(getLayoutInflater());
+        com.advento.lucart.databinding.ActivityBusinessHomeBinding binding = ActivityBusinessHomeBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {

@@ -11,20 +11,23 @@ public class PagerAdapter extends FragmentStateAdapter {
 
     private final List<Fragment> fragmentList;
 
-    public PagerAdapter(@NonNull FragmentActivity fragmentActivity, List<Fragment> fragments) {
+    public PagerAdapter(@NonNull FragmentActivity fragmentActivity, @NonNull List<Fragment> fragments) {
         super(fragmentActivity);
-        this.fragmentList = fragments;
+        this.fragmentList = fragments; // Initialize the list of fragments
     }
 
     @NonNull
     @Override
     public Fragment createFragment(int position) {
-        return fragmentList.get(position);
+        // Return the fragment corresponding to the position
+        if (position >= 0 && position < fragmentList.size()) {
+            return fragmentList.get(position);
+        }
+        throw new IllegalArgumentException("Invalid position: " + position);
     }
 
     @Override
     public int getItemCount() {
-        return fragmentList.size();
+        return fragmentList.size(); // Return the total number of fragments
     }
 }
-

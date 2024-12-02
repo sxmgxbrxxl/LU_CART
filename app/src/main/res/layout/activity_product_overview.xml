@@ -151,12 +151,7 @@
                         <com.google.android.material.tabs.TabItem
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Description"/>
-
-                        <com.google.android.material.tabs.TabItem
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Ingredients"/>
+                            android:text="@string/description"/>
 
                     </com.google.android.material.tabs.TabLayout>
 
@@ -180,6 +175,15 @@
                     android:paddingTop="10dp"
                     android:paddingEnd="20dp"
                     android:paddingBottom="5dp">
+
+                    <TextView
+                        android:id="@+id/tvAvailableStock"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="60dp"
+                        android:fontFamily="@font/montserrat_bold"
+                        android:text="Stock: 50"
+                        android:textColor="@color/black" />
 
                     <TextView
                         android:layout_width="wrap_content"

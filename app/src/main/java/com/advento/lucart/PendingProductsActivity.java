@@ -37,7 +37,6 @@ public class PendingProductsActivity extends AppCompatActivity {
     private ProductAdapter productAdapter;
     private List<Product> pendingProducts;
     private FirebaseFirestore firestore;
-    private ProductAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,7 +62,7 @@ public class PendingProductsActivity extends AppCompatActivity {
         productAdapter = new ProductAdapter(this, pendingProducts, true);
         recyclerView.setAdapter(productAdapter);
 
-        adapter = new ProductAdapter(PendingProductsActivity.this, pendingProducts, product -> {
+        ProductAdapter adapter = new ProductAdapter(PendingProductsActivity.this, pendingProducts, product -> {
             Intent intent = new Intent(PendingProductsActivity.this, MyProductOverview.class);
             intent.putExtra("productId", product.getProductId());
             intent.putExtra("productName", product.getProductName());
@@ -125,10 +124,10 @@ public class PendingProductsActivity extends AppCompatActivity {
                             Toast.makeText(PendingProductsActivity.this, "Approved: " + product.getProductName(), Toast.LENGTH_SHORT).show();
                             pendingProducts.remove(product);
                             productAdapter.notifyDataSetChanged();
-                            sendApprovalNotificationToUser(product.getUserId(), product.getProductName());
+                            sendApprovalNotificationToUser(product.getSellerId(), product.getProductName());
 
                             // Step 2: Add a notification document for the user
-                            addNotificationForUser(product.getUserId(), product.getProductName());
+                            addNotificationForUser(product.getSellerId(), product.getProductName());
                         } else {
                             Toast.makeText(PendingProductsActivity.this, "Failed to approve product: " + product.getProductName(), Toast.LENGTH_SHORT).show();
                         }

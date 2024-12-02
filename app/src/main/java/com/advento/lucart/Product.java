@@ -7,22 +7,24 @@ public class Product {
     private String productPrice;
     private String productDescription;
     private String productImage;
+    private String stock;
     private String status;
-    private String userId;// Add this field for the product category
+    private String sellerId; // Renamed from userId for clarity
 
     public Product() {
         // Default constructor required for calls to DataSnapshot.getValue(Product.class)
     }
 
-    public Product(String productName, String productCategory, String productPrice, String productDescription, String productImage, String productId, String status, String userId) {
+    public Product(String productName, String productCategory, String productPrice, String stock, String productDescription, String productImage, String productId, String status, String sellerId) {
         this.productName = productName;
         this.productCategory = productCategory;
         this.productPrice = productPrice;
         this.productDescription = productDescription;
         this.productImage = productImage;
         this.productId = productId;
+        this.stock = stock;
         this.status = status;
-        this.userId = userId;
+        this.sellerId = sellerId;
     }
 
     // Getter and Setter methods
@@ -58,6 +60,10 @@ public class Product {
         this.productPrice = productPrice;
     }
 
+    public String getStock() {return stock; }
+
+    public void setStock(String stock) { this.stock = stock; }
+
     public String getProductDescription() {
         return productDescription;
     }
@@ -82,11 +88,11 @@ public class Product {
         this.status = status;
     }
 
-    public String getUserId() {
-        return userId;
+    public String getSellerId() {
+        return sellerId; // Renamed getter
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setSellerId(String sellerId) {
+        this.sellerId = sellerId; // Renamed setter
     }
 }

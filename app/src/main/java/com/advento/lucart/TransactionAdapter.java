@@ -4,20 +4,24 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.List;
 
 public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.TransactionViewHolder> {
 
-    private Context context;
-    private List<Transaction> transactionList;
+    private final Context context;
+    private final List<Transaction> transactionList;
 
     public TransactionAdapter(Context context, List<Transaction> transactionList) {
         this.context = context;
@@ -36,41 +40,97 @@ public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.
     public void onBindViewHolder(@NonNull TransactionViewHolder holder, int position) {
         Transaction transaction = transactionList.get(position);
 
-        // Check if the transaction has products
-        if (transaction.getCartItems() != null && !transaction.getCartItems().isEmpty()) {
-            CartItem firstProduct = transaction.getCartItems().get(0);
+        // Bind transaction details
+        holder.tvStatus.setText(transaction.getStatus());
+        holder.tvLocation.setText(transaction.getDeliveryLocation());
+        holder.tvPaymentMethod.setText(transaction.getPaymentMethod());
 
-            // Bind product details
-            holder.tvProductName.setText(firstProduct.getName());
-            holder.tvPrice.setText(String.format("PHP %.2f", firstProduct.getPrice()));
-            holder.tvQuantity.setText(String.format("Quantity: %d", firstProduct.getQuantity()));
-
-            // Calculate total price
-            double totalPrice = 0;
-            for (CartItem product : transaction.getCartItems()) {
-                totalPrice += product.getPrice() * product.getQuantity();
-            }
-            holder.tvPrice.setText(String.format("Total: PHP %.2f", totalPrice));
-
-            // Load product image using Glide
-            Glide.with(context)
-                    .load(firstProduct.getImageUrl()) // Replace with actual image URL
-                    .placeholder(R.drawable.ic_placeholder_image) // Placeholder image
-                    .error(R.drawable.ic_placeholder_image) // Fallback image
-                    .into(holder.ivProductImage);
-
-            // Bind transaction details
-            holder.tvStatus.setText(transaction.getStatus());
-            holder.tvLocation.setText(transaction.getDeliveryLocation());
-            holder.tvPaymentMethod.setText(transaction.getPaymentMethod());
-        } else {
-            // Handle no products
-            holder.tvProductName.setText("No products available");
-            holder.tvPrice.setText("N/A");
-            holder.tvQuantity.setText("Quantity: N/A");
-            holder.ivProductImage.setImageResource(R.drawable.ic_placeholder_image);
+        // Calculate and display the total price
+        double totalPrice = 0;
+        for (CartItem product : transaction.getCartItems()) {
+            totalPrice += product.getPrice() * product.getQuantity();
         }
+        holder.tvPrice.setText(String.format("Total: PHP %.2f", totalPrice));
+
+        // Set up the nested RecyclerView for cart items
+        CartItemAdapter cartItemAdapter = new CartItemAdapter(context, transaction.getCartItems());
+        holder.rvCartItems.setLayoutManager(new LinearLayoutManager(context)); // Vertical list
+        holder.rvCartItems.setAdapter(cartItemAdapter);
+
+        // Dynamically set button text based on status
+        if ("To Ship".equals(transaction.getStatus())) {
+            holder.btnCancel.setText("Cancel");
+            holder.btnCancel.setVisibility(View.VISIBLE);
+        } else if ("Cancelled".equals(transaction.getStatus())) {
+            holder.btnCancel.setText("Delete");
+            holder.btnCancel.setVisibility(View.VISIBLE);
+        } else {
+            holder.btnCancel.setVisibility(View.GONE);
+        }
+
+           // Handle cancel and delete button clicks
+        holder.btnCancel.setOnClickListener(v -> {
+            if ("To Ship".equals(transaction.getStatus())) {
+                // Show confirmation dialog
+                new androidx.appcompat.app.AlertDialog.Builder(context)
+                        .setTitle("Cancel Transaction")
+                        .setMessage("Do you want to cancel your transaction?")
+                        .setPositiveButton("Yes", (dialog, which) -> {
+                            // Move transaction to "Cancelled"
+                            SharedTransactionData.getInstance().addToCancelList(transaction);
+                            transaction.setStatus("Cancelled"); // Update status locally
+
+                            // Update Firestore status to "Cancelled"
+                            FirebaseFirestore.getInstance()
+                                    .collection("transactions")
+                                    .document(transaction.getUserId()) // Assuming the document ID is userId; adjust as needed
+                                    .update("status", "Cancelled")
+                                    .addOnSuccessListener(aVoid -> Toast.makeText(context, "Transaction Cancelled.", Toast.LENGTH_SHORT).show())
+                                    .addOnFailureListener(e -> Toast.makeText(context, "Failed to update transaction status.", Toast.LENGTH_SHORT).show());
+
+                            // Update UI
+                            transactionList.remove(position);
+                            notifyItemRemoved(position);
+                            notifyItemRangeChanged(position, transactionList.size());
+                        })
+                        .setNegativeButton("No", (dialog, which) -> {
+                            // Dismiss the dialog
+                            dialog.dismiss();
+                        })
+                        .show();
+            } else if ("Cancelled".equals(transaction.getStatus())) {
+                // Delete transaction from Firestore
+                new androidx.appcompat.app.AlertDialog.Builder(context)
+                        .setTitle("Delete Transaction")
+                        .setMessage("Are you sure you want to delete this transaction?")
+                        .setPositiveButton("Yes", (dialog, which) -> FirebaseFirestore.getInstance()
+                                .collection("transactions")
+                                .document(transaction.getUserId()) // Ensure unique Firestore document ID
+                                .delete()
+                                .addOnSuccessListener(aVoid -> {
+                                    transactionList.remove(position);
+                                    notifyItemRemoved(position);
+                                    notifyItemRangeChanged(position, transactionList.size());
+                                    Toast.makeText(context, "Transaction deleted successfully.", Toast.LENGTH_SHORT).show();
+                                })
+                                .addOnFailureListener(e -> Toast.makeText(context, "Failed to delete transaction.", Toast.LENGTH_SHORT).show()))
+                        .setNegativeButton("No", (dialog, which) -> {
+                            // Dismiss the dialog
+                            dialog.dismiss();
+                        })
+                        .show();
+            }
+        });
+
+
+
     }
+
+    private void addToCancelSection(Transaction transaction) {
+        // Pass the transaction to the cancel list
+        // Example: YourActivity.cancelList.add(transaction);
+    }
+
 
     @Override
     public int getItemCount() {
@@ -81,6 +141,8 @@ public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.
     public static class TransactionViewHolder extends RecyclerView.ViewHolder {
         ImageView ivProductImage;
         TextView tvProductName, tvPrice, tvQuantity, tvStatus, tvLocation, tvPaymentMethod;
+        RecyclerView rvCartItems; // Add RecyclerView for cart items
+        Button btnCancel;
 
         public TransactionViewHolder(View itemView) {
             super(itemView);
@@ -91,6 +153,9 @@ public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.
             tvStatus = itemView.findViewById(R.id.tvStatus);
             tvLocation = itemView.findViewById(R.id.tvLocation);
             tvPaymentMethod = itemView.findViewById(R.id.tvModeOfPayment);
+            rvCartItems = itemView.findViewById(R.id.rvCartItems); // Initialize the RecyclerView
+            btnCancel = itemView.findViewById(R.id.btnCancel);
         }
     }
+
 }

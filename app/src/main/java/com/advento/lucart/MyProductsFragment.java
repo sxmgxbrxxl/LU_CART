@@ -120,7 +120,7 @@ public class MyProductsFragment extends Fragment {
                 storageRef.putFile(imageUri)
                         .addOnSuccessListener(taskSnapshot -> storageRef.getDownloadUrl().addOnSuccessListener(uri -> {
                             // Create new product with image URL
-                            Product newProduct = new Product(productName,productCategory,productPrice, productDescription,
+                            Product newProduct = new Product(productName,productCategory,productPrice, stockNumber, productDescription,
                                     uri.toString(), "", status, currentUserId);
 
                             // Save product to Firestore

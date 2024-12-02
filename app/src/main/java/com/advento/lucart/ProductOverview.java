@@ -1,5 +1,6 @@
 package com.advento.lucart;
 
+import android.annotation.SuppressLint;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -17,16 +18,20 @@ import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-public class    ProductOverview extends AppCompatActivity {
+public class ProductOverview extends AppCompatActivity {
 
     private ActivityProductOverviewBinding binding;
     private FirebaseFirestore db;
     private FirebaseAuth mAuth;
     private int quantity = 1;
+    private int stockQuantity = 0; // Variable to store the available stock
 
+    @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,7 +71,7 @@ public class    ProductOverview extends AppCompatActivity {
         String productPrice = getIntent().getStringExtra("productPrice");
         String productDescription = getIntent().getStringExtra("productDescription");
 
-        //Import Image
+        // Import Image
         Glide.with(this)
                 .load(productImage)
                 .into(binding.ivProductImage);
@@ -76,10 +81,35 @@ public class    ProductOverview extends AppCompatActivity {
         binding.tvCategory.setText(productCategory);
         binding.tvProductPrice.setText("₱ " + productPrice);
 
-        // Setup quantity buttons
+        // Set up ViewPager2 for description
+        List<String> descriptions = Arrays.asList(productDescription.split("\n\n"));
+        DescriptionPagerAdapter adapter = new DescriptionPagerAdapter(this, descriptions);
+        binding.vpProductDescription.setAdapter(adapter);
+
+        db.collection("products").document(productId)
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        String stock = documentSnapshot.getString("stock"); // Assuming 'stock' field exists
+                        stockQuantity = Integer.parseInt(stock); // Store the available stock in the variable
+                        binding.tvAvailableStock.setText("Stock: " + stock); // Set the stock number in the TextView
+                    } else {
+                        binding.tvAvailableStock.setText("Stock: 0"); // Default if not found
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(ProductOverview.this, "Error retrieving stock: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    binding.tvAvailableStock.setText("Stock: 0");
+                });
+
+        // Setup quantity buttons with stock limit
         binding.buttonIncrease.setOnClickListener(v -> {
-            quantity++;
-            binding.tvQuantity.setText(String.valueOf(quantity));
+            if (quantity < stockQuantity) { // Limit quantity to available stock
+                quantity++;
+                binding.tvQuantity.setText(String.valueOf(quantity));
+            } else {
+                Toast.makeText(this, "Cannot exceed available stock.", Toast.LENGTH_SHORT).show();
+            }
         });
 
         binding.buttonDecrease.setOnClickListener(v -> {
@@ -186,42 +216,62 @@ public class    ProductOverview extends AppCompatActivity {
     private void addToCart(String productId, String name, String productCategory, double price, String imageUrl, int quantity) {
         String userId = mAuth.getCurrentUser().getUid();
 
-        // Reference to the cart items collection in Firestore
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("carts")
-                .document(userId)
-                .collection("items")
-                .document(productId) // Using productId as document ID to prevent duplicates
+        // First, retrieve the sellerId of the product
+        db.collection("products") // Assuming the products collection is named "products"
+                .document(productId)
                 .get()
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
-                        // If the item already exists, update the quantity
-                        int existingQuantity = documentSnapshot.getLong("quantity").intValue();
-                        int newQuantity = existingQuantity + quantity;
+                        String sellerId = documentSnapshot.getString("sellerId"); // Adjust the field name if it's different in Firestore
 
-                        // Update the quantity
-                        documentSnapshot.getReference().update("quantity", newQuantity)
-                                .addOnSuccessListener(aVoid -> Toast.makeText(ProductOverview.this, "Added to cart successfully!", Toast.LENGTH_SHORT).show())
-                                .addOnFailureListener(e -> Toast.makeText(ProductOverview.this, "Failed to add to cart: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                        if (sellerId == null) {
+                            Toast.makeText(this, "Seller information not found.", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                        // Proceed to add the item to the cart
+                        db.collection("carts")
+                                .document(userId)
+                                .collection("items")
+                                .document(productId)
+                                .get()
+                                .addOnSuccessListener(cartSnapshot -> {
+                                    if (cartSnapshot.exists()) {
+                                        int newQuantity = cartSnapshot.getLong("quantity") != null ? cartSnapshot.getLong("quantity").intValue() + quantity : quantity;
+                                        // Update existing cart item
+                                        db.collection("carts")
+                                                .document(userId)
+                                                .collection("items")
+                                                .document(productId)
+                                                .update("quantity", newQuantity)
+                                                .addOnSuccessListener(aVoid -> Toast.makeText(ProductOverview.this, "Item added to cart", Toast.LENGTH_SHORT).show())
+                                                .addOnFailureListener(e -> Toast.makeText(ProductOverview.this, "Failed to update cart", Toast.LENGTH_SHORT).show());
+                                    } else {
+                                        // Add new item to the cart
+                                        Map<String, Object> cartItem = new HashMap<>();
+                                        cartItem.put("productId", productId);
+                                        cartItem.put("name", name);
+                                        cartItem.put("productCategory", productCategory);
+                                        cartItem.put("price", price);
+                                        cartItem.put("imageUrl", imageUrl);
+                                        cartItem.put("quantity", quantity);
+                                        cartItem.put("sellerId", sellerId);
+
+                                        db.collection("carts")
+                                                .document(userId)
+                                                .collection("items")
+                                                .document(productId)
+                                                .set(cartItem)
+                                                .addOnSuccessListener(aVoid -> Toast.makeText(ProductOverview.this, "Item added to cart", Toast.LENGTH_SHORT).show())
+                                                .addOnFailureListener(e -> Toast.makeText(ProductOverview.this, "Failed to add to cart", Toast.LENGTH_SHORT).show());
+                                    }
+                                })
+                                .addOnFailureListener(e -> Toast.makeText(ProductOverview.this, "Error checking cart: " + e.getMessage(), Toast.LENGTH_SHORT).show());
                     } else {
-                        // If the item does not exist, create a new cart item
-                        CartItem cartItem = new CartItem(
-                                productId,
-                                name,
-                                productCategory,
-                                price,
-                                imageUrl,
-                                quantity,
-                                userId
-                        );
-
-                        // Add new item to Firestore
-                        documentSnapshot.getReference().set(cartItem)
-                                .addOnSuccessListener(aVoid -> Toast.makeText(ProductOverview.this, "Added to cart successfully!", Toast.LENGTH_SHORT).show())
-                                .addOnFailureListener(e -> Toast.makeText(ProductOverview.this, "Failed to add to cart: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                        Toast.makeText(this, "Product not found in the database", Toast.LENGTH_SHORT).show();
                     }
                 })
-                .addOnFailureListener(e -> Toast.makeText(ProductOverview.this, "Error checking cart item: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                .addOnFailureListener(e -> Toast.makeText(this, "Error retrieving sellerId: " + e.getMessage(), Toast.LENGTH_SHORT).show());
     }
 
     @Override
@@ -230,3 +280,4 @@ public class    ProductOverview extends AppCompatActivity {
         return true;
     }
 }
+

@@ -24,11 +24,8 @@ import com.advento.lucart.models.User;
 import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -37,6 +34,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Objects;
 
 public class MyProfile extends AppCompatActivity {
 
@@ -44,10 +42,10 @@ public class MyProfile extends AppCompatActivity {
     private static final int GALLERY_REQUEST_CODE = 101;
 
     private ActivityMyProfileBinding binding;
-    private FirebaseDatabase db;
-    private DatabaseReference reference;
     private FirebaseAuth mAuth;
     private FirebaseUser user;
+    private FirebaseFirestore firestore;
+    private DocumentReference userReference;
     private boolean isEditing = false;
     private Uri selectedImageUri;
     private Uri photoUri;
@@ -69,14 +67,15 @@ public class MyProfile extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         user = mAuth.getCurrentUser();
 
-        if (user != null) {
-            db = FirebaseDatabase.getInstance("https://lu-cart-firebase-default-rtdb.asia-southeast1.firebasedatabase.app/");
-            reference = db.getReference("users").child(user.getUid());
-        } else {
+        // Check if the user is logged in
+        if (user == null) {
             Toast.makeText(this, "User not signed in.", Toast.LENGTH_SHORT).show();
             finish();
-            return;
+            return; // Stop further execution of the code if no user is logged in.
         }
+
+        firestore = FirebaseFirestore.getInstance();
+        userReference = firestore.collection("users").document(user.getUid());
 
         fetchUserData();
 
@@ -92,36 +91,30 @@ public class MyProfile extends AppCompatActivity {
     }
 
     private void fetchUserData() {
-        reference.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot snapshot) {
-                if (snapshot.exists()) {
-                    User user = snapshot.getValue(User.class);
-                    if (user != null) {
-                        binding.etFirstName.setText(user.getFirstName());
-                        binding.etLastName.setText(user.getLastName());
-                        binding.etEmailAddress.setText(user.getEmail());
-                        binding.etBirthday.setText(user.getBirthday());
-                        binding.etPhoneNumber.setText(user.getPhoneNumber());
-                        binding.etPassword.setText(user.getPassword());
+        userReference.get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        User user = documentSnapshot.toObject(User.class);
+                        if (user != null) {
+                            binding.etFirstName.setText(user.getFirstName());
+                            binding.etLastName.setText(user.getLastName());
+                            binding.etEmailAddress.setText(user.getEmail());
+                            binding.etBirthday.setText(user.getBirthday());
+                            binding.etPhoneNumber.setText(user.getPhoneNumber());
+                            binding.etPassword.setText(user.getPassword());
 
-                        if (user.getPhotoUrl() != null) {
-                            Glide.with(MyProfile.this)
-                                    .load(user.getPhotoUrl())
-                                    .circleCrop()
-                                    .into(binding.ivDisplayPhoto);
+                            if (user.getPhotoUrl() != null) {
+                                Glide.with(MyProfile.this)
+                                        .load(user.getPhotoUrl())
+                                        .circleCrop()
+                                        .into(binding.ivDisplayPhoto);
+                            }
                         }
+                    } else {
+                        Toast.makeText(MyProfile.this, "No user data found.", Toast.LENGTH_SHORT).show();
                     }
-                } else {
-                    Toast.makeText(MyProfile.this, "No user data found.", Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError error) {
-                Toast.makeText(MyProfile.this, "Failed to load data.", Toast.LENGTH_SHORT).show();
-            }
-        });
+                })
+                .addOnFailureListener(e -> Toast.makeText(MyProfile.this, "Failed to load data.", Toast.LENGTH_SHORT).show());
     }
 
     private void toggleEditMode() {
@@ -138,10 +131,10 @@ public class MyProfile extends AppCompatActivity {
     private void setFieldsEditable(boolean editable) {
         binding.etFirstName.setEnabled(editable);
         binding.etLastName.setEnabled(editable);
-        binding.etEmailAddress.setEnabled(editable);
-        binding.etBirthday.setEnabled(editable);
+        binding.etEmailAddress.setEnabled(false);
+        binding.etBirthday.setEnabled(false);
         binding.etPhoneNumber.setEnabled(editable);
-        binding.etPassword.setEnabled(editable);
+        binding.etPassword.setEnabled(false);
     }
 
     private void saveUserData() {
@@ -155,13 +148,9 @@ public class MyProfile extends AppCompatActivity {
 
         User updatedUser = new User(firstName, lastName, email, password, birthday, phoneNumber, photoUrl);
 
-        reference.setValue(updatedUser).addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                Toast.makeText(MyProfile.this, "Profile updated successfully!", Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(MyProfile.this, "Failed to update profile.", Toast.LENGTH_SHORT).show();
-            }
-        });
+        userReference.set(updatedUser)
+                .addOnSuccessListener(aVoid -> Toast.makeText(MyProfile.this, "Profile updated successfully!", Toast.LENGTH_SHORT).show())
+                .addOnFailureListener(e -> Toast.makeText(MyProfile.this, "Failed to update profile.", Toast.LENGTH_SHORT).show());
     }
 
     private void showDialog() {
@@ -239,43 +228,52 @@ public class MyProfile extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == CAMERA_REQUEST_CODE && resultCode == RESULT_OK) {
-            uploadImageToFirebase(photoUri);
-        } else if (requestCode == GALLERY_REQUEST_CODE && resultCode == RESULT_OK && data != null) {
-            selectedImageUri = data.getData();
-            uploadImageToFirebase(selectedImageUri);
+        if (resultCode == RESULT_OK && data != null) {
+            if (requestCode == GALLERY_REQUEST_CODE) {
+                selectedImageUri = data.getData();
+                try {
+                    // Directly use the URI to load the image
+                    Glide.with(this)
+                            .load(selectedImageUri)
+                            .circleCrop()
+                            .into(binding.ivDisplayPhoto);
+
+                    // Optionally, upload the image if needed
+                    uploadImageToFirebase(selectedImageUri);
+                } catch (Exception e) {
+                    Toast.makeText(this, "Error loading image.", Toast.LENGTH_SHORT).show();
+                    Log.e("ImagePicker", "Error loading URI", e);
+                }
+            }
         }
     }
 
     private void uploadImageToFirebase(Uri selectedImageUri) {
         if (selectedImageUri != null) {
             StorageReference storageReference = FirebaseStorage.getInstance().getReference("profile_photos")
-                    .child(mAuth.getCurrentUser().getUid() + ".jpg");
+                    .child(Objects.requireNonNull(mAuth.getCurrentUser()).getUid() + ".jpg");
 
             storageReference.putFile(selectedImageUri)
-                    .addOnSuccessListener(taskSnapshot -> storageReference.getDownloadUrl()
-                            .addOnSuccessListener(uri -> {
-                                String photoUrl = uri.toString();
-                                updateUserPhotoUrl(photoUrl);
-                            }))
-                    .addOnFailureListener(e -> Toast.makeText(MyProfile.this, "Failed to upload photo.", Toast.LENGTH_SHORT).show());
+                    .addOnSuccessListener(taskSnapshot -> {
+                        storageReference.getDownloadUrl().addOnSuccessListener(uri -> {
+                            // Use a local variable to store the URI for Glide and Firestore update
+                            final Uri finalUri = uri;
+                            Glide.with(MyProfile.this)
+                                    .load(finalUri)
+                                    .circleCrop()
+                                    .into(binding.ivDisplayPhoto);
+                        }).addOnFailureListener(e -> Toast.makeText(MyProfile.this, "Failed to get image URL.", Toast.LENGTH_SHORT).show());
+                    })
+                    .addOnFailureListener(e -> Toast.makeText(MyProfile.this, "Failed to upload image.", Toast.LENGTH_SHORT).show());
         }
     }
 
-    private void updateUserPhotoUrl(String photoUrl) {
-        reference.child("photoUrl").setValue(photoUrl)
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        Toast.makeText(MyProfile.this, "Photo updated successfully!", Toast.LENGTH_SHORT).show();
-                    } else {
-                        Toast.makeText(MyProfile.this, "Failed to update photo.", Toast.LENGTH_SHORT).show();
-                    }
-                });
-    }
 
     @Override
     public boolean onSupportNavigateUp() {
         onBackPressed();
         return true;
     }
+
 }
+

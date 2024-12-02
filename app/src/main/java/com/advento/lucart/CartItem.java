@@ -9,12 +9,14 @@ public class CartItem implements Serializable {
     private double price;
     private String imageUrl;
     private int quantity;
-    private String userId;  // To track which user added this item
+    private String userId; // Buyer ID
+    private String sellerId; // Seller ID
 
-    // Empty constructor for Firebase
+    // No-argument constructor for Firebase
     public CartItem() {}
 
-    public CartItem(String productId, String name, String productCategory, double price, String imageUrl, int quantity, String userId) {
+    // Parameterized constructor
+    public CartItem(String productId, String name, String productCategory, double price, String imageUrl, int quantity, String userId, String sellerId) {
         this.productId = productId;
         this.name = name;
         this.productCategory = productCategory;
@@ -22,6 +24,7 @@ public class CartItem implements Serializable {
         this.imageUrl = imageUrl;
         this.quantity = quantity;
         this.userId = userId;
+        this.sellerId = sellerId;
     }
 
     // Getters
@@ -32,6 +35,7 @@ public class CartItem implements Serializable {
     public String getName() {
         return name;
     }
+
     public String getProductCategory() {
         return productCategory;
     }
@@ -50,6 +54,10 @@ public class CartItem implements Serializable {
 
     public String getUserId() {
         return userId;
+    }
+
+    public String getSellerId() {
+        return sellerId;
     }
 
     // Setters
@@ -79,6 +87,10 @@ public class CartItem implements Serializable {
 
     public void setUserId(String userId) {
         this.userId = userId;
+    }
+
+    public void setSellerId(String sellerId) {
+        this.sellerId = sellerId;
     }
 
     // Optional: Calculate total price for this item

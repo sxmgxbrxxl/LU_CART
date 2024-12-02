@@ -12,7 +12,6 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.advento.lucart.databinding.FragmentBusinessProfileBinding;
-import com.advento.lucart.databinding.FragmentProfileBinding;
 import com.bumptech.glide.Glide;
 import com.facebook.login.LoginManager;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -20,8 +19,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 public class BusinessProfileFragment extends Fragment {
@@ -29,8 +26,6 @@ public class BusinessProfileFragment extends Fragment {
     private FragmentBusinessProfileBinding binding;
     private FirebaseAuth auth;
     private FirebaseUser user;
-    private FirebaseDatabase db;
-    private DatabaseReference reference;
     private GoogleSignInClient googleSignInClient;
 
     @Override
@@ -41,22 +36,15 @@ public class BusinessProfileFragment extends Fragment {
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
 
-        // Check if user is signed in
-        if (user != null) {
-            db = FirebaseDatabase.getInstance("https://lu-cart-firebase-default-rtdb.asia-southeast1.firebasedatabase.app/");
-            reference = db.getReference("users").child(user.getUid());
-        } else {
-            // Handle the case where the user is not signed in (e.g., redirect to login)
-            Log.e("ProfileFragment", "User not signed in");
-            // You can redirect to a login screen or show a message
-            return;
-        }
-
-        // Load user data after the view is created
-        loadData();
-
         // Initialize Google Sign-In client
         initializeGoogleSignInClient();
+
+        // Check if user is signed in
+        if (user == null) {
+            Log.e("ProfileFragment", "User not signed in");
+            // Handle the case where the user is not signed in (e.g., redirect to login)
+            return;
+        }
     }
 
     @Override
@@ -64,14 +52,32 @@ public class BusinessProfileFragment extends Fragment {
                              Bundle savedInstanceState) {
         binding = FragmentBusinessProfileBinding.inflate(inflater, container, false);
 
+        // Set up UI and button click listeners
         binding.btnSignOut.setOnClickListener(v -> signOut());
+
+        // Load user data after the fragment's view has been created
+        loadData();
 
         return binding.getRoot();
     }
 
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        // Move the loadData call here instead of onCreate
+        // Now we are sure the view is ready and attached to the fragment
+        loadData();
+    }
+
     private void loadData() {
+        if (!isAdded()) {
+            // If the fragment is not attached, skip the operation to avoid crashes
+            return;
+        }
+
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        String userId = user.getUid();
 
         db.collection("business").document(userId)
                 .get()
@@ -81,16 +87,18 @@ public class BusinessProfileFragment extends Fragment {
                         String email = documentSnapshot.getString("email");
                         String photoUrl = documentSnapshot.getString("photoUrl");
 
-                        binding.tvFirstName.setText(businessName);
-                        binding.tvEmailAddress.setText(email);
+                        if (isAdded()) {  // Make sure the fragment is still attached before accessing UI
+                            binding.tvFirstName.setText(businessName);
+                            binding.tvEmailAddress.setText(email);
 
-                        if (photoUrl != null && !photoUrl.isEmpty()) {
-                            Glide.with(requireContext())
-                                    .load(photoUrl)
-                                    .circleCrop()
-                                    .into(binding.ivDisplayPhoto);
-                        } else {
-                            binding.ivDisplayPhoto.setImageResource(R.drawable.ic_photo_placeholder);
+                            if (photoUrl != null && !photoUrl.isEmpty()) {
+                                Glide.with(requireContext())
+                                        .load(photoUrl)
+                                        .circleCrop()
+                                        .into(binding.ivDisplayPhoto);
+                            } else {
+                                binding.ivDisplayPhoto.setImageResource(R.drawable.ic_photo_placeholder);
+                            }
                         }
                     } else {
                         Log.e("ProfileFragment", "No data found for the user.");
@@ -98,7 +106,9 @@ public class BusinessProfileFragment extends Fragment {
                 })
                 .addOnFailureListener(e -> {
                     Log.e("ProfileFragment", "Error fetching user data: " + e.getMessage());
-                    Toast.makeText(getContext(), "Failed to load profile data", Toast.LENGTH_SHORT).show();
+                    if (isAdded()) {
+                        Toast.makeText(getContext(), "Failed to load profile data", Toast.LENGTH_SHORT).show();
+                    }
                 });
     }
 
@@ -110,10 +120,11 @@ public class BusinessProfileFragment extends Fragment {
     }
 
     private void signOut() {
+        if (!isAdded()) return;
+
         auth.signOut();
 
         googleSignInClient.signOut().addOnCompleteListener(requireActivity(), task -> {
-
             LoginManager.getInstance().logOut();
 
             Intent intent = new Intent(requireActivity(), SplashScreen.class);

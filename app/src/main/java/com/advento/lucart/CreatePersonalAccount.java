@@ -1,5 +1,6 @@
 package com.advento.lucart;
 
+import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Intent;
 import android.net.Uri;
@@ -35,6 +36,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
@@ -67,10 +69,25 @@ public class CreatePersonalAccount extends AppCompatActivity {
 
         binding.fabPhoto.setOnClickListener(v -> showDialog());
         binding.btnSave.setOnClickListener(v -> saveUserInfo());
+        binding.btnOpenCalendar.setOnClickListener(v -> showDatePicker());
 
         setSupportActionBar(binding.toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
+    }
+
+    private void showDatePicker() {
+        Calendar calendar = Calendar.getInstance();
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+        DatePickerDialog datePickerDialog = new DatePickerDialog(this, (view, selectedYear, selectedMonth, selectedDay) -> {
+            String date = selectedDay + "/" + (selectedMonth + 1) + "/" + selectedYear;
+            binding.btnOpenCalendar.setText(date);
+        }, year, month, day);
+
+        datePickerDialog.show();
     }
 
     @Override

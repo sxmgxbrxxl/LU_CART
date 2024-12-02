@@ -81,4 +81,8 @@
     <string name="pname">pName</string>
     <string name="qty">Qty</string>
     <string name="pimage">pImage</string>
+    <string name="preceive">pReceive</string>
+    <string name="description">Description</string>
+    <string name="ivedit">ivedit</string>
+    <string name="my_profile">My Profile</string>
 </resources>
