@@ -180,7 +180,7 @@
                         android:id="@+id/tvAvailableStock"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="60dp"
+                        android:layout_marginEnd="30dp"
                         android:fontFamily="@font/montserrat_bold"
                         android:text="Stock: 50"
                         android:textColor="@color/black" />
@@ -259,7 +259,7 @@
                     android:text="Total Price:"
                     android:textColor="@color/two_green"
                     android:fontFamily="@font/montserrat_semibold"
-                    android:textSize="16sp" />
+                    android:textSize="14sp" />
 
                 <Button
                     android:id="@+id/btnAddToCart"

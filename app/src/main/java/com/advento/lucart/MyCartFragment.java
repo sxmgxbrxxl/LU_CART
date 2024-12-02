@@ -90,7 +90,7 @@ public class MyCartFragment extends Fragment implements CartAdapter.CartItemClic
             if (isEditMode) {
                 ivEdit.setImageResource(R.drawable.ic_check); // Replace with your new image
             } else {
-                ivEdit.setImageResource(R.drawable.ic_edit); // Replace with your original image
+                ivEdit.setImageResource(R.drawable.ic_trash); // Replace with your original image
             }
 
             adapter.setEditMode(isEditMode); // Notify adapter to show/hide delete buttons

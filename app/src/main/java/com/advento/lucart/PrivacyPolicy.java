@@ -1,18 +1,20 @@
 package com.advento.lucart;
 
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.advento.lucart.databinding.ActivityForgotPasswordBinding;
+import com.advento.lucart.databinding.ActivityPrivacyPolicyBinding;
 
-public class ForgotPassword extends AppCompatActivity {
+public class PrivacyPolicy extends AppCompatActivity {
 
-    ActivityForgotPasswordBinding binding;
+    private ActivityPrivacyPolicyBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,7 +22,7 @@ public class ForgotPassword extends AppCompatActivity {
 
         EdgeToEdge.enable(this);
 
-        binding = ActivityForgotPasswordBinding.inflate(getLayoutInflater());
+        binding = ActivityPrivacyPolicyBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
@@ -29,12 +31,17 @@ public class ForgotPassword extends AppCompatActivity {
             return insets;
         });
 
-        setSupportActionBar(binding.tbForgotPassword);
+        setSupportActionBar(binding.tbPrivacyPolicy);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
+        Drawable customBackButton = ContextCompat.getDrawable(this, R.drawable.ic_custom_back_activities);
+        if (customBackButton != null) {
+            customBackButton.setTint(ContextCompat.getColor(this, R.color.eleven_green));
+            getSupportActionBar().setHomeAsUpIndicator(customBackButton);
+        }
     }
 
     @Override

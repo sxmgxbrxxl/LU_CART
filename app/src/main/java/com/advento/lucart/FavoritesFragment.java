@@ -104,7 +104,7 @@ public class FavoritesFragment extends Fragment implements FavoritesAdapter.OnDe
 
         // Update the edit button icon
         if (binding != null) {  // Check if binding is not null
-            binding.ivEdit.setImageResource(isEditMode ? R.drawable.ic_check : R.drawable.ic_edit);
+            binding.ivEdit.setImageResource(isEditMode ? R.drawable.ic_check : R.drawable.ic_trash);
         }
 
         // Notify adapter to show/hide delete buttons

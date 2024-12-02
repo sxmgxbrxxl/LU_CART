@@ -29,7 +29,7 @@ public class ProductOverview extends AppCompatActivity {
     private FirebaseFirestore db;
     private FirebaseAuth mAuth;
     private int quantity = 1;
-    private int stockQuantity = 0; // Variable to store the available stock
+    private int stockQuantity = 0;
 
     @SuppressLint("SetTextI18n")
     @Override
@@ -43,11 +43,10 @@ public class ProductOverview extends AppCompatActivity {
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(0, systemBars.top, 0, 0);
+            v.setPadding(0, systemBars.top, 0, systemBars.bottom);
             return insets;
         });
 
-        // Initialize Firebase
         db = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
 
@@ -63,7 +62,6 @@ public class ProductOverview extends AppCompatActivity {
             getSupportActionBar().setHomeAsUpIndicator(customBackButton);
         }
 
-        // Retrieve data from intent
         String productId = getIntent().getStringExtra("productId");
         String productImage = getIntent().getStringExtra("productImage");
         String productName = getIntent().getStringExtra("productName");
@@ -71,17 +69,15 @@ public class ProductOverview extends AppCompatActivity {
         String productPrice = getIntent().getStringExtra("productPrice");
         String productDescription = getIntent().getStringExtra("productDescription");
 
-        // Import Image
         Glide.with(this)
                 .load(productImage)
                 .into(binding.ivProductImage);
 
-        // Set data to views
         binding.tvProductName.setText(productName);
         binding.tvCategory.setText(productCategory);
         binding.tvProductPrice.setText("₱ " + productPrice);
+        binding.totalP.setText("Total Price: ₱ " + productPrice);
 
-        // Set up ViewPager2 for description
         List<String> descriptions = Arrays.asList(productDescription.split("\n\n"));
         DescriptionPagerAdapter adapter = new DescriptionPagerAdapter(this, descriptions);
         binding.vpProductDescription.setAdapter(adapter);
@@ -107,6 +103,7 @@ public class ProductOverview extends AppCompatActivity {
             if (quantity < stockQuantity) { // Limit quantity to available stock
                 quantity++;
                 binding.tvQuantity.setText(String.valueOf(quantity));
+                updateTotalPrice(Double.parseDouble(productPrice));
             } else {
                 Toast.makeText(this, "Cannot exceed available stock.", Toast.LENGTH_SHORT).show();
             }
@@ -116,6 +113,7 @@ public class ProductOverview extends AppCompatActivity {
             if (quantity > 1) {
                 quantity--;
                 binding.tvQuantity.setText(String.valueOf(quantity));
+                updateTotalPrice(Double.parseDouble(productPrice));
             }
         });
 
@@ -155,6 +153,11 @@ public class ProductOverview extends AppCompatActivity {
                 removeProductFromFavorites(productId);
             }
         });
+    }
+
+    private void updateTotalPrice(double price) {
+        double totalPrice = price * quantity;
+        binding.totalP.setText("Total Price: ₱ " + String.format("%.2f", totalPrice));
     }
 
     private void checkIfFavorite(String productId) {

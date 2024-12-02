@@ -2,6 +2,7 @@ package com.advento.lucart;
 
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -9,12 +10,21 @@ import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.recyclerview.widget.GridLayoutManager;
 
 import com.advento.lucart.databinding.ActivityOthersBinding;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Others extends AppCompatActivity {
 
     private ActivityOthersBinding binding;
+    private ProductAdapter productAdapter;
+    private List<Product> othersProducts;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,11 +52,41 @@ public class Others extends AppCompatActivity {
             customBackButton.setTint(ContextCompat.getColor(this, R.color.eleven_green));
             getSupportActionBar().setHomeAsUpIndicator(customBackButton);
         }
+
+        // Initialize the RecyclerView
+        othersProducts = new ArrayList<>();
+        productAdapter = new ProductAdapter(this, othersProducts, null);
+        binding.rvBrowse.setLayoutManager(new GridLayoutManager(this, 2)); // Adjust GridLayoutManager as needed
+        binding.rvBrowse.setAdapter(productAdapter);
+
+        // Fetch data from Firestore
+        fetchOthersProducts();
     }
 
     @Override
     public boolean onSupportNavigateUp() {
         onBackPressed();
         return true;
+    }
+
+    private void fetchOthersProducts() {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference productsCollection = db.collection("products"); // Adjust with your collection name
+
+        // Query to get only "Accessories" category products
+        productsCollection.whereEqualTo("productCategory", "Others")
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        othersProducts.clear(); // Clear existing data
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            Product product = document.toObject(Product.class);
+                            othersProducts.add(product);
+                        }
+                        productAdapter.notifyDataSetChanged(); // Notify adapter that data is updated
+                    } else {
+                        Toast.makeText(Others.this, "Error fetching data", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 }

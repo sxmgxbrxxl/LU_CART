@@ -84,6 +84,10 @@ public class Settings extends AppCompatActivity {
             }
         });
 
+        binding.cvPrivacyPolicy.setOnClickListener(v -> {
+            startActivity(new Intent(this, PrivacyPolicy.class));
+        });
+
         // Delete account action
         binding.cvDeleteAccount.setOnClickListener(v -> showConfirmationDialog());
     }
