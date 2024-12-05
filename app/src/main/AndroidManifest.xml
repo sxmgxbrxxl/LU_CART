@@ -33,6 +33,12 @@
         android:theme="@style/Base.Theme.LUCART"
         tools:targetApi="29">
         <activity
+            android:name=".FinishCheckout"
+            android:exported="false" />
+        <activity
+            android:name=".ShopOverview"
+            android:exported="false" />
+        <activity
             android:name=".PrivacyPolicy"
             android:exported="false" />
         <activity
@@ -85,9 +91,6 @@
             android:exported="false" />
         <activity
             android:name=".Transactions"
-            android:exported="false" />
-        <activity
-            android:name=".Favorites"
             android:exported="false" />
         <activity
             android:name=".MyProfile"

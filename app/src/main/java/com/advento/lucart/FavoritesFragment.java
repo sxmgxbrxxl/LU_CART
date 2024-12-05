@@ -47,6 +47,9 @@ public class FavoritesFragment extends Fragment implements FavoritesAdapter.OnDe
         binding.rvFavorites.setAdapter(adapter);
 
         loadFavorites();
+
+        showEdit();
+
         binding.ivEdit.setOnClickListener(v -> toggleEditMode());
 
         return binding.getRoot();

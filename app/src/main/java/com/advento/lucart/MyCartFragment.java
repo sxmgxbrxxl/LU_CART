@@ -37,7 +37,7 @@ public class MyCartFragment extends Fragment implements CartAdapter.CartItemClic
 
     private boolean isEditMode = false;
 
-    private double totalPrice = 0.0;
+    private double subtotalPrice = 0.0;
 
     public MyCartFragment() {
         // Required empty public constructor
@@ -77,7 +77,7 @@ public class MyCartFragment extends Fragment implements CartAdapter.CartItemClic
             } else {
                 Intent intent = new Intent(getContext(), Checkout.class);
                 intent.putExtra("cartItems", new ArrayList<>(cartItems));  // Pass cart items
-                intent.putExtra("totalPrice", totalPrice);  // Pass total price
+                intent.putExtra("subtotalPrice", subtotalPrice);  // Pass total price
                 startActivity(intent);
             }
         });
@@ -117,13 +117,13 @@ public class MyCartFragment extends Fragment implements CartAdapter.CartItemClic
                     }
 
                     cartItems.clear();
-                    totalPrice = 0.0;
+                    subtotalPrice = 0.0;
 
                     if (value != null && !value.isEmpty()) {
                         for (QueryDocumentSnapshot document : value) {
                             CartItem item = document.toObject(CartItem.class);
                             cartItems.add(item);
-                            totalPrice += (item.getPrice() * item.getQuantity());
+                            subtotalPrice += (item.getPrice() * item.getQuantity());
                         }
                         updateUI(false);
                     } else {
@@ -133,7 +133,6 @@ public class MyCartFragment extends Fragment implements CartAdapter.CartItemClic
                     updateTotalPrice();
                     adapter.notifyDataSetChanged();
 
-                    //Show Edit Button
                     showEdit();
                 });
     }
@@ -170,7 +169,7 @@ public class MyCartFragment extends Fragment implements CartAdapter.CartItemClic
 
     private void updateTotalPrice() {
         NumberFormat formatPHP = NumberFormat.getCurrencyInstance(new Locale("en", "PH"));
-        String formattedTotal = formatPHP.format(totalPrice);
+        String formattedTotal = formatPHP.format(subtotalPrice);
         tvTotalPrice.setText("Total: " + formattedTotal);
     }
 
@@ -181,7 +180,7 @@ public class MyCartFragment extends Fragment implements CartAdapter.CartItemClic
         adapter.notifyItemRemoved(position);
 
         // Update the total price
-        totalPrice -= (item.getPrice() * item.getQuantity());
+        subtotalPrice -= (item.getPrice() * item.getQuantity());
         updateTotalPrice();
 
         // Delete the item from Firestore
@@ -206,9 +205,9 @@ public class MyCartFragment extends Fragment implements CartAdapter.CartItemClic
 
     @Override
     public void onQuantityChanged(CartItem item, int position, double newTotalPrice) {
-        totalPrice = 0.0;
+        subtotalPrice = 0.0;
         for (CartItem cartItem : cartItems) {
-            totalPrice += (cartItem.getPrice() * cartItem.getQuantity());
+            subtotalPrice += (cartItem.getPrice() * cartItem.getQuantity());
         }
         updateTotalPrice();
     }

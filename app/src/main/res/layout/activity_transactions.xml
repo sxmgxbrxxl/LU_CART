@@ -4,7 +4,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg_lucart"
+    android:background="@drawable/bg_try"
     tools:context=".Transactions">
 
     <androidx.appcompat.widget.Toolbar
@@ -20,16 +20,11 @@
         app:title="" >
 
         <TextView
-            android:id="@+id/tvTransactions"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:layout_gravity="center"
-            android:fontFamily="@font/montserrat_bold"
-            android:text="@string/transactions"
-            android:textAlignment="center"
+            android:fontFamily="@font/montserrat_semibold"
             android:textColor="@color/eleven_green"
-            android:textSize="20sp" />
+            android:text="@string/transactions"/>
 
     </androidx.appcompat.widget.Toolbar>
 

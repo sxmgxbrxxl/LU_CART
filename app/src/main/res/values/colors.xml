@@ -14,5 +14,12 @@
     <color name="nine_green">#1d5e2d</color>
     <color name="ten_green">#194e27</color>
     <color name="eleven_green">#092a13</color>
+    
+    <color name="lightGray">#E3E3E3</color>
+    <color name="darkGray">#808080</color>"
+    <color name="weak">#FF4646</color>
+    <color name="medium">#FF8F00</color>
+    <color name="strong">#FCCA3F</color>
+    <color name="bulletproof">#00C853</color>
     <color name="warning_red">#Ff0000</color>
 </resources>

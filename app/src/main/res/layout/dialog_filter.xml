@@ -14,7 +14,7 @@
         android:fontFamily="@font/montserrat_bold"
         android:text="Select Categories"
         android:textSize="16sp"
-        android:textColor="@color/black"/>
+        android:textColor="@color/eleven_green"/>
 
     <CheckBox
         android:id="@+id/chkFoods"
@@ -24,11 +24,12 @@
         android:text="@string/foods"
         android:textSize="14sp"
         android:padding="8dp"
-        android:textColor="@color/black"/>
+        android:textColor="@color/eleven_green"/>
 
     <com.google.android.material.divider.MaterialDivider
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        app:dividerColor="@color/eleven_green"/>
 
     <CheckBox
         android:id="@+id/chkClothes"
@@ -38,11 +39,12 @@
         android:text="@string/clothes"
         android:textSize="14sp"
         android:padding="8dp"
-        android:textColor="@color/black"/>
+        android:textColor="@color/eleven_green"/>
 
     <com.google.android.material.divider.MaterialDivider
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        app:dividerColor="@color/eleven_green"/>
 
     <CheckBox
         android:id="@+id/chkAccessories"
@@ -52,11 +54,12 @@
         android:text="@string/accessories"
         android:textSize="14sp"
         android:padding="8dp"
-        android:textColor="@color/black"/>
+        android:textColor="@color/eleven_green"/>
 
     <com.google.android.material.divider.MaterialDivider
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        app:dividerColor="@color/eleven_green"/>
 
     <CheckBox
         android:id="@+id/chkElectronics"
@@ -66,7 +69,22 @@
         android:text="@string/electronics"
         android:textSize="14sp"
         android:padding="8dp"
-        android:textColor="@color/black"/>
+        android:textColor="@color/eleven_green"/>
+
+    <com.google.android.material.divider.MaterialDivider
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:dividerColor="@color/eleven_green"/>
+
+    <CheckBox
+        android:id="@+id/chkOthers"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:fontFamily="@font/montserrat_semibold"
+        android:text="Others"
+        android:textSize="14sp"
+        android:padding="8dp"
+        android:textColor="@color/eleven_green"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -79,7 +97,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/montserrat_semibold"
-            android:textColor="@color/black"
+            android:textColor="@color/eleven_green"
             android:text="Cancel"
             android:textSize="12sp"
             android:backgroundTint="@color/white"
@@ -90,7 +108,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="@font/montserrat_semibold"
-            android:textColor="@color/black"
+            android:textColor="@color/eleven_green"
             android:text="Apply"
             android:textSize="12sp"
             android:backgroundTint="@color/white"/>

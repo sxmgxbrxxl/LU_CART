@@ -16,12 +16,14 @@ import java.util.List;
 
 public class ShopAdapter extends RecyclerView.Adapter<ShopAdapter.ShopViewHolder> {
 
-    private Context context;
-    private List<Shop> shopList;
+    private final Context context;
+    private final List<Shop> shopList;
+    private final OnShopClickListener shopClickListener;
 
-    public ShopAdapter(Context context, List<Shop> shopList) {
+    public ShopAdapter(Context context, List<Shop> shopList, OnShopClickListener listener) {
         this.context = context;
         this.shopList = shopList;
+        this.shopClickListener = listener;
     }
 
     @NonNull
@@ -36,6 +38,12 @@ public class ShopAdapter extends RecyclerView.Adapter<ShopAdapter.ShopViewHolder
         Shop shop = shopList.get(position);
         holder.tvShopName.setText(shop.getBusinessName());
         Glide.with(context).load(shop.getPhotoUrl()).circleCrop().into(holder.ivShopImage);
+
+        holder.itemView.setOnClickListener(v -> {
+            if (shopClickListener != null) {
+                shopClickListener.onShopClick(shop);
+            }
+        });
     }
 
     @Override
@@ -52,5 +60,9 @@ public class ShopAdapter extends RecyclerView.Adapter<ShopAdapter.ShopViewHolder
             tvShopName = itemView.findViewById(R.id.tvShop);
             ivShopImage = itemView.findViewById(R.id.ivShop);
         }
+    }
+
+    public interface OnShopClickListener {
+        void onShopClick(Shop shop);
     }
 }

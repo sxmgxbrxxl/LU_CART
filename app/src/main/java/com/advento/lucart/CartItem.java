@@ -11,7 +11,7 @@ public class CartItem implements Serializable {
     private int quantity;
     private String stock; // Add this field to track the stock limit
     private String userId; // Buyer ID
-    private String sellerId; // Seller ID
+    private String businessId; // Seller ID
 
     public int getStockAsInt() {
         try {
@@ -25,7 +25,7 @@ public class CartItem implements Serializable {
     public CartItem() {}
 
     // Parameterized constructor
-    public CartItem(String productId, String name, String productCategory, double price, String imageUrl, int quantity, String stock, String userId, String sellerId) {
+    public CartItem(String productId, String name, String productCategory, double price, String imageUrl, int quantity, String stock, String userId, String businessId) {
         this.productId = productId;
         this.name = name;
         this.productCategory = productCategory;
@@ -34,7 +34,7 @@ public class CartItem implements Serializable {
         this.quantity = quantity;
         this.stock = stock; // Initialize stock
         this.userId = userId;
-        this.sellerId = sellerId;
+        this.businessId = businessId;
     }
 
     // Getters
@@ -70,8 +70,8 @@ public class CartItem implements Serializable {
         return userId;
     }
 
-    public String getSellerId() {
-        return sellerId;
+    public String getBusinessId() {
+        return businessId;
     }
 
     // Setters
@@ -107,8 +107,8 @@ public class CartItem implements Serializable {
         this.userId = userId;
     }
 
-    public void setSellerId(String sellerId) {
-        this.sellerId = sellerId;
+    public void setBusinessId(String businessId) {
+        this.businessId = businessId;
     }
 
     public double getTotalPrice() {

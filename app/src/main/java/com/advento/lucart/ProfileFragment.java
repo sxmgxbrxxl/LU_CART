@@ -69,11 +69,7 @@ public class ProfileFragment extends Fragment {
                 startActivity(new Intent(getActivity(), MyProfile.class));
             }
         });
-        binding.btnChangeAccount.setOnClickListener(v -> {
-            if (isAdded()) {
-                startActivity(new Intent(getActivity(), Favorites.class));
-            }
-        });
+
         binding.btnTransactions.setOnClickListener(v -> {
             if (isAdded()) {
                 startActivity(new Intent(getActivity(), Transactions.class));

@@ -9,13 +9,13 @@ public class Product {
     private String productImage;
     private String stock;
     private String status;
-    private String sellerId; // Renamed from userId for clarity
+    private String businessId;
 
     public Product() {
         // Default constructor required for calls to DataSnapshot.getValue(Product.class)
     }
 
-    public Product(String productName, String productCategory, String productPrice, String stock, String productDescription, String productImage, String productId, String status, String sellerId) {
+    public Product(String productName, String productCategory, String productPrice, String stock, String productDescription, String productImage, String productId, String status, String businessId) {
         this.productName = productName;
         this.productCategory = productCategory;
         this.productPrice = productPrice;
@@ -24,7 +24,7 @@ public class Product {
         this.productId = productId;
         this.stock = stock;
         this.status = status;
-        this.sellerId = sellerId;
+        this.businessId = businessId;
     }
 
     // Getter and Setter methods
@@ -87,12 +87,10 @@ public class Product {
     public void setStatus(String status) {
         this.status = status;
     }
-
-    public String getSellerId() {
-        return sellerId; // Renamed getter
+    public String getBusinessId() {
+        return businessId;
     }
-
-    public void setSellerId(String sellerId) {
-        this.sellerId = sellerId; // Renamed setter
+    public void setBusinessId(String businessId) {
+        this.businessId = businessId;
     }
 }

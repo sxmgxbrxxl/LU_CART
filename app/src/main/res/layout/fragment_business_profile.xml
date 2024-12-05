@@ -125,53 +125,65 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <LinearLayout
-                android:id="@+id/NameContainer"
+            <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:orientation="vertical">
+                android:layout_marginEnd="20dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginBottom="10dp"
+                app:cardCornerRadius="20dp"
+                app:contentPadding="5dp">
 
                 <LinearLayout
-                    android:layout_width="wrap_content"
+                    android:id="@+id/NameContainer"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:gravity="center"
+                    android:orientation="vertical">
 
-                    <TextView
-                        android:id="@+id/tvFirstName"
+                    <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginEnd="5dp"
-                        android:textColor="@color/eleven_green"
-                        android:textSize="24sp"
-                        android:fontFamily="@font/montserrat_bold"/>
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/tvFirstName"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="5dp"
+                            android:textColor="@color/eleven_green"
+                            android:textSize="24sp"
+                            android:fontFamily="@font/montserrat_bold"/>
+
+                        <TextView
+                            android:id="@+id/tvLastName"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/montserrat_bold"
+                            android:textColor="@color/eleven_green"
+                            android:textSize="24sp" />
+
+                    </LinearLayout>
 
                     <TextView
-                        android:id="@+id/tvLastName"
+                        android:id="@+id/tvEmailAddress"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:fontFamily="@font/montserrat_bold"
                         android:textColor="@color/eleven_green"
-                        android:textSize="24sp" />
+                        android:textSize="14sp"
+                        android:fontFamily="@font/montserrat" />
 
                 </LinearLayout>
 
-                <TextView
-                    android:id="@+id/tvEmailAddress"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/eleven_green"
-                    android:textSize="14sp"
-                    android:fontFamily="@font/montserrat" />
 
-            </LinearLayout>
+            </androidx.cardview.widget.CardView>
 
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:layout_marginEnd="40dp"
-                android:layout_marginStart="40dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="20dp"
+                android:layout_marginStart="20dp"
                 android:layout_marginBottom="100dp"
                 app:cardElevation="5dp"
                 app:cardCornerRadius="20dp"
@@ -212,77 +224,7 @@
                     <com.google.android.material.divider.MaterialDivider
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        app:dividerColor="@color/black"
-                        android:layout_marginTop="10dp"
-                        android:layout_marginEnd="10dp"
-                        android:layout_marginBottom="10dp"/>
-
-                    <LinearLayout
-                        android:id="@+id/btnTransactions"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
-                        <ImageView
-                            android:layout_width="30dp"
-                            android:layout_height="30dp"
-                            android:layout_gravity="center"
-                            android:layout_weight="0"
-                            android:src="@drawable/ic_transaction"
-                            android:scaleType="fitXY"/>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:layout_marginStart="20dp"
-                            android:layout_weight="1"
-                            android:text="Transactions"
-                            android:textSize="12sp"
-                            android:fontFamily="@font/montserrat_semibold"
-                            android:textColor="@color/eleven_green"/>
-
-                    </LinearLayout>
-
-                    <com.google.android.material.divider.MaterialDivider
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        app:dividerColor="@color/black"
-                        android:layout_marginTop="10dp"
-                        android:layout_marginEnd="10dp"
-                        android:layout_marginBottom="10dp"/>
-
-                    <LinearLayout
-                        android:id="@+id/btnChangeAccount"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
-                        <ImageView
-                            android:layout_width="30dp"
-                            android:layout_height="30dp"
-                            android:layout_gravity="center"
-                            android:layout_weight="0"
-                            android:src="@drawable/ic_sell"
-                            android:scaleType="fitXY"/>
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:layout_marginStart="20dp"
-                            android:layout_weight="1"
-                            android:text="Change to Personal Account"
-                            android:textSize="12sp"
-                            android:fontFamily="@font/montserrat_semibold"
-                            android:textColor="@color/eleven_green"/>
-
-                    </LinearLayout>
-
-                    <com.google.android.material.divider.MaterialDivider
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        app:dividerColor="@color/black"
+                        app:dividerColor="@color/eleven_green"
                         android:layout_marginTop="10dp"
                         android:layout_marginEnd="10dp"
                         android:layout_marginBottom="10dp"/>

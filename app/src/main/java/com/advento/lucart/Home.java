@@ -2,18 +2,17 @@ package com.advento.lucart;
 
 import android.os.Bundle;
 import androidx.activity.EdgeToEdge;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
-
 import com.advento.lucart.databinding.ActivityHomeBinding;
 
 public class Home extends AppCompatActivity {
 
     private ActivityHomeBinding binding;
+    private int lastSelectedItemOrder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,7 +23,7 @@ public class Home extends AppCompatActivity {
         binding = ActivityHomeBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+        ViewCompat.setOnApplyWindowInsetsListener(binding.main, (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(0, systemBars.top, 0, 0);
             return insets;
@@ -35,28 +34,68 @@ public class Home extends AppCompatActivity {
         Fragment favoritesFragment = new FavoritesFragment();
         Fragment profileFragment = new ProfileFragment();
 
-        setCurrentFragment(homeFragment);
+        setCurrentFragment(homeFragment, 0);
 
-        binding.bnvUser.setOnNavigationItemSelectedListener(item -> {
+        binding.bnvUser.setOnItemSelectedListener(item -> {
             int itemId = item.getItemId();
+            Fragment selectedFragment = null;
 
             if (itemId == R.id.miHome) {
-                setCurrentFragment(homeFragment);
+                selectedFragment = homeFragment;
             } else if (itemId == R.id.miCart) {
-                setCurrentFragment(myCartFragment);
+                selectedFragment = myCartFragment;
             } else if (itemId == R.id.miFavorites) {
-                setCurrentFragment(favoritesFragment);
+                selectedFragment = favoritesFragment;
             } else if (itemId == R.id.miProfile) {
-                setCurrentFragment(profileFragment);
+                selectedFragment = profileFragment;
+            }
+
+            if (selectedFragment != null) {
+                setCurrentFragment(selectedFragment, itemId);
             }
 
             return true;
         });
     }
 
-    private void setCurrentFragment(Fragment fragment) {
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.flFragment, fragment)
-                .commit();
+    private int getMenuOrder(int menuItemId) {
+        if (menuItemId == R.id.miHome) {
+            return 0;
+        } else if (menuItemId == R.id.miCart) {
+            return 1;
+        } else if (menuItemId == R.id.miFavorites) {
+            return 2;
+        } else if (menuItemId == R.id.miProfile) {
+            return 3;
+        } else {
+            return -1;
+        }
+    }
+
+    private void setCurrentFragment(Fragment fragment, int menuItemId) {
+        int currentOrder = getMenuOrder(menuItemId);
+
+        if (currentOrder != lastSelectedItemOrder) {
+            int enterAnim, exitAnim, popEnterAnim, popExitAnim;
+
+            if (currentOrder > lastSelectedItemOrder) {
+                enterAnim = R.anim.slide_in_right;
+                exitAnim = R.anim.slide_out_left;
+                popEnterAnim = R.anim.slide_in_left;
+                popExitAnim = R.anim.slide_out_right;
+            } else {
+                enterAnim = R.anim.slide_in_left;
+                exitAnim = R.anim.slide_out_right;
+                popEnterAnim = R.anim.slide_in_right;
+                popExitAnim = R.anim.slide_out_left;
+            }
+
+            getSupportFragmentManager().beginTransaction()
+                    .setCustomAnimations(enterAnim, exitAnim, popEnterAnim, popExitAnim)
+                    .replace(binding.flFragment.getId(), fragment)
+                    .commit();
+
+            lastSelectedItemOrder = currentOrder;
+        }
     }
 }

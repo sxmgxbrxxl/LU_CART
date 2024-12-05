@@ -42,9 +42,8 @@ public class HomeFragment extends Fragment {
 
         db = FirebaseFirestore.getInstance();
 
-        RecyclerView recyclerView = binding.recyclerViewProducts;
         GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(), 2);
-        recyclerView.setLayoutManager(gridLayoutManager);
+        binding.recyclerViewProducts.setLayoutManager(gridLayoutManager);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
         binding.rvShops.setLayoutManager(layoutManager);
@@ -63,9 +62,15 @@ public class HomeFragment extends Fragment {
             intent.putExtra("productImage", product.getProductImage());
             startActivity(intent);
         });
-        recyclerView.setAdapter(productAdapter);
+        binding.recyclerViewProducts.setAdapter(productAdapter);
 
-        shopAdapter = new ShopAdapter(getContext(), shopList);
+        shopAdapter = new ShopAdapter(getContext(), shopList, shop -> {
+            Intent intent = new Intent(getContext(), ShopOverview.class);
+            intent.putExtra("businessId", shop.getBusinessId());
+            intent.putExtra("businessName", shop.getBusinessName());
+            intent.putExtra("businessImage", shop.getPhotoUrl());
+            startActivity(intent);
+        });
         binding.rvShops.setAdapter(shopAdapter);
 
         loadGreetings();

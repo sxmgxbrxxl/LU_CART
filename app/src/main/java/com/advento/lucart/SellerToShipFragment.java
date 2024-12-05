@@ -79,7 +79,7 @@ public class SellerToShipFragment extends Fragment {
                                 Transaction transaction = snapshot.toObject(Transaction.class);
                                 if (transaction != null) {
                                     // Additional debug logging
-                                    Log.d(TAG, "Seller ID in transaction: " + transaction.getSellerId());
+                                    Log.d(TAG, "Seller ID in transaction: " + transaction.getBusinessId());
                                     Log.d(TAG, "Status in transaction: " + transaction.getStatus());
                                     Log.d(TAG, "Cart Items count: " + (transaction.getCartItems() != null ? transaction.getCartItems().size() : "NULL"));
 

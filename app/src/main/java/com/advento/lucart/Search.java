@@ -35,6 +35,7 @@ public class Search extends AppCompatActivity {
     private List<Product> productList;
     private ProductAdapter productAdapter;
     private List<Product> allProducts;
+    private List<String> selectedCategories = new ArrayList<>();
     private FirebaseFirestore db;
 
     @Override
@@ -130,6 +131,13 @@ public class Search extends AppCompatActivity {
         productAdapter.notifyDataSetChanged();
     }
 
+    private void clearFilters() {
+        productList.clear();
+        productList.addAll(allProducts);
+        productAdapter.notifyDataSetChanged();
+    }
+
+
     private void showDialog() {
         Dialog dialog = new Dialog(this);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -143,6 +151,13 @@ public class Search extends AppCompatActivity {
         CheckBox chkClothes = dialog.findViewById(R.id.chkClothes);
         CheckBox chkAccessories = dialog.findViewById(R.id.chkAccessories);
         CheckBox chkElectronics = dialog.findViewById(R.id.chkElectronics);
+        CheckBox chkOthers = dialog.findViewById(R.id.chkOthers);
+
+        chkFoods.setChecked(selectedCategories.contains("Foods"));
+        chkClothes.setChecked(selectedCategories.contains("Clothes"));
+        chkAccessories.setChecked(selectedCategories.contains("Accessories"));
+        chkElectronics.setChecked(selectedCategories.contains("Electronics"));
+        chkOthers.setChecked(selectedCategories.contains("Others"));
 
         Button btnCancel = dialog.findViewById(R.id.btnCancel);
         Button btnApply = dialog.findViewById(R.id.btnApply);
@@ -150,13 +165,18 @@ public class Search extends AppCompatActivity {
         btnCancel.setOnClickListener(v -> dialog.dismiss());
 
         btnApply.setOnClickListener(v -> {
-            List<String> selectedCategories = new ArrayList<>();
+            selectedCategories.clear();
             if (chkFoods.isChecked()) selectedCategories.add("Foods");
             if (chkClothes.isChecked()) selectedCategories.add("Clothes");
             if (chkAccessories.isChecked()) selectedCategories.add("Accessories");
             if (chkElectronics.isChecked()) selectedCategories.add("Electronics");
+            if (chkOthers.isChecked()) selectedCategories.add("Others");
 
-            applyFilters(selectedCategories);
+            if (selectedCategories.isEmpty()) {
+                clearFilters();
+            } else {
+                applyFilters(selectedCategories);
+            }
             dialog.dismiss();
         });
 
@@ -186,7 +206,6 @@ public class Search extends AppCompatActivity {
                         productAdapter.notifyDataSetChanged();
                     }
                 });
-        Toast.makeText(this, "Filters applied: " + selectedCategories, Toast.LENGTH_SHORT).show();
     }
 
     private void loadApprovedProducts() {

@@ -1,5 +1,6 @@
 package com.advento.lucart;
 
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.widget.Toast;
@@ -57,7 +58,16 @@ public class Accessories extends AppCompatActivity {
 
         // Initialize the RecyclerView
         accessoriesProducts = new ArrayList<>();
-        productAdapter = new ProductAdapter(this, accessoriesProducts, null);
+        productAdapter = new ProductAdapter(this, accessoriesProducts, product -> {
+            Intent intent = new Intent(this, ProductOverview.class);
+            intent.putExtra("productId", product.getProductId());
+            intent.putExtra("productName", product.getProductName());
+            intent.putExtra("productPrice", product.getProductPrice());
+            intent.putExtra("productDescription", product.getProductDescription());
+            intent.putExtra("productCategory", product.getProductCategory());
+            intent.putExtra("productImage", product.getProductImage());
+            startActivity(intent);
+        });
         binding.rvBrowse.setLayoutManager(new GridLayoutManager(this, 2)); // Adjust GridLayoutManager as needed
         binding.rvBrowse.setAdapter(productAdapter);
 

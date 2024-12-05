@@ -5,5 +5,6 @@
         <item>Clothes</item>
         <item>Accessories</item>
         <item>Electronics</item>
+        <item>Others</item>
     </string-array>
 </resources>

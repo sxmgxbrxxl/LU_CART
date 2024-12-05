@@ -124,10 +124,9 @@ public class PendingProductsActivity extends AppCompatActivity {
                             Toast.makeText(PendingProductsActivity.this, "Approved: " + product.getProductName(), Toast.LENGTH_SHORT).show();
                             pendingProducts.remove(product);
                             productAdapter.notifyDataSetChanged();
-                            sendApprovalNotificationToUser(product.getSellerId(), product.getProductName());
+                            sendApprovalNotificationToUser(product.getBusinessId(), product.getProductName());
 
-                            // Step 2: Add a notification document for the user
-                            addNotificationForUser(product.getSellerId(), product.getProductName());
+                            addNotificationForUser(product.getBusinessId(), product.getProductName());
                         } else {
                             Toast.makeText(PendingProductsActivity.this, "Failed to approve product: " + product.getProductName(), Toast.LENGTH_SHORT).show();
                         }

@@ -1,5 +1,6 @@
 package com.advento.lucart;
 
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.widget.Toast;
@@ -53,13 +54,20 @@ public class Others extends AppCompatActivity {
             getSupportActionBar().setHomeAsUpIndicator(customBackButton);
         }
 
-        // Initialize the RecyclerView
         othersProducts = new ArrayList<>();
-        productAdapter = new ProductAdapter(this, othersProducts, null);
-        binding.rvBrowse.setLayoutManager(new GridLayoutManager(this, 2)); // Adjust GridLayoutManager as needed
+        productAdapter = new ProductAdapter(this, othersProducts, product -> {
+            Intent intent = new Intent(this, ProductOverview.class);
+            intent.putExtra("productId", product.getProductId());
+            intent.putExtra("productName", product.getProductName());
+            intent.putExtra("productPrice", product.getProductPrice());
+            intent.putExtra("productDescription", product.getProductDescription());
+            intent.putExtra("productCategory", product.getProductCategory());
+            intent.putExtra("productImage", product.getProductImage());
+            startActivity(intent);
+        });
+        binding.rvBrowse.setLayoutManager(new GridLayoutManager(this, 2));
         binding.rvBrowse.setAdapter(productAdapter);
 
-        // Fetch data from Firestore
         fetchOthersProducts();
     }
 
@@ -71,19 +79,18 @@ public class Others extends AppCompatActivity {
 
     private void fetchOthersProducts() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        CollectionReference productsCollection = db.collection("products"); // Adjust with your collection name
+        CollectionReference productsCollection = db.collection("products");
 
-        // Query to get only "Accessories" category products
         productsCollection.whereEqualTo("productCategory", "Others")
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        othersProducts.clear(); // Clear existing data
+                        othersProducts.clear();
                         for (QueryDocumentSnapshot document : task.getResult()) {
                             Product product = document.toObject(Product.class);
                             othersProducts.add(product);
                         }
-                        productAdapter.notifyDataSetChanged(); // Notify adapter that data is updated
+                        productAdapter.notifyDataSetChanged();
                     } else {
                         Toast.makeText(Others.this, "Error fetching data", Toast.LENGTH_SHORT).show();
                     }

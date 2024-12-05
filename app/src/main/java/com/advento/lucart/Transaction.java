@@ -6,7 +6,8 @@ import java.util.List;
 public class Transaction implements Serializable {
     private List<CartItem> cartItems;
     private String userId; // Buyer ID
-    private String sellerId; // Seller ID
+    private String businessId; // Seller ID
+    private String transactionId; // Transaction Id
     private String status; // "To Ship", "To Receive", "Completed", "Cancelled"
     private String deliveryLocation;
     private String paymentMethod;
@@ -17,10 +18,11 @@ public class Transaction implements Serializable {
     }
 
     // Parameterized constructor
-    public Transaction(List<CartItem> cartItems, String userId, String sellerId, String status, String deliveryLocation, String paymentMethod) {
+    public Transaction(List<CartItem> cartItems, String userId, String businessId, String transactionId, String status, String deliveryLocation, String paymentMethod) {
         this.cartItems = cartItems;
         this.userId = userId;
-        this.sellerId = sellerId;
+        this.businessId = businessId;
+        this.transactionId = transactionId;
         this.status = status;
         this.deliveryLocation = deliveryLocation;
         this.paymentMethod = paymentMethod;
@@ -43,12 +45,12 @@ public class Transaction implements Serializable {
         this.userId = userId;
     }
 
-    public String getSellerId() {
-        return sellerId;
+    public String getBusinessId() {
+        return businessId;
     }
 
-    public void setSellerId(String sellerId) {
-        this.sellerId = sellerId;
+    public void setBusinessId(String businessId) {
+        this.businessId = businessId;
     }
 
     public String getStatus() {
@@ -73,5 +75,13 @@ public class Transaction implements Serializable {
 
     public void setPaymentMethod(String paymentMethod) {
         this.paymentMethod = paymentMethod;
+    }
+
+    public String getTransactionId() {
+        return transactionId;
+    }
+
+    public void setTransactionId(String transactionId) {
+        this.transactionId = transactionId;
     }
 }

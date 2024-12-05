@@ -31,6 +31,8 @@ public class PrivacyPolicy extends AppCompatActivity {
             return insets;
         });
 
+        binding.wvPrivacyPolicy.loadUrl("https://www.termsfeed.com/live/0cb819b9-f843-434c-9037-c8ea3fbcf3b1");
+
         setSupportActionBar(binding.tbPrivacyPolicy);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);

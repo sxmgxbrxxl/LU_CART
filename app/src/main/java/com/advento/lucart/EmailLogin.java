@@ -1,11 +1,13 @@
 package com.advento.lucart;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -90,8 +92,17 @@ public class EmailLogin extends AppCompatActivity {
                 return; // Exit if credentials are empty
             }
 
+            Dialog progressDialog = new Dialog(this);
+            progressDialog.setContentView(R.layout.dialog_loading);
+            progressDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+
             auth.signInWithEmailAndPassword(userEmail, userPassword)
                     .addOnCompleteListener(task -> {
+
+                        progressDialog.dismiss();
+
                         if (task.isSuccessful()) {
                             FirebaseUser user = auth.getCurrentUser();
                             if (user != null) {

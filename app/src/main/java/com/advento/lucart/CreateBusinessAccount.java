@@ -105,9 +105,15 @@ public class CreateBusinessAccount extends AppCompatActivity {
             return;
         }
 
+        Dialog progressDialog = new Dialog(this);
+        progressDialog.setContentView(R.layout.dialog_loading);
+        progressDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+
         uploadPhotoToFirebase(photoUri, userId, downloadUrl -> {
             String photoUrl = downloadUrl.toString();
-            Business business = new Business(businessName, email, password, photoUrl);
+            Business business = new Business(userId, businessName, email, password, photoUrl);
 
             FirebaseFirestore firestore = FirebaseFirestore.getInstance();
 
@@ -115,6 +121,9 @@ public class CreateBusinessAccount extends AppCompatActivity {
                     .document(userId)
                     .set(business)
                     .addOnCompleteListener(task -> {
+
+                        progressDialog.dismiss();
+
                         if (task.isSuccessful()) {
                             showToast("Business information saved successfully");
                             startActivity(new Intent(CreateBusinessAccount.this, BusinessHome.class));

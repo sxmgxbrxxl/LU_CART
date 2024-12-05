@@ -21,6 +21,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -53,11 +54,10 @@ public class MyProductsFragment extends Fragment {
 
         binding.ivAddProduct.setOnClickListener(v -> showAddProductDialog());
 
-        // Initialize RecyclerView and product list
-        RecyclerView recyclerView = binding.rvApprovedProducts;
-        approvedProducts = new ArrayList<>(); // This will be populated from the database
 
-        // Initialize adapter with click listener to navigate to MyProductOverview
+        RecyclerView recyclerView = binding.rvApprovedProducts;
+        approvedProducts = new ArrayList<>();
+
         adapter = new ProductAdapter(getContext(), approvedProducts, product -> {
             Intent intent = new Intent(getContext(), MyProductOverview.class);
             intent.putExtra("productId", product.getProductId());
@@ -69,16 +69,16 @@ public class MyProductsFragment extends Fragment {
             startActivity(intent);
         });
 
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        recyclerView.setAdapter(adapter); // Set the adapter on the RecyclerView
+        GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(), 2);
+        recyclerView.setLayoutManager(gridLayoutManager);
+        recyclerView.setAdapter(adapter);
 
         binding.swipeRefreshLayout.setOnRefreshListener(() -> {
-            fetchApprovedProducts();
+            fetchUserProducts();
             binding.swipeRefreshLayout.setRefreshing(false);
         });
 
-        // Fetch approved products from Firestore on fragment creation
-        fetchApprovedProducts();
+        fetchUserProducts();
 
         return binding.getRoot();
     }
@@ -106,7 +106,7 @@ public class MyProductsFragment extends Fragment {
             String productDescription = editTextProductDescription.getText().toString().trim();
             String stockNumber = editTextStockNumber.getText().toString().trim();
             String productCategory = spinnerCategory.getSelectedItem().toString();
-            String status = "pending"; //Default for Admin
+            String status = "pending";
 
             if (productName.isEmpty() || productPrice.isEmpty() || productDescription.isEmpty() || stockNumber.isEmpty()) {
                 Toast.makeText(getContext(), "All fields are required", Toast.LENGTH_SHORT).show();
@@ -127,24 +127,26 @@ public class MyProductsFragment extends Fragment {
             }
 
             if (imageUri != null) {
-                // Upload image and save product logic
-                // ...
-            } else {
-                Toast.makeText(getContext(), "Please select an image", Toast.LENGTH_SHORT).show();
-            }
 
-            if (imageUri != null) {
+                Dialog progressDialog = new Dialog(getContext());
+                progressDialog.setContentView(R.layout.dialog_loading);
+                progressDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+                progressDialog.setCancelable(false);
+                progressDialog.show();
+
                 // Upload image to Firebase Storage
                 StorageReference storageRef = FirebaseStorage.getInstance().getReference()
                         .child("product_images/" + System.currentTimeMillis() + ".jpg");
 
                 storageRef.putFile(imageUri)
                         .addOnSuccessListener(taskSnapshot -> storageRef.getDownloadUrl().addOnSuccessListener(uri -> {
-                            // Create new product with image URL
+
+                            dialog.dismiss();
+                            progressDialog.dismiss();
+
                             Product newProduct = new Product(productName,productCategory,productPrice, stockNumber, productDescription,
                                     uri.toString(), "", status, currentUserId);
 
-                            // Save product to Firestore
                             FirebaseFirestore db = FirebaseFirestore.getInstance();
                             db.collection("products").add(newProduct)
                                     .addOnSuccessListener(documentReference -> db.collection("products")
@@ -191,32 +193,10 @@ public class MyProductsFragment extends Fragment {
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    private void fetchApprovedProducts() {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("products")
-                .whereEqualTo("status", "approved")
-                .get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        approvedProducts.clear();
-                        for (QueryDocumentSnapshot document : task.getResult()) {
-                            Product product = document.toObject(Product.class);
-                            approvedProducts.add(product);
-                        }
-                        adapter.notifyDataSetChanged();
-                    } else {
-                        Toast.makeText(getContext(), "Error fetching products", Toast.LENGTH_SHORT).show();
-                    }
-                });
-
-        fetchUserProducts();
-    }
-
-    @SuppressLint("NotifyDataSetChanged")
     private void fetchUserProducts() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("products")
-                .whereEqualTo("userId", currentUserId)
+                .whereEqualTo("businessId", currentUserId)
                 .whereEqualTo("status", "approved")
                 .get()
                 .addOnCompleteListener(task -> {

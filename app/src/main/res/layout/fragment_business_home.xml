@@ -54,7 +54,7 @@
                             android:layout_marginStart="8dp"
                             android:fontFamily="@font/montserrat_semibold"
                             android:textColor="@color/eleven_green"
-                            android:textSize="20sp"
+                            android:textSize="18sp"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintStart_toEndOf="@+id/logo"
                             app:layout_constraintTop_toTopOf="parent" />
@@ -85,18 +85,6 @@
                         app:layout_constraintTop_toTopOf="@id/clTopBar"
                         app:layout_constraintBottom_toBottomOf="@id/clTopBar"/>
 
-                    <ImageView
-                        android:id="@+id/ivSearch"
-                        android:layout_width="30dp"
-                        android:layout_height="30dp"
-                        android:layout_marginEnd="15dp"
-                        android:src="@drawable/ic_notif"
-                        android:padding="4dp"
-                        android:background="@drawable/circle"
-                        app:layout_constraintEnd_toStartOf="@id/ivBell"
-                        app:layout_constraintTop_toTopOf="@id/clTopBar"
-                        app:layout_constraintBottom_toBottomOf="@id/clTopBar"/>
-
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -113,15 +101,6 @@
                 android:textColor="@color/eleven_green"
                 app:layout_constraintTop_toBottomOf="@id/tbHome"/>
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvShops"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="20dp"
-                android:scrollbars="horizontal"
-                android:orientation="horizontal"
-                app:layout_constraintTop_toBottomOf="@id/tvShops"/>
-
             <TextView
                 android:id="@+id/tvCategory"
                 android:layout_width="match_parent"
@@ -131,7 +110,7 @@
                 android:text="Top Costumers"
                 android:textSize="24sp"
                 android:textColor="@color/eleven_green"
-                app:layout_constraintTop_toBottomOf="@id/rvShops"/>
+                app:layout_constraintTop_toBottomOf="@id/tvShops"/>
 
             <HorizontalScrollView
                 android:id="@+id/svCategory"
@@ -149,195 +128,7 @@
                     android:paddingEnd="10dp"
                     android:orientation="horizontal">
 
-                    <androidx.cardview.widget.CardView
-                        android:id="@+id/btnFood"
-                        android:layout_width="300dp"
-                        android:layout_height="150dp"
-                        android:layout_margin="10dp"
-                        app:cardElevation="5dp"
-                        app:cardCornerRadius="15dp">
 
-                        <FrameLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content">
-
-                            <ImageView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:src="@drawable/bg_food"/>
-
-                            <LinearLayout
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:orientation="vertical">
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_margin="20dp"
-                                    android:fontFamily="@font/montserrat_bold"
-                                    android:textColor="@color/one_green"
-                                    android:textSize="24sp"
-                                    android:text="Food"/>
-
-                            </LinearLayout>
-
-                        </FrameLayout>
-
-                    </androidx.cardview.widget.CardView>
-
-                    <androidx.cardview.widget.CardView
-                        android:id="@+id/btnClothes"
-                        android:layout_width="300dp"
-                        android:layout_height="150dp"
-                        android:layout_margin="10dp"
-                        app:cardElevation="5dp"
-                        app:cardCornerRadius="15dp">
-
-                        <FrameLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content">
-
-                            <ImageView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:scaleType="centerCrop"
-                                android:src="@drawable/bg_clothes"/>
-
-                            <LinearLayout
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:orientation="vertical">
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_margin="20dp"
-                                    android:fontFamily="@font/montserrat_bold"
-                                    android:textColor="@color/one_green"
-                                    android:textSize="24sp"
-                                    android:text="Clothes"/>
-
-                            </LinearLayout>
-
-                        </FrameLayout>
-
-                    </androidx.cardview.widget.CardView>
-
-                    <androidx.cardview.widget.CardView
-                        android:id="@+id/btnElectronics"
-                        android:layout_width="300dp"
-                        android:layout_height="150dp"
-                        android:layout_margin="10dp"
-                        app:cardElevation="5dp"
-                        app:cardCornerRadius="15dp">
-
-                        <FrameLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content">
-
-                            <ImageView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:scaleType="centerCrop"
-                                android:src="@drawable/bg_electronics"/>
-
-                            <LinearLayout
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:orientation="vertical">
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_margin="20dp"
-                                    android:fontFamily="@font/montserrat_bold"
-                                    android:textColor="@color/one_green"
-                                    android:textSize="24sp"
-                                    android:text="Electronics"/>
-
-                            </LinearLayout>
-
-                        </FrameLayout>
-
-                    </androidx.cardview.widget.CardView>
-
-                    <androidx.cardview.widget.CardView
-                        android:id="@+id/btnAccessories"
-                        android:layout_width="300dp"
-                        android:layout_height="150dp"
-                        android:layout_margin="10dp"
-                        app:cardElevation="5dp"
-                        app:cardCornerRadius="15dp">
-
-                        <FrameLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content">
-
-                            <ImageView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:scaleType="centerCrop"
-                                android:src="@drawable/bg_accessories"/>
-
-                            <LinearLayout
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:orientation="vertical">
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_margin="20dp"
-                                    android:fontFamily="@font/montserrat_bold"
-                                    android:textColor="@color/one_green"
-                                    android:textSize="24sp"
-                                    android:text="Accessories"/>
-
-
-                            </LinearLayout>
-
-                        </FrameLayout>
-
-                    </androidx.cardview.widget.CardView>
-
-                    <androidx.cardview.widget.CardView
-                        android:id="@+id/btnOthers"
-                        android:layout_width="300dp"
-                        android:layout_height="150dp"
-                        android:layout_margin="10dp"
-                        app:cardElevation="5dp"
-                        app:cardCornerRadius="15dp">
-
-                        <FrameLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content">
-
-                            <ImageView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:scaleType="centerCrop"
-                                android:src="@drawable/bg_others"/>
-
-                            <LinearLayout
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:orientation="vertical">
-
-                                <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_margin="20dp"
-                                    android:fontFamily="@font/montserrat_bold"
-                                    android:textColor="@color/one_green"
-                                    android:textSize="24sp"
-                                    android:text="Others"/>
-
-                            </LinearLayout>
-
-                        </FrameLayout>
-
-                    </androidx.cardview.widget.CardView>
 
                 </LinearLayout>
 
@@ -377,14 +168,6 @@
 
             </LinearLayout>
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recycler_view_products"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:paddingStart="15dp"
-                android:paddingEnd="15dp"
-                tools:listitem="@layout/product_tile"
-                app:layout_constraintTop_toBottomOf="@id/llBrowse"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -1,5 +1,6 @@
 package com.advento.lucart;
 
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.widget.Toast;
@@ -35,33 +36,37 @@ public class Clothes extends AppCompatActivity {
         binding = ActivityClothesBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        // Adjust the layout for system bars
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(0, systemBars.top, 0, 0);
             return insets;
         });
 
-        // Setup the toolbar
         setSupportActionBar(binding.tbClothes);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
-        // Set custom back button
         Drawable customBackButton = ContextCompat.getDrawable(this, R.drawable.ic_custom_back_activities);
         if (customBackButton != null) {
             customBackButton.setTint(ContextCompat.getColor(this, R.color.eleven_green));
             getSupportActionBar().setHomeAsUpIndicator(customBackButton);
         }
 
-        // Initialize the RecyclerView
         clothesProducts = new ArrayList<>();
-        productAdapter = new ProductAdapter(this, clothesProducts, null);
-        binding.rvBrowse.setLayoutManager(new GridLayoutManager(this, 2)); // Adjust GridLayoutManager as needed
+        productAdapter = new ProductAdapter(this, clothesProducts, product -> {
+            Intent intent = new Intent(this, ProductOverview.class);
+            intent.putExtra("productId", product.getProductId());
+            intent.putExtra("productName", product.getProductName());
+            intent.putExtra("productPrice", product.getProductPrice());
+            intent.putExtra("productDescription", product.getProductDescription());
+            intent.putExtra("productCategory", product.getProductCategory());
+            intent.putExtra("productImage", product.getProductImage());
+            startActivity(intent);
+        });
+        binding.rvBrowse.setLayoutManager(new GridLayoutManager(this, 2));
         binding.rvBrowse.setAdapter(productAdapter);
 
-        // Fetch data from Firestore
         fetchClothesProducts();
     }
 
@@ -71,22 +76,20 @@ public class Clothes extends AppCompatActivity {
         return true;
     }
 
-    // Fetch clothes products from Firestore
     private void fetchClothesProducts() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        CollectionReference productsCollection = db.collection("products"); // Adjust with your collection name
+        CollectionReference productsCollection = db.collection("products");
 
-        // Query to get only "Clothes" category products
         productsCollection.whereEqualTo("productCategory", "Clothes")
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        clothesProducts.clear(); // Clear existing data
+                        clothesProducts.clear();
                         for (QueryDocumentSnapshot document : task.getResult()) {
                             Product product = document.toObject(Product.class);
                             clothesProducts.add(product);
                         }
-                        productAdapter.notifyDataSetChanged(); // Notify adapter that data is updated
+                        productAdapter.notifyDataSetChanged();
                     } else {
                         Toast.makeText(Clothes.this, "Error fetching data", Toast.LENGTH_SHORT).show();
                     }

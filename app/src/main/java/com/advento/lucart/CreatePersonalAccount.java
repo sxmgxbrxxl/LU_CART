@@ -120,6 +120,12 @@ public class CreatePersonalAccount extends AppCompatActivity {
             return;
         }
 
+        Dialog progressDialog = new Dialog(this);
+        progressDialog.setContentView(R.layout.dialog_loading);
+        progressDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+
         uploadPhotoToFirebase(photoUri, userId, downloadUrl -> {
             String photoUrl = downloadUrl.toString();
             User user = new User(firstName, lastName, email, password, birthday, phoneNumber, photoUrl);
@@ -127,6 +133,9 @@ public class CreatePersonalAccount extends AppCompatActivity {
             // Save user data to Firestore
             DocumentReference userDoc = firestore.collection("users").document(userId);
             userDoc.set(user).addOnCompleteListener(task -> {
+
+                progressDialog.dismiss();
+
                 if (task.isSuccessful()) {
                     showToast("User information saved successfully");
                     startActivity(new Intent(CreatePersonalAccount.this, Home.class));

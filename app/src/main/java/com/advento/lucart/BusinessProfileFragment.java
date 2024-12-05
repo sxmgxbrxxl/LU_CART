@@ -52,8 +52,15 @@ public class BusinessProfileFragment extends Fragment {
                              Bundle savedInstanceState) {
         binding = FragmentBusinessProfileBinding.inflate(inflater, container, false);
 
-        // Set up UI and button click listeners
+
+        binding.btnMyProfile.setOnClickListener(v -> {
+//            startActivity(new Intent(getContext(), MyBusinessProfile.class)); // PLEASE WAG MONG KALIMUTAN TO SAM
+        });
         binding.btnSignOut.setOnClickListener(v -> signOut());
+
+        binding.ivSettings.setOnClickListener(v -> {
+            startActivity(new Intent(getContext(), Settings.class));
+        });
 
         // Load user data after the fragment's view has been created
         loadData();

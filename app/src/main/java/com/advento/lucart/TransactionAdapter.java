@@ -83,9 +83,11 @@ public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.
                             // Update Firestore status to "Cancelled"
                             FirebaseFirestore.getInstance()
                                     .collection("transactions")
-                                    .document(transaction.getUserId()) // Assuming the document ID is userId; adjust as needed
+                                    .document(transaction.getTransactionId()) // Assuming the document ID is userId; adjust as needed
                                     .update("status", "Cancelled")
-                                    .addOnSuccessListener(aVoid -> Toast.makeText(context, "Transaction Cancelled.", Toast.LENGTH_SHORT).show())
+                                    .addOnSuccessListener(aVoid -> {
+                                        Toast.makeText(context, "Transaction Cancelled.", Toast.LENGTH_SHORT).show();
+                                    })
                                     .addOnFailureListener(e -> Toast.makeText(context, "Failed to update transaction status.", Toast.LENGTH_SHORT).show());
 
                             // Update UI
@@ -121,9 +123,6 @@ public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.
                         .show();
             }
         });
-
-
-
     }
 
     private void addToCancelSection(Transaction transaction) {

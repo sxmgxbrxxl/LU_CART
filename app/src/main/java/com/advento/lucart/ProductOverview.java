@@ -75,28 +75,46 @@ public class ProductOverview extends AppCompatActivity {
 
         binding.tvProductName.setText(productName);
         binding.tvCategory.setText(productCategory);
+        binding.tvProductDescription.setText(productDescription);
         binding.tvProductPrice.setText("₱ " + productPrice);
         binding.totalP.setText("Total Price: ₱ " + productPrice);
 
-        List<String> descriptions = Arrays.asList(productDescription.split("\n\n"));
-        DescriptionPagerAdapter adapter = new DescriptionPagerAdapter(this, descriptions);
-        binding.vpProductDescription.setAdapter(adapter);
 
+        // Fetch shop details
         db.collection("products").document(productId)
                 .get()
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
-                        String stock = documentSnapshot.getString("stock"); // Assuming 'stock' field exists
-                        stockQuantity = Integer.parseInt(stock); // Store the available stock in the variable
-                        binding.tvAvailableStock.setText("Stock: " + stock); // Set the stock number in the TextView
+                        String businessId = documentSnapshot.getString("businessId");
+
+                        if (businessId != null) {
+                            db.collection("business").document(businessId)
+                                    .get()
+                                    .addOnSuccessListener(shopSnapshot -> {
+                                        if (shopSnapshot.exists()) {
+                                            String shopName = shopSnapshot.getString("businessName");
+                                            String shopPhoto = shopSnapshot.getString("photoUrl");
+
+                                            binding.tvShopName.setText(shopName);
+
+                                            Glide.with(this)
+                                                    .load(shopPhoto)
+                                                    .circleCrop()
+                                                    .into(binding.ivShopPhoto);
+                                        } else {
+                                            Toast.makeText(this, "Shop details not found.", Toast.LENGTH_SHORT).show();
+                                        }
+                                    })
+                                    .addOnFailureListener(e -> Toast.makeText(this, "Error retrieving shop details: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+                        } else {
+                            Toast.makeText(this, "Seller ID not found.", Toast.LENGTH_SHORT).show();
+                        }
                     } else {
-                        binding.tvAvailableStock.setText("Stock: 0"); // Default if not found
+                        Toast.makeText(this, "Product not found in the database.", Toast.LENGTH_SHORT).show();
                     }
                 })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(ProductOverview.this, "Error retrieving stock: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                    binding.tvAvailableStock.setText("Stock: 0");
-                });
+                .addOnFailureListener(e -> Toast.makeText(this, "Error retrieving product details: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+
 
         // Setup quantity buttons with stock limit
         binding.buttonIncrease.setOnClickListener(v -> {
@@ -219,16 +237,15 @@ public class ProductOverview extends AppCompatActivity {
     private void addToCart(String productId, String name, String productCategory, double price, String imageUrl, int quantity) {
         String userId = mAuth.getCurrentUser().getUid();
 
-        // Retrieve product details, including stock as a String and sellerId
         db.collection("products")
                 .document(productId)
                 .get()
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
-                        String sellerId = documentSnapshot.getString("sellerId"); // Adjust field name if needed
+                        String businessId = documentSnapshot.getString("businessId"); // Adjust field name if needed
                         String stock = documentSnapshot.getString("stock"); // Retrieve stock as a String
 
-                        if (sellerId == null || stock == null) {
+                        if (businessId == null || stock == null) {
                             Toast.makeText(this, "Product or seller information not found.", Toast.LENGTH_SHORT).show();
                             return;
                         }
@@ -281,7 +298,7 @@ public class ProductOverview extends AppCompatActivity {
                                             cartItem.put("price", price);
                                             cartItem.put("imageUrl", imageUrl);
                                             cartItem.put("quantity", quantity);
-                                            cartItem.put("sellerId", sellerId);
+                                            cartItem.put("businessId", businessId);
                                             cartItem.put("stock", stock); // Store stock as a String
 
                                             db.collection("carts")

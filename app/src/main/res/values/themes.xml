@@ -8,12 +8,5 @@
         <item name="android:fitsSystemWindows">true</item> <!-- Disable edge-to-edge by respecting system windows -->
 
     </style>
-    
-    <style name="DialogAnimation">
-        
-        <item name="android:windowEnterAnimation">@anim/slide_in_bottom</item>
-        <item name="android:windowExitAnimation">@anim/slide_out_bottom</item>
-        
-    </style>
        
 </resources>

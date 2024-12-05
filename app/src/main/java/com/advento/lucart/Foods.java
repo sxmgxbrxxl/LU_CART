@@ -57,7 +57,16 @@ public class Foods extends AppCompatActivity {
 
         // Initialize the RecyclerView
         foodProducts = new ArrayList<>();
-        productAdapter = new ProductAdapter(this, foodProducts, null);
+        productAdapter = new ProductAdapter(this, foodProducts, product -> {
+            Intent intent = new Intent(this, ProductOverview.class);
+            intent.putExtra("productId", product.getProductId());
+            intent.putExtra("productName", product.getProductName());
+            intent.putExtra("productPrice", product.getProductPrice());
+            intent.putExtra("productDescription", product.getProductDescription());
+            intent.putExtra("productCategory", product.getProductCategory());
+            intent.putExtra("productImage", product.getProductImage());
+            startActivity(intent);
+        });
         binding.rvBrowse.setLayoutManager(new GridLayoutManager(this, 2)); // Adjust GridLayoutManager as needed
         binding.rvBrowse.setAdapter(productAdapter);
 

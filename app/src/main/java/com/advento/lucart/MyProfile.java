@@ -2,18 +2,22 @@ package com.advento.lucart;
 
 import android.app.Dialog;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -33,7 +37,9 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 
 public class MyProfile extends AppCompatActivity {
@@ -54,13 +60,15 @@ public class MyProfile extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        EdgeToEdge.enable(this);
+
         binding = ActivityMyProfileBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
         // Apply system bar insets
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            v.setPadding(0, systemBars.top, 0, systemBars.bottom);
             return insets;
         });
 
@@ -82,12 +90,32 @@ public class MyProfile extends AppCompatActivity {
         binding.ivEdit.setOnClickListener(v -> toggleEditMode());
         binding.fabPhoto.setOnClickListener(v -> showDialog());
 
-        setSupportActionBar(binding.toolbar);
+        setSupportActionBar(binding.tbMyProfile);
         if (getSupportActionBar() != null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
             getSupportActionBar().setDisplayShowTitleEnabled(false);
         }
+
+        Drawable customBackButton = ContextCompat.getDrawable(this, R.drawable.ic_custom_back_activities);
+        if (customBackButton != null) {
+            customBackButton.setTint(ContextCompat.getColor(this, R.color.eleven_green));
+            getSupportActionBar().setHomeAsUpIndicator(customBackButton);
+        }
+
+        setFieldsLocked();
+    }
+
+    private void setFieldsLocked() {
+        binding.etFirstName.setClickable(false);
+        binding.etLastName.setClickable(false);
+        binding.etPhoneNumber.setClickable(false);
+
+        binding.etFirstName.setFocusable(false);
+        binding.etLastName.setFocusable(false);
+        binding.etPhoneNumber.setFocusable(false);
+
+        binding.fabPhoto.setVisibility(View.GONE);
     }
 
     private void fetchUserData() {
@@ -99,9 +127,7 @@ public class MyProfile extends AppCompatActivity {
                             binding.etFirstName.setText(user.getFirstName());
                             binding.etLastName.setText(user.getLastName());
                             binding.etEmailAddress.setText(user.getEmail());
-                            binding.etBirthday.setText(user.getBirthday());
                             binding.etPhoneNumber.setText(user.getPhoneNumber());
-                            binding.etPassword.setText(user.getPassword());
 
                             if (user.getPhotoUrl() != null) {
                                 Glide.with(MyProfile.this)
@@ -125,38 +151,50 @@ public class MyProfile extends AppCompatActivity {
             binding.ivEdit.setImageResource(R.drawable.ic_check);
         }
         isEditing = !isEditing;
-        setFieldsEditable(isEditing);
+        setFieldsOpen(isEditing);
     }
 
-    private void setFieldsEditable(boolean editable) {
-        binding.etFirstName.setEnabled(editable);
-        binding.etLastName.setEnabled(editable);
-        binding.etEmailAddress.setEnabled(false);
-        binding.etBirthday.setEnabled(false);
-        binding.etPhoneNumber.setEnabled(editable);
-        binding.etPassword.setEnabled(false);
+    private void setFieldsOpen(boolean isEditing) {
+        binding.etFirstName.setClickable(isEditing);
+        binding.etLastName.setClickable(isEditing);
+        binding.etPhoneNumber.setClickable(isEditing);
+
+        binding.etFirstName.setFocusable(isEditing);
+        binding.etLastName.setFocusable(isEditing);
+        binding.etPhoneNumber.setFocusable(isEditing);
+
+        binding.fabPhoto.setVisibility(View.VISIBLE);
     }
 
     private void saveUserData() {
         String firstName = binding.etFirstName.getText().toString();
         String lastName = binding.etLastName.getText().toString();
-        String email = binding.etEmailAddress.getText().toString();
-        String password = binding.etPassword.getText().toString();
-        String birthday = binding.etBirthday.getText().toString();
         String phoneNumber = binding.etPhoneNumber.getText().toString();
         String photoUrl = selectedImageUri != null ? selectedImageUri.toString() : null;
 
-        User updatedUser = new User(firstName, lastName, email, password, birthday, phoneNumber, photoUrl);
+        Map<String, Object> updatedUserData = new HashMap<>();
+        updatedUserData.put("firstName", firstName);
+        updatedUserData.put("lastName", lastName);
+        updatedUserData.put("phoneNumber", phoneNumber);
+        if (photoUrl != null) {
+            updatedUserData.put("photoUrl", photoUrl);
+        }
 
-        userReference.set(updatedUser)
-                .addOnSuccessListener(aVoid -> Toast.makeText(MyProfile.this, "Profile updated successfully!", Toast.LENGTH_SHORT).show())
-                .addOnFailureListener(e -> Toast.makeText(MyProfile.this, "Failed to update profile.", Toast.LENGTH_SHORT).show());
+        userReference.update(updatedUserData)
+                .addOnSuccessListener(aVoid ->
+                        Toast.makeText(MyProfile.this, "Profile updated successfully!", Toast.LENGTH_SHORT).show())
+                .addOnFailureListener(e ->
+                        Toast.makeText(MyProfile.this, "Failed to update profile.", Toast.LENGTH_SHORT).show());
     }
 
     private void showDialog() {
         Dialog dialog = new Dialog(this);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.dialog_photo);
+
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setWindowAnimations(R.style.DialogAnimation);
+        }
 
         TextView takePhoto = dialog.findViewById(R.id.tvTakePhoto);
         TextView choosePhoto = dialog.findViewById(R.id.tvChoosePhoto);
