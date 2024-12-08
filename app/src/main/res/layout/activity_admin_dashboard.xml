@@ -65,7 +65,7 @@
                 android:fontFamily="@font/montserrat_semibold"
                 android:paddingBottom="30dp"
                 android:textSize="12sp"
-                android:text="Pending"
+                android:text="@string/pending"
                 android:textAlignment="center"
                 android:textColor="@color/black" />
 
@@ -76,7 +76,7 @@
                 android:fontFamily="@font/montserrat_semibold"
                 android:paddingBottom="15dp"
                 android:textSize="12sp"
-                android:text="Products"
+                android:text="@string/products"
                 android:textAlignment="center"
                 android:textColor="@color/black" />
 
@@ -113,7 +113,7 @@
                 android:layout_gravity="bottom|center"
                 android:fontFamily="@font/montserrat_semibold"
                 android:paddingBottom="30dp"
-                android:text="View"
+                android:text="@string/view"
                 android:textAlignment="center"
                 android:textSize="12sp"
                 android:textColor="@color/black" />
@@ -124,10 +124,10 @@
                 android:layout_gravity="bottom|center"
                 android:fontFamily="@font/montserrat_semibold"
                 android:paddingBottom="15dp"
-                android:textSize="12sp"
-                android:text="Statistics"
+                android:text="@string/statistics2"
                 android:textAlignment="center"
-                android:textColor="@color/black" />
+                android:textColor="@color/black"
+                android:textSize="12sp" />
 
         </FrameLayout>
     </androidx.cardview.widget.CardView>
@@ -164,7 +164,7 @@
                 android:fontFamily="@font/montserrat_semibold"
                 android:paddingBottom="30dp"
                 android:textSize="12sp"
-                android:text="Sign Out"
+                android:text="@string/sign_out"
                 android:textAlignment="center"
                 android:textColor="@color/black" />
 

@@ -25,7 +25,7 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/montserrat_semibold"
             android:textColor="@color/eleven_green"
-            android:text="Accessories"/>
+            android:text="@string/accories"/>
 
     </androidx.appcompat.widget.Toolbar>
 

@@ -85,4 +85,10 @@
     <string name="description">Description</string>
     <string name="ivedit">ivedit</string>
     <string name="my_profile">My Profile</string>
+    <string name="accories">Accories</string>
+    <string name="pending">Pending</string>
+    <string name="products">Products</string>
+    <string name="view">View</string>
+    <string name="statistics2">Statistics</string>
+    <string name="sign_out">Sign Out</string>
 </resources>

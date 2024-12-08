@@ -95,6 +95,8 @@ public class Checkout extends AppCompatActivity {
             String location = binding.spinnerLandmark.getSelectedItem().toString() + ", " + binding.etLocation.getText().toString().trim();
             String paymentMethod = binding.spinnerPaymentMethod.getSelectedItem().toString();
 
+            totalPrice = subtotalPrice + shippingPrice;
+
             if (location.isEmpty()) {
                 Toast.makeText(this, "Please enter a delivery location", Toast.LENGTH_SHORT).show();
             } else {
@@ -157,11 +159,13 @@ public class Checkout extends AppCompatActivity {
                     itemsForBusiness,    // List of items for this business
                     buyerId,             // Buyer ID
                     businessId,          // Business ID
-                    null,                  // No transactionId yet
+                    null,                // No transactionId yet
                     "To Ship",           // Status
                     location,            // Delivery location
-                    paymentMethod     // Payment method
+                    paymentMethod,       // Payment method
+                    shippingPrice        // Shipping fee (add this argument)
             );
+
 
             Dialog progressDialog = new Dialog(this);
             progressDialog.setContentView(R.layout.dialog_loading);

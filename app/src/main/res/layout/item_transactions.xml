@@ -27,7 +27,7 @@
                 android:layout_width="30dp"
                 android:layout_height="30dp"
                 android:layout_weight="0"
-                android:layout_marginEnd="5dp"/>
+                android:layout_marginEnd="5dp" />
 
             <TextView
                 android:id="@+id/tvShopName"
@@ -35,7 +35,7 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:fontFamily="@font/montserrat_semibold"
-                android:textSize="12sp"/>
+                android:textSize="12sp" />
 
         </LinearLayout>
 
@@ -67,7 +67,6 @@
             android:textSize="12sp"
             android:layout_marginBottom="8dp" />
 
-
         <!-- Status -->
         <TextView
             android:id="@+id/tvStatus"
@@ -98,18 +97,16 @@
             android:textSize="12sp" />
 
         <Button
-            android:id="@+id/btnCancel"
+            android:id="@+id/btnMoveToReceive"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
-            android:text="Cancel"
+            android:text="Move to Receive"
             android:textAllCaps="false"
             android:padding="8dp"
             android:layout_margin="8dp"
             android:backgroundTint="@color/six_green"
             android:textColor="@color/two_green" />
-
-
 
     </LinearLayout>
 </androidx.cardview.widget.CardView>

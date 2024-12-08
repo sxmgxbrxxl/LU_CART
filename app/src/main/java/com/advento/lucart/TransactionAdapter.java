@@ -41,16 +41,37 @@ public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.
         Transaction transaction = transactionList.get(position);
 
         // Bind transaction details
+
         holder.tvStatus.setText(transaction.getStatus());
         holder.tvLocation.setText(transaction.getDeliveryLocation());
         holder.tvPaymentMethod.setText(transaction.getPaymentMethod());
+
+        FirebaseFirestore.getInstance()
+                .collection("transactions")
+                .document(transaction.getTransactionId())
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        double shippingFee = documentSnapshot.getDouble("shippingFee");
+                        transaction.setShippingFee(shippingFee);
+                        holder.tvShippingFee.setText(String.format("Shipping: PHP %.2f", shippingFee));
+                    } else {
+                        Toast.makeText(context, "Failed to fetch shipping fee", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .addOnFailureListener(e -> Toast.makeText(context, "Failed to fetch shipping fee", Toast.LENGTH_SHORT).show());
 
         // Calculate and display the total price
         double totalPrice = 0;
         for (CartItem product : transaction.getCartItems()) {
             totalPrice += product.getPrice() * product.getQuantity();
         }
-        holder.tvPrice.setText(String.format("Total: PHP %.2f", totalPrice));
+        // Add shipping fee if available
+        double shippingFee = transaction.getShippingFee(); // Assuming getShippingFee() exists
+        totalPrice += shippingFee;
+
+        holder.tvPrice.setText(String.format("Total: PHP %.2f", totalPrice, shippingFee));
+
 
         // Set up the nested RecyclerView for cart items
         CartItemAdapter cartItemAdapter = new CartItemAdapter(context, transaction.getCartItems());
@@ -139,7 +160,7 @@ public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.
     // ViewHolder for the RecyclerView items
     public static class TransactionViewHolder extends RecyclerView.ViewHolder {
         ImageView ivProductImage;
-        TextView tvProductName, tvPrice, tvQuantity, tvStatus, tvLocation, tvPaymentMethod;
+        TextView tvProductName, tvPrice, tvQuantity, tvStatus, tvLocation, tvPaymentMethod, tvShippingFee;
         RecyclerView rvCartItems; // Add RecyclerView for cart items
         Button btnCancel;
 
@@ -152,6 +173,7 @@ public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.
             tvStatus = itemView.findViewById(R.id.tvStatus);
             tvLocation = itemView.findViewById(R.id.tvLocation);
             tvPaymentMethod = itemView.findViewById(R.id.tvModeOfPayment);
+            tvShippingFee = itemView.findViewById(R.id.tvShippingFee);
             rvCartItems = itemView.findViewById(R.id.rvCartItems); // Initialize the RecyclerView
             btnCancel = itemView.findViewById(R.id.btnCancel);
         }
